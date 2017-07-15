@@ -5,11 +5,15 @@
 -- !!!: Сохраняйте регистр в мэппингах для Hibernate (на mysql под linux это важно).
 --
 
+DROP TABLE IF EXISTS CoffeeOrderItem;
+DROP TABLE IF EXISTS CoffeeOrder;
+DROP TABLE IF EXISTS CoffeeType;
+DROP TABLE IF EXISTS Configuration;
 --
 -- Сорт кофе
 --
-create table CoffeeType (
-  id        INT          NOT NULL, -- pk
+CREATE TABLE CoffeeType (
+  id        INT          NOT NULL AUTO_INCREMENT, -- pk
   type_name VARCHAR(200) NOT NULL, -- название
   price     DOUBLE       NOT NULL, -- цена
   disabled  CHAR(1), -- если disabled = 'Y', то не показывать данный сорт в списке доступных сортов
@@ -17,15 +21,16 @@ create table CoffeeType (
 );
 -- ) type=InnoDB;
 
-create index CT_I on CoffeeType (
-  id asc
-);
+CREATE INDEX CT_I
+  ON CoffeeType (
+    id ASC
+  );
 
 --
 -- Заказ
 --
-create table CoffeeOrder (
-  id               INT          NOT NULL, -- pk
+CREATE TABLE CoffeeOrder (
+  id               INT          NOT NULL AUTO_INCREMENT, -- pk
   order_date       DATETIME     NOT NULL, -- время заказа
   name             VARCHAR(100), -- имя заказчика
   delivery_address VARCHAR(200) NOT NULL, -- куда доставлять
@@ -34,45 +39,48 @@ create table CoffeeOrder (
 );
 -- ) type=InnoDB;
 
-create index CO_I1 on CoffeeOrder (
-  id asc
-);
+CREATE INDEX CO_I1
+  ON CoffeeOrder (
+    id ASC
+  );
 
 --
 -- Одна позиция заказа
 --
-create table CoffeeOrderItem (
-  id int not null, -- pk
-  type_id int not null, -- сорт кофе
-  order_id int not null, -- к какому заказу принадлежит
-  quantity int, -- сколько чашек
-  primary key (id)
+CREATE TABLE CoffeeOrderItem (
+  id       INT NOT NULL AUTO_INCREMENT, -- pk
+  type_id  INT NOT NULL, -- сорт кофе
+  order_id INT NOT NULL, -- к какому заказу принадлежит
+  quantity INT, -- сколько чашек
+  PRIMARY KEY (id)
 );
 -- ) type=InnoDB;
 
-create index COI_I on CoffeeOrderItem (
-  order_id asc
-);
+CREATE INDEX COI_I
+  ON CoffeeOrderItem (
+    order_id ASC
+  );
 
-create index COI_3 on CoffeeOrderItem (
-  type_id asc
-);
+CREATE INDEX COI_3
+  ON CoffeeOrderItem (
+    type_id ASC
+  );
 
-alter table CoffeeOrderItem
-  add constraint COI_CO foreign key (order_id)
-    references CoffeeOrder (id);
+ALTER TABLE CoffeeOrderItem
+  ADD CONSTRAINT COI_CO FOREIGN KEY (order_id)
+REFERENCES CoffeeOrder (id);
 
 
-alter table CoffeeOrderItem
-  add constraint COI_CT foreign key (type_id)
-    references CoffeeType (id);
+ALTER TABLE CoffeeOrderItem
+  ADD CONSTRAINT COI_CT FOREIGN KEY (type_id)
+REFERENCES CoffeeType (id);
 
 --
 -- Конфигурация
 --
-create table Configuration (
-  id varchar(20) not null, -- pk, название свойства
-  value varchar(30), -- значение
-  primary key (id)
+CREATE TABLE Configuration (
+  id    VARCHAR(20) NOT NULL, -- pk, название свойства
+  value VARCHAR(30), -- значение
+  PRIMARY KEY (id)
 );
 -- ) type=InnoDB;
