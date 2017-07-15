@@ -6,13 +6,20 @@
     <display-name>Topjava</display-name>
 
     <servlet>
-        <servlet-name>drinkServlet</servlet-name>
+        <servlet-name>coffeeServlet</servlet-name>
         <servlet-class>test.onlinecafe.web.CoffeeServlet</servlet-class>
         <load-on-startup>0</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>drinkServlet</servlet-name>
+        <servlet-name>coffeeServlet</servlet-name>
         <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/css/*</url-pattern>
+        <url-pattern>/js/*</url-pattern>
+        <url-pattern>/fonts/*</url-pattern>
     </servlet-mapping>
 
 </web-app>
