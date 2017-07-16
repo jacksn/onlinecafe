@@ -2,7 +2,7 @@ package test.onlinecafe.repository;
 
 import test.onlinecafe.model.CoffeeOrder;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface CoffeeOrderRepository {
     CoffeeOrder save(CoffeeOrder coffeeOrder);
@@ -11,6 +11,6 @@ public interface CoffeeOrderRepository {
 
     CoffeeOrder get(int id);
 
-    Collection<CoffeeOrder> getAll();
+    List<CoffeeOrder> getAll();
 
 }
