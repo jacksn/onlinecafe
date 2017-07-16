@@ -1,13 +1,10 @@
 package test.onlinecafe.repository;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import test.onlinecafe.model.BaseEntity;
 import test.onlinecafe.model.CoffeeOrder;
-import test.onlinecafe.util.DbUtil;
 
-import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -15,18 +12,7 @@ import java.util.List;
 
 import static test.onlinecafe.CoffeeOrderTestData.*;
 
-public class JdbcCoffeeOrderRepositoryTest {
-    private static CoffeeOrderRepository repository;
-    private static Connection connection;
-
-    @BeforeClass
-    public static void init() {
-        repository = new JdbcCoffeeOrderRepository();
-        connection = DbUtil.getConnection();
-        DbUtil.executeFile("sql/coffee.sql");
-        DbUtil.executeFile("sql/testdata.sql");
-    }
-
+public class JdbcCoffeeOrderRepositoryTest extends AbstractJdbcRepositoryTest{
     @Test
     public void testUpdate() throws Exception {
         connection.setAutoCommit(false);
