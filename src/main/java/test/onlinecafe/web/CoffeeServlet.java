@@ -4,6 +4,7 @@ import test.onlinecafe.repository.CoffeeOrderRepository;
 import test.onlinecafe.repository.CoffeeTypeRepository;
 import test.onlinecafe.repository.JdbcCoffeeOrderRepository;
 import test.onlinecafe.repository.JdbcCoffeeTypeRepository;
+import test.onlinecafe.util.CoffeeTypeUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -28,8 +29,8 @@ public class CoffeeServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         if (action == null) {
-            request.setAttribute("drinks", coffeeTypeRepository.getAll());
-            request.getRequestDispatcher("/index.jsp").forward(request, response);
+            request.setAttribute("coffeeTypes", CoffeeTypeUtil.filterEnabled(coffeeTypeRepository.getAll()));
+            request.getRequestDispatcher("WEB-INF/index.jsp").forward(request, response);
         }
     }
 }
