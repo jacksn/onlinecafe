@@ -10,7 +10,7 @@ import java.util.List;
 public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
     private static final String SELECT_ALL_QUERY = "SELECT * FROM CoffeeType";
     private static final String SELECT_QUERY = "SELECT * FROM CoffeeType WHERE id = ?";
-    private static final String INSERT_QUERY = "INSERT INTO CoffeeType (null, type_name, price, disabled) VALUES (NULL, ?, ?, ?)";
+    private static final String INSERT_QUERY = "INSERT INTO CoffeeType (id, type_name, price, disabled) VALUES (NULL, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE CoffeeType SET type_name = ?, price = ?, disabled = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM CoffeeType WHERE id=?";
 
@@ -56,7 +56,7 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
         return coffeeType;
     }
 
-    private void fillStatementParameters(CoffeeType coffeeType, PreparedStatement statement) throws SQLException {
+    private static void fillStatementParameters(CoffeeType coffeeType, PreparedStatement statement) throws SQLException {
         statement.setString(1, coffeeType.getTypeName());
         statement.setDouble(2, coffeeType.getPrice());
         statement.setString(3, coffeeType.getDisabled() ? "Y" : "N");
