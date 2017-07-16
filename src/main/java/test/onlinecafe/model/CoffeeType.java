@@ -9,6 +9,9 @@ public class CoffeeType extends BaseEntity {
     public CoffeeType() {
     }
 
+    public CoffeeType(String typeName, Double price, Boolean disabled) {
+        this(null, typeName, price, disabled);
+    }
     public CoffeeType(Integer id, String typeName, Double price, Boolean disabled) {
         super(id);
         this.typeName = typeName;
@@ -60,5 +63,15 @@ public class CoffeeType extends BaseEntity {
         result = 31 * result + (price != null ? price.hashCode() : 0);
         result = 31 * result + (disabled != null ? disabled.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "CoffeeType{" +
+                "id='" + getId() + '\'' +
+                ", typeName='" + typeName + '\'' +
+                ", price=" + price +
+                ", disabled=" + disabled +
+                '}';
     }
 }

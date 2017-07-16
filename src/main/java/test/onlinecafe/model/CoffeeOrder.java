@@ -10,6 +10,26 @@ public class CoffeeOrder extends BaseEntity {
     private List<CoffeeOrderItem> orderItems;
     private Double cost;
 
+    public CoffeeOrder() {
+    }
+
+    public CoffeeOrder(LocalDateTime orderDate, String name, String deliveryAddress) {
+        this(null, orderDate, name, deliveryAddress, null, null);
+    }
+
+    public CoffeeOrder(LocalDateTime orderDate, String name, String deliveryAddress, List<CoffeeOrderItem> orderItems, Double cost) {
+        this(null, orderDate, name, deliveryAddress, orderItems, cost);
+    }
+
+    public CoffeeOrder(Integer id, LocalDateTime orderDate, String name, String deliveryAddress, List<CoffeeOrderItem> orderItems, Double cost) {
+        super(id);
+        this.orderDate = orderDate;
+        this.name = name;
+        this.deliveryAddress = deliveryAddress;
+        this.orderItems = orderItems;
+        this.cost = cost;
+    }
+
     public LocalDateTime getOrderDate() {
         return orderDate;
     }
@@ -42,6 +62,14 @@ public class CoffeeOrder extends BaseEntity {
         this.cost = cost;
     }
 
+    public List<CoffeeOrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<CoffeeOrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -67,5 +95,17 @@ public class CoffeeOrder extends BaseEntity {
         result = 31 * result + (orderItems != null ? orderItems.hashCode() : 0);
         result = 31 * result + (cost != null ? cost.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "CoffeeOrder{" +
+                "id=" + getId() +
+                ", orderDate=" + orderDate +
+                ", name='" + name + '\'' +
+                ", deliveryAddress='" + deliveryAddress + '\'' +
+                ", orderItems=" + orderItems +
+                ", cost=" + cost +
+                '}';
     }
 }

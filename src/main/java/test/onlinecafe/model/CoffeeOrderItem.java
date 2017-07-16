@@ -4,6 +4,19 @@ public class CoffeeOrderItem extends BaseEntity {
     private CoffeeType coffeeType;
     private Integer quantity;
 
+    public CoffeeOrderItem() {
+    }
+
+    public CoffeeOrderItem(CoffeeType coffeeType, Integer quantity) {
+        this(null, coffeeType, quantity);
+    }
+
+    public CoffeeOrderItem(Integer id, CoffeeType coffeeType, Integer quantity) {
+        super(id);
+        this.coffeeType = coffeeType;
+        this.quantity = quantity;
+    }
+
     public CoffeeType getCoffeeType() {
         return coffeeType;
     }
@@ -38,5 +51,14 @@ public class CoffeeOrderItem extends BaseEntity {
         result = 31 * result + (coffeeType != null ? coffeeType.hashCode() : 0);
         result = 31 * result + (quantity != null ? quantity.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "CoffeeOrderItem{" +
+                "id=" + getId() +
+                ", coffeeType=" + coffeeType +
+                ", quantity=" + quantity +
+                '}';
     }
 }
