@@ -82,11 +82,7 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
             statement.setInt(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    CoffeeType coffeeType = new CoffeeType();
-                    coffeeType.setId(resultSet.getInt("id"));
-                    coffeeType.setTypeName(resultSet.getString("type_name"));
-                    coffeeType.setPrice(resultSet.getDouble("price"));
-                    coffeeType.setDisabled(resultSet.getString("disabled").equals("Y"));
+                    return getCoffeeType(resultSet);
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -103,11 +99,7 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
             try (ResultSet resultSet = statement.executeQuery(SELECT_ALL_QUERY)) {
                 ArrayList<CoffeeType> coffeeTypes = new ArrayList<>();
                 while (resultSet.next()) {
-                    CoffeeType coffeeType = new CoffeeType();
-                    coffeeType.setId(resultSet.getInt("id"));
-                    coffeeType.setTypeName(resultSet.getString("type_name"));
-                    coffeeType.setPrice(resultSet.getDouble("price"));
-                    coffeeType.setDisabled(resultSet.getString("disabled").equals("Y"));
+                    CoffeeType coffeeType = getCoffeeType(resultSet);
                     coffeeTypes.add(coffeeType);
                 }
                 return coffeeTypes;
@@ -118,5 +110,14 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static CoffeeType getCoffeeType(ResultSet resultSet) throws SQLException {
+        CoffeeType coffeeType = new CoffeeType();
+        coffeeType.setId(resultSet.getInt("id"));
+        coffeeType.setTypeName(resultSet.getString("type_name"));
+        coffeeType.setPrice(resultSet.getDouble("price"));
+        coffeeType.setDisabled("Y".equals(resultSet.getString("disabled")));
+        return coffeeType;
     }
 }

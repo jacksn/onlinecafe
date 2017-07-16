@@ -138,5 +138,4 @@ public class JdbcCoffeeTypeRepositoryTest {
         types.sort(Comparator.comparingInt(BaseEntity::getId));
         Assert.assertEquals(COFFEE_TYPES_ALL, types);
     }
-
 }
