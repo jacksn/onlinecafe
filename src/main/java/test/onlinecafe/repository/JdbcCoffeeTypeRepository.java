@@ -69,7 +69,7 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
             statement.setInt(1, id);
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0) {
-                throw new SQLException("DeletionCreation of CoffeeType failed, no rows affected.");
+                throw new SQLException("Deletion of CoffeeType failed, no rows affected.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -78,25 +78,23 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
 
     @Override
     public CoffeeType get(int id) {
-        CoffeeType coffeeType = null;
         try (PreparedStatement statement = connection.prepareStatement(SELECT_QUERY)) {
             statement.setInt(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    coffeeType = new CoffeeType();
+                    CoffeeType coffeeType = new CoffeeType();
                     coffeeType.setId(resultSet.getInt("id"));
                     coffeeType.setTypeName(resultSet.getString("type_name"));
                     coffeeType.setPrice(resultSet.getDouble("price"));
                     coffeeType.setDisabled(resultSet.getString("disabled").equals("Y"));
                 }
-                statement.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return coffeeType;
+        return null;
     }
 
     @Override
