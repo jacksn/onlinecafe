@@ -38,6 +38,7 @@ public class JdbcCoffeeTypeRepositoryTest {
         } finally {
             connection.rollback();
         }
+        connection.setAutoCommit(true);
     }
 
     @Test
@@ -52,6 +53,7 @@ public class JdbcCoffeeTypeRepositoryTest {
         } finally {
             connection.rollback();
         }
+        connection.setAutoCommit(true);
     }
 
     @Test
@@ -66,6 +68,7 @@ public class JdbcCoffeeTypeRepositoryTest {
         } finally {
             connection.rollback();
         }
+        connection.setAutoCommit(true);
     }
 
     @Test
@@ -79,6 +82,7 @@ public class JdbcCoffeeTypeRepositoryTest {
         } finally {
             connection.rollback();
         }
+        connection.setAutoCommit(true);
     }
 
     @Test
@@ -91,6 +95,7 @@ public class JdbcCoffeeTypeRepositoryTest {
         } finally {
             connection.rollback();
         }
+        connection.setAutoCommit(true);
     }
 
     @Test
@@ -105,6 +110,7 @@ public class JdbcCoffeeTypeRepositoryTest {
         } finally {
             connection.rollback();
         }
+        connection.setAutoCommit(true);
     }
 
     @Test
@@ -118,6 +124,7 @@ public class JdbcCoffeeTypeRepositoryTest {
         } finally {
             connection.rollback();
         }
+        connection.setAutoCommit(true);
     }
 
     @Test
