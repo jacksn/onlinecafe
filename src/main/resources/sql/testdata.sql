@@ -10,21 +10,15 @@ INSERT INTO CoffeeType (id, type_name, price, disabled) VALUES
   (NULL, 'Caramel Macchiato', 6.00, 'Y');
 
 INSERT INTO CoffeeOrder (id, order_date, name, delivery_address, cost) VALUES
-  (NULL, '2017-07-01 09:00', 'John Smith', 'John\'s address', 3.25),
-  (NULL, '2017-07-01 09:01', 'Jane Smith', 'Jane\'s address', 3.25),
-  (NULL, '2017-07-01 18:00', 'John Smith', 'John\'s address', 3.25),
-  (NULL, '2017-07-02 09:00', 'Jane Smith', 'Jane\'s address', 3.25),
-  (NULL, '2017-07-02 09:02', 'John Smith', 'John\'s address', 3.25);
+  (NULL, '2017-07-01 09:00', 'John Smith', 'John\'s address', 25.50),
+  (NULL, '2017-07-01 09:01', 'Jane Smith', 'Jane\'s address', 11.00),
+  (NULL, '2017-07-02 18:00', 'John Smith', 'John\'s address', 7.00);
 
 INSERT INTO CoffeeOrderItem (id, type_id, order_id, quantity) VALUES
-  (NULL, 4, 1, 2),
-  (NULL, 2, 2, 2),
   (NULL, 1, 1, 2),
   (NULL, 4, 1, 2),
   (NULL, 5, 1, 2),
+  (NULL, 2, 2, 2),
   (NULL, 4, 2, 1),
-  (NULL, 1, 3, 2),
-  (NULL, 2, 3, 2),
-  (NULL, 1, 4, 1),
-  (NULL, 2, 4, 2),
-  (NULL, 3, 4, 1);
+  (NULL, 1, 3, 1),
+  (NULL, 2, 3, 1);
