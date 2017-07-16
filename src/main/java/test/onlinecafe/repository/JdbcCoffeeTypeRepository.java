@@ -10,7 +10,7 @@ import java.util.List;
 public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
     private static final String SELECT_ALL_QUERY = "SELECT * FROM CoffeeType";
     private static final String SELECT_QUERY = "SELECT * FROM CoffeeType WHERE id = ?";
-    private static final String INSERT_QUERY = "INSERT INTO CoffeeType (type_name, price, disabled, id) VALUES (?, ?, ?, ?)";
+    private static final String INSERT_QUERY = "INSERT INTO CoffeeType (null, type_name, price, disabled) VALUES (NULL, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE CoffeeType SET type_name = ?, price = ?, disabled = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM CoffeeType WHERE id=?";
 
@@ -25,7 +25,6 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
         if (coffeeType.isNew()) {
             try (PreparedStatement statement = connection.prepareStatement(INSERT_QUERY, Statement.RETURN_GENERATED_KEYS)) {
                 fillStatementParameters(coffeeType, statement);
-                statement.setNull(4, Types.INTEGER);
                 int affectedRows = statement.executeUpdate();
                 if (affectedRows == 0) {
                     throw new SQLException("Create of CoffeeType failed, no rows affected.");
