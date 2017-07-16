@@ -5,6 +5,7 @@ import test.onlinecafe.repository.CoffeeTypeRepository;
 import test.onlinecafe.repository.JdbcCoffeeOrderRepository;
 import test.onlinecafe.repository.JdbcCoffeeTypeRepository;
 import test.onlinecafe.util.CoffeeTypeUtil;
+import test.onlinecafe.util.DbUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -22,6 +23,12 @@ public class CoffeeServlet extends HttpServlet {
         super.init(config);
         coffeeTypeRepository = new JdbcCoffeeTypeRepository();
         coffeeOrderRepository = new JdbcCoffeeOrderRepository();
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        DbUtil.closeConnection();
     }
 
     @Override
