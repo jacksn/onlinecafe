@@ -13,14 +13,13 @@ import java.util.List;
 
 import static test.onlinecafe.CoffeeTypeTestData.*;
 
-public class JdbcCoffeeTypeRepositoryTest {
+public class JdbcCoffeeTypeRepositoryTest extends AbstractJdbcRepositoryTest{
     private static CoffeeTypeRepository repository;
 
     @BeforeClass
-    public static void init() {
+    public static void init(){
+        initDatabase();
         repository = new JdbcCoffeeTypeRepository();
-        DbUtil.executeFile("sql/coffee.sql");
-        DbUtil.executeFile("sql/testdata.sql");
     }
 
     @Test

@@ -1,6 +1,7 @@
 package test.onlinecafe.repository;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import test.onlinecafe.model.BaseEntity;
 import test.onlinecafe.model.CoffeeOrder;
@@ -13,6 +14,14 @@ import java.util.List;
 import static test.onlinecafe.CoffeeOrderTestData.*;
 
 public class JdbcCoffeeOrderRepositoryTest extends AbstractJdbcRepositoryTest{
+    private static CoffeeOrderRepository repository;
+
+    @BeforeClass
+    public static void init(){
+        initDatabase();
+        repository = new JdbcCoffeeOrderRepository();
+    }
+
     @Test
     public void testUpdate() throws Exception {
         connection.setAutoCommit(false);
