@@ -1,5 +1,6 @@
 package test.onlinecafe.web;
 
+import org.slf4j.Logger;
 import test.onlinecafe.repository.CoffeeOrderRepository;
 import test.onlinecafe.repository.CoffeeTypeRepository;
 import test.onlinecafe.repository.JdbcCoffeeOrderRepository;
@@ -14,7 +15,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class CoffeeServlet extends HttpServlet {
+    private static final Logger LOG = getLogger(CoffeeServlet.class);
+
     private CoffeeTypeRepository coffeeTypeRepository;
     private CoffeeOrderRepository coffeeOrderRepository;
 
@@ -36,6 +41,7 @@ public class CoffeeServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         if (action == null) {
+            LOG.info("Show all CoffeeTypes");
             request.setAttribute("coffeeTypes", CoffeeTypeUtil.filterEnabled(coffeeTypeRepository.getAll()));
             request.getRequestDispatcher("WEB-INF/index.jsp").forward(request, response);
         }

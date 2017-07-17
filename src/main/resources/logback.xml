@@ -5,7 +5,7 @@
     <jmxConfigurator/>
 
     <appender name="file" class="ch.qos.logback.core.FileAppender">
-        <file>/log/onlinecafe.log</file>
+        <file>log/onlinecafe.log</file>
 
         <encoder>
             <charset>UTF-8</charset>
@@ -23,7 +23,7 @@
     <logger name="test.onlinecafe" level="debug"/>
 
     <root level="info">
-        <!--<appender-ref ref="file"/>-->
+        <appender-ref ref="file"/>
         <appender-ref ref="console"/>
     </root>
 </configuration>
