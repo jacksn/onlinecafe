@@ -1,3 +1,13 @@
+.btn {
+    padding: 6px 15px;
+    font-size: 13px;
+}
+
+.order-count>input {
+    width: 52px;
+    text-align: right;
+}
+
 .navbar-brand {
     height: 45px;
     padding: 15px 15px;
