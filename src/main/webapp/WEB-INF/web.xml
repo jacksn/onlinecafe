@@ -5,19 +5,6 @@
          version="3.1">
     <display-name>Online cafe</display-name>
 
-    <servlet>
-        <servlet-name>coffeeServlet</servlet-name>
-        <servlet-class>test.onlinecafe.web.CoffeeServlet</servlet-class>
-        <load-on-startup>0</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>coffeeServlet</servlet-name>
-        <url-pattern>/</url-pattern>
-        <url-pattern>/order</url-pattern>
-        <url-pattern>/confirmation</url-pattern>
-        <url-pattern>/reset</url-pattern>
-    </servlet-mapping>
-
     <servlet-mapping>
         <servlet-name>default</servlet-name>
         <url-pattern>/css/*</url-pattern>

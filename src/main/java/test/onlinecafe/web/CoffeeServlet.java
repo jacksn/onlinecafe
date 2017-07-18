@@ -14,6 +14,7 @@ import test.onlinecafe.util.DbUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +26,7 @@ import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+@WebServlet({"/", "/order", "/confirmation", "/reset"})
 public class CoffeeServlet extends HttpServlet {
     private static final Logger LOG = getLogger(CoffeeServlet.class);
 
