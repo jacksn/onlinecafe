@@ -12,9 +12,6 @@ import java.util.List;
 import static test.onlinecafe.repository.CoffeeOrderQueryStrings.*;
 
 public class JdbcCoffeeOrderRepository implements CoffeeOrderRepository {
-    static final String UPDATE_ORDER_QUERY = "UPDATE CoffeeOrder " +
-            "SET order_date = ?, name = ?, delivery_address = ?, cost = ? WHERE id = ?";
-//    static final String UPDATE_ORDER_ITEMS_QUERY = "UPDATE CoffeeOrder SET type_id = ?, price = ?, disabled = ? WHERE id = ?";
 
     private Connection connection;
 
