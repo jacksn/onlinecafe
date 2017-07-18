@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
 		 http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
-    <display-name>Topjava</display-name>
+    <display-name>Online cafe</display-name>
 
     <servlet>
         <servlet-name>coffeeServlet</servlet-name>
@@ -23,4 +23,7 @@
         <url-pattern>/img/*</url-pattern>
     </servlet-mapping>
 
+    <error-page>
+        <location>/WEB-INF/error.jsp</location>
+    </error-page>
 </web-app>
