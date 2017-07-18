@@ -1,12 +1,14 @@
 package test.onlinecafe.web;
 
 import org.slf4j.Logger;
+import test.onlinecafe.model.CoffeeOrder;
 import test.onlinecafe.model.CoffeeOrderItem;
 import test.onlinecafe.model.CoffeeType;
 import test.onlinecafe.repository.CoffeeOrderRepository;
 import test.onlinecafe.repository.CoffeeTypeRepository;
 import test.onlinecafe.repository.JdbcCoffeeOrderRepository;
 import test.onlinecafe.repository.JdbcCoffeeTypeRepository;
+import test.onlinecafe.util.CoffeeOrderUtil;
 import test.onlinecafe.util.CoffeeTypeUtil;
 import test.onlinecafe.util.DbUtil;
 
@@ -17,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,36 +46,44 @@ public class CoffeeServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
+        HttpSession session = request.getSession(true);
 
-        String action = request.getParameter("action");
-        if (action == null) {
+        String action = request.getRequestURI();
+        if ("/".equals(action)) {
             LOG.info("Show all CoffeeTypes");
+            String lastErrorMessage = (String) session.getAttribute("lastErrorMessage");
+            if (lastErrorMessage != null) {
+                session.removeAttribute("lastErrorMessage");
+            }
+            request.setAttribute("lastErrorMessage", lastErrorMessage);
             request.setAttribute("coffeeTypes", CoffeeTypeUtil.filterEnabled(coffeeTypeRepository.getAll()));
             request.getRequestDispatcher("WEB-INF/index.jsp").forward(request, response);
-        } else if ("confirm".equals(action)) {
-            if (session != null) {
-                Object orderItemsObject = session.getAttribute("orderItems");
-                if (orderItemsObject != null && orderItemsObject instanceof List) {
-                    List<CoffeeOrderItem> coffeeOrderItems = (List<CoffeeOrderItem>) orderItemsObject;
-                    LOG.info("Show confirm order page");
-                    request.setAttribute("coffeeOrderItems", coffeeOrderItems);
-                    request.getRequestDispatcher("WEB-INF/order.jsp").forward(request, response);
-                }
+            return;
+        } else if ("/order".equals(action)) {
+            List<?> coffeeOrderItems = (List<?>) session.getAttribute("coffeeOrderItems");
+            if (coffeeOrderItems != null) {
+                request.getRequestDispatcher("WEB-INF/order.jsp").forward(request, response);
+                LOG.info("Show confirm order page");
+                return;
             }
-        } else if ("thankyou".equals(action)) {
-            LOG.info("Show thank you page");
+        } else if ("/confirmation".equals(action)) {
             request.getRequestDispatcher("WEB-INF/confirmation.jsp").forward(request, response);
-        } else {
-            response.sendRedirect("/");
+            LOG.info("Show thank you page");
+            return;
+        } else if ("/reset".equals(action)) {
+            session.invalidate();
         }
+        response.sendRedirect("/");
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws
+            ServletException, IOException {
+        String action = request.getRequestURI();
+        HttpSession session = request.getSession(true);
 
-        if ("create".equals(action)) {
+        if ("/".equals(action)) {
             String[] ids = request.getParameterValues("id[]");
             String[] quantities = request.getParameterValues("quantity[]");
 
@@ -85,17 +96,37 @@ public class CoffeeServlet extends HttpServlet {
                     orderItems.add(new CoffeeOrderItem(type, quantity));
                 }
             }
-            if (orderItems.isEmpty()) {
-                response.sendRedirect("/?error=empty_order");
+            if (!orderItems.isEmpty()) {
+                session.setAttribute("coffeeOrderItems", orderItems);
+                response.sendRedirect("/order");
+                return;
             } else {
-                HttpSession session = request.getSession(true);
-                session.setAttribute("orderItems", orderItems);
-                response.sendRedirect("/?action=confirm");
+                session.setAttribute("lastErrorMessage", "Your order is empty. Enter order quantity and try again.");
             }
-        } else if ("confirm".equals(action)) {
-            response.sendRedirect("/?action=thankyou");
-        } else {
-            response.sendRedirect("/");
+        } else if ("/order".equals(action)) {
+            String name = request.getParameter("name");
+            String address = request.getParameter("address");
+
+            List<CoffeeOrderItem> coffeeOrderItems = (List<CoffeeOrderItem>) session.getAttribute("coffeeOrderItems");
+
+            if (coffeeOrderItems == null || coffeeOrderItems.isEmpty()) {
+                session.removeAttribute("coffeeOrderItems");
+                session.setAttribute("lastErrorMessage", "Your order is empty. Enter order quantity and try again.");
+            } else if (name != null && !name.isEmpty() && address != null && !address.isEmpty()) {
+                CoffeeOrder coffeeOrder =
+                        new CoffeeOrder(LocalDateTime.now().withNano(0),
+                                name, address, coffeeOrderItems,
+                                CoffeeOrderUtil.getTotalCost(coffeeOrderItems));
+                coffeeOrderRepository.save(coffeeOrder);
+                session.invalidate();
+                response.sendRedirect("/confirmation");
+                return;
+            } else {
+                session.setAttribute("lastErrorMessage", "Please fill all fields and try again.");
+                response.sendRedirect("/order");
+                return;
+            }
         }
+        response.sendRedirect("/");
     }
 }

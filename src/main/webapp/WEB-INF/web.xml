@@ -13,6 +13,9 @@
     <servlet-mapping>
         <servlet-name>coffeeServlet</servlet-name>
         <url-pattern>/</url-pattern>
+        <url-pattern>/order</url-pattern>
+        <url-pattern>/confirmation</url-pattern>
+        <url-pattern>/reset</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
