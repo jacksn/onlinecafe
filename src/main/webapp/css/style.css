@@ -1,6 +1,14 @@
+body {
+    font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    font-synthesis: weight style;
+    color: #3e3f3a;
+}
+
 .btn {
-    padding: 6px 15px;
     font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
 }
 
 .order-count>input {
@@ -16,6 +24,7 @@
 .navbar-brand>img {
     margin-top: -8px;
 }
+
 .navbar-toggle {
     float: left;
 }
@@ -25,9 +34,14 @@
 }
 
 .navbar-inverse .navbar-nav > li > a {
-    color: #3b4c22;
+    color: #ddd;
     font-size: 12px;
-    padding: 15px 15px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.navbar-inverse .navbar-brand {
+    color: #eee;
 }
 
 .jumbotron {
