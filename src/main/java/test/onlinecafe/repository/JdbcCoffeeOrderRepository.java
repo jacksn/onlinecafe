@@ -17,8 +17,8 @@ public class JdbcCoffeeOrderRepository implements CoffeeOrderRepository {
 
     private Connection connection;
 
-    public JdbcCoffeeOrderRepository() {
-        this.connection = DbUtil.getConnection();
+    public JdbcCoffeeOrderRepository(Connection connection) {
+        this.connection = connection;
     }
 
     private static List<CoffeeOrder> getCoffeeOrdersFromResultSetRow(ResultSet resultSet) throws SQLException {

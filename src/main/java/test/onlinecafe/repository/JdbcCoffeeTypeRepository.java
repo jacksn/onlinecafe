@@ -16,8 +16,8 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
 
     private Connection connection;
 
-    public JdbcCoffeeTypeRepository() {
-        this.connection = DbUtil.getConnection();
+    public JdbcCoffeeTypeRepository(Connection connection) {
+        this.connection = connection;
     }
 
     @Override

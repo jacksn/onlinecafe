@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +37,9 @@ public class CoffeeServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        coffeeTypeRepository = new JdbcCoffeeTypeRepository();
-        coffeeOrderRepository = new JdbcCoffeeOrderRepository();
+        Connection connection = DbUtil.getConnection();
+        coffeeTypeRepository = new JdbcCoffeeTypeRepository(connection);
+        coffeeOrderRepository = new JdbcCoffeeOrderRepository(connection);
     }
 
     @Override

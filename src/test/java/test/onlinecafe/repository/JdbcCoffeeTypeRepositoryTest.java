@@ -19,7 +19,7 @@ public class JdbcCoffeeTypeRepositoryTest extends AbstractJdbcRepositoryTest{
     @BeforeClass
     public static void init(){
         initDatabase();
-        repository = new JdbcCoffeeTypeRepository();
+        repository = new JdbcCoffeeTypeRepository(connection);
     }
 
     @Test
