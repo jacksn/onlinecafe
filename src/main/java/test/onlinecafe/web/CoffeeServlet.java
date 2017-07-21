@@ -118,7 +118,7 @@ public class CoffeeServlet extends HttpServlet {
                 CoffeeOrder coffeeOrder =
                         new CoffeeOrder(LocalDateTime.now().withNano(0),
                                 name, address, coffeeOrderItems,
-                                CoffeeOrderUtil.getTotalCost(coffeeOrderItems));
+                                CoffeeOrderUtil.getOrderTotal(coffeeOrderItems));
                 coffeeOrderRepository.save(coffeeOrder);
                 session.invalidate();
                 response.sendRedirect("/confirmation");

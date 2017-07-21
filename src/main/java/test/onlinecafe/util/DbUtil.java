@@ -47,18 +47,17 @@ public final class DbUtil {
     }
 
     public static void closeConnection() {
-        if (connection == null)
-            return;
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public static void executeFile(String fileName) {
+    public static void executeSQLScriptFile(String fileName) {
         StringBuilder sb = new StringBuilder();
-
         try {
             BufferedReader br = new BufferedReader(
                     new InputStreamReader(

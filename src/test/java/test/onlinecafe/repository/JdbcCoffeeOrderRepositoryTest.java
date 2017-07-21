@@ -136,7 +136,7 @@ public class JdbcCoffeeOrderRepositoryTest extends AbstractJdbcRepositoryTest{
 
     @Test
     public void testGetAll() throws Exception {
-        List<CoffeeOrder> order = repository.getAll();
-        Assert.assertEquals(COFFEE_ORDERS, order);
+        List<CoffeeOrder> coffeeOrderList = repository.getAll();
+        Assert.assertEquals(COFFEE_ORDERS, coffeeOrderList);
     }
 }
