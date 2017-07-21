@@ -22,9 +22,8 @@ public final class DbUtil {
         if (dbConfigLocation == null) {
             dbConfigLocation = DEFAULT_DB_CONFIG_LOCATION;
         }
-        try (InputStream inputStream = DbUtil.class.getClassLoader().getResourceAsStream(dbConfigLocation)) {
-            Properties properties = new Properties();
-            properties.load(inputStream);
+        try {
+            Properties properties = ConfigurationUtil.getPropertiesFromFile(dbConfigLocation);
             String driver = properties.getProperty("db.driver");
             String url = properties.getProperty("db.url");
             String user = properties.getProperty("db.user");
