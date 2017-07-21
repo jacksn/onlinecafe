@@ -45,6 +45,24 @@ public class CoffeeServlet extends HttpServlet {
         Connection connection = DbUtil.getConnection();
         coffeeTypeRepository = new JdbcCoffeeTypeRepository(connection);
         coffeeOrderRepository = new JdbcCoffeeOrderRepository(connection);
+        Properties appProperties = null;
+        try {
+            appProperties = ConfigurationUtil.getPropertiesFromFile("app.properties");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        DiscountStrategy discountStrategy = null;
+        if (appProperties != null) {
+            String discountStrategyClassName = appProperties.getProperty("app.discount.strategy");
+            try {
+                discountStrategy = (DiscountStrategy) Class.forName(discountStrategyClassName).newInstance();
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+                discountStrategy = new DefaultDiscountStrategy();
+            }
+        }
+
+        CoffeeOrderUtil.setDiscountStrategy(discountStrategy);
     }
 
     @Override
