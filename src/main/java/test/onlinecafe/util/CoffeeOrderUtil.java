@@ -2,8 +2,8 @@ package test.onlinecafe.util;
 
 import test.onlinecafe.model.CoffeeOrderItem;
 import test.onlinecafe.model.DiscountConfiguration;
-
-import java.util.List;
+import test.onlinecafe.to.CoffeeOrderItemTo;
+import test.onlinecafe.util.discount.DiscountStrategy;
 
 public final class CoffeeOrderUtil {
     private static DiscountStrategy discountStrategy;
@@ -28,22 +28,18 @@ public final class CoffeeOrderUtil {
         CoffeeOrderUtil.discountStrategy = discountStrategy;
     }
 
-    public static Double getDeliveryCost(Double orderTotal) {
-        return discountStrategy.getDeliveryPrice(orderTotal, discountConfiguration.getDeliveryCost(), discountConfiguration.getFreeDeliveryThreshold());
+    public static Double getDeliveryCost(Double orderTotalCost) {
+        return discountStrategy.getDeliveryCost(orderTotalCost);
     }
 
-    public static double getDiscountedItemPrice(CoffeeOrderItem orderItem){
-        return discountStrategy.getDiscountedItemPrice(
-                orderItem.getQuantity(),
-                orderItem.getCoffeeType().getPrice(),
-                discountConfiguration.getNthCup());
+    public static double getDiscountedItemPrice(int quantity, double price) {
+        return discountStrategy.getDiscountedItemCost(quantity, price);
     }
 
-    public static double getOrderTotal(List<CoffeeOrderItem> orderItems) {
-        double orderTotal = 0;
-        for (CoffeeOrderItem orderItem : orderItems) {
-            orderTotal += getDiscountedItemPrice(orderItem);
-        }
-        return orderTotal;
+    public static CoffeeOrderItem getCoffeeOrderItemFromTo(CoffeeOrderItemTo coffeeOrderItemTo) {
+        return new CoffeeOrderItem(coffeeOrderItemTo.getId(),
+                coffeeOrderItemTo.getCoffeeType(),
+                coffeeOrderItemTo.getQuantity()
+        );
     }
 }

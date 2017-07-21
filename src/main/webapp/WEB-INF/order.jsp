@@ -25,7 +25,8 @@
                         <div class="form-group">
                             <label for="address" class="col-md-2 control-label">Delivery address</label>
                             <div class="col-md-10">
-                                <input class="form-control" id="address" name="address" placeholder="Delivery address" type="text">
+                                <input class="form-control" id="address" name="address" placeholder="Delivery address"
+                                       type="text">
                             </div>
                         </div>
                     </div>
@@ -35,34 +36,52 @@
                             <thead>
                             <tr>
                                 <th>Coffee type</th>
-                                <th class="text-center">Price</th>
-                                <th class="text-center">Quantity</th>
-                                <th class="text-center">Total</th>
+                                <th width="15%" class="text-center">Price</th>
+                                <th width="15%" class="text-center">Quantity</th>
+                                <th width="15%" class="text-center">Cost</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <%--@elvariable id="coffeeOrderItems" type="java.util.List"--%>
-                            <c:forEach items="${coffeeOrderItems}" var="coffeeOrderItem">
-                                <jsp:useBean id="coffeeOrderItem" class="test.onlinecafe.model.CoffeeOrderItem"/>
+                            <%--@elvariable id="coffeeOrderItemTos" type="java.util.List"--%>
+                            <c:forEach items="${coffeeOrderItemTos}" var="coffeeOrderItemTo">
                                 <tr>
-                                    <td><c:out value="${coffeeOrderItem.coffeeType.typeName}"/></td>
-                                    <td align="center">
+                                    <td><c:out value="${coffeeOrderItemTo.coffeeType.typeName}"/></td>
+                                    <td class="text-right">
                                         <fmt:formatNumber type="currency" currencySymbol="TGR"
                                                           minFractionDigits="2"
                                                           maxFractionDigits="2"
-                                                          value="${coffeeOrderItem.coffeeType.price}"/>
+                                                          value="${coffeeOrderItemTo.coffeeType.price}"/>
                                     </td>
                                     <td align="center" width="15%">
-                                        <c:out value="${coffeeOrderItem.quantity}"/>
+                                        <c:out value="${coffeeOrderItemTo.quantity}"/>
                                     </td>
-                                    <td></td>
+                                    <td class="text-right">
+                                        <fmt:formatNumber type="currency" currencySymbol="TGR"
+                                                          minFractionDigits="2"
+                                                          maxFractionDigits="2"
+                                                          value="${coffeeOrderItemTo.cost}"/>
+                                    </td>
                                 </tr>
                             </c:forEach>
                             <tr>
-                                <td colspan="2"></td>
-                                <td class="text-center"><strong>Order total:</strong></td>
-                                <td></td>
-
+                                <td colspan="3" class="text-right"><strong>Delivery cost:</strong></td>
+                                <td class="text-right">
+                                    <%--@elvariable id="coffeeOrderDeliveryCost" type="double"--%>
+                                    <fmt:formatNumber type="currency" currencySymbol="TGR"
+                                                      minFractionDigits="2"
+                                                      maxFractionDigits="2"
+                                                      value="${coffeeOrderDeliveryCost}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-right"><strong>Order total cost:</strong></td>
+                                <td class="text-right">
+                                    <%--@elvariable id="coffeeOrderTotalCost" type="double"--%>
+                                    <fmt:formatNumber type="currency" currencySymbol="TGR"
+                                                      minFractionDigits="2"
+                                                      maxFractionDigits="2"
+                                                      value="${coffeeOrderTotalCost}"/>
+                                </td>
                             </tr>
                             </tbody>
                         </table>

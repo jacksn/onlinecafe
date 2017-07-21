@@ -8,9 +8,13 @@ import test.onlinecafe.repository.CoffeeOrderRepository;
 import test.onlinecafe.repository.CoffeeTypeRepository;
 import test.onlinecafe.repository.JdbcCoffeeOrderRepository;
 import test.onlinecafe.repository.JdbcCoffeeTypeRepository;
+import test.onlinecafe.to.CoffeeOrderItemTo;
 import test.onlinecafe.util.CoffeeOrderUtil;
 import test.onlinecafe.util.CoffeeTypeUtil;
+import test.onlinecafe.util.ConfigurationUtil;
 import test.onlinecafe.util.DbUtil;
+import test.onlinecafe.util.discount.DefaultDiscountStrategy;
+import test.onlinecafe.util.discount.DiscountStrategy;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -24,6 +28,7 @@ import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -64,7 +69,7 @@ public class CoffeeServlet extends HttpServlet {
             request.getRequestDispatcher("WEB-INF/index.jsp").forward(request, response);
             return;
         } else if ("/order".equals(action)) {
-            List<?> coffeeOrderItems = (List<?>) session.getAttribute("coffeeOrderItems");
+            List<?> coffeeOrderItems = (List<?>) session.getAttribute("coffeeOrderItemTos");
             if (coffeeOrderItems != null) {
                 request.getRequestDispatcher("WEB-INF/order.jsp").forward(request, response);
                 LOG.info("Show confirm order page");
@@ -88,20 +93,24 @@ public class CoffeeServlet extends HttpServlet {
         HttpSession session = request.getSession(true);
 
         if ("/".equals(action)) {
-            String[] ids = request.getParameterValues("id[]");
-            String[] quantities = request.getParameterValues("quantity[]");
+            String[] coffeeTypeIds = request.getParameterValues("id[]");
+            String[] coffeeTypeQuantities = request.getParameterValues("quantity[]");
 
-            List<CoffeeOrderItem> orderItems = new ArrayList<>();
-            for (int i = 0; i < ids.length; i++) {
-                int quantity = Integer.valueOf(quantities[i]);
-                if (quantity > 0) {
-                    int id = Integer.valueOf(ids[i]);
-                    CoffeeType type = coffeeTypeRepository.get(id);
-                    orderItems.add(new CoffeeOrderItem(type, quantity));
+            List<CoffeeOrderItemTo> orderItemTos = new ArrayList<>();
+            for (int i = 0; i < coffeeTypeIds.length; i++) {
+                int coffeeTypeQuantity = Integer.valueOf(coffeeTypeQuantities[i]);
+                if (coffeeTypeQuantity > 0) {
+                    int id = Integer.valueOf(coffeeTypeIds[i]);
+                    CoffeeType coffeeType = coffeeTypeRepository.get(id);
+                    CoffeeOrderItemTo coffeeOrderItemTo = new CoffeeOrderItemTo(
+                            coffeeType,
+                            coffeeTypeQuantity,
+                            CoffeeOrderUtil.getDiscountedItemPrice(coffeeTypeQuantity, coffeeType.getPrice()));
+                    orderItemTos.add(coffeeOrderItemTo);
                 }
             }
-            if (!orderItems.isEmpty()) {
-                session.setAttribute("coffeeOrderItems", orderItems);
+            if (!orderItemTos.isEmpty()) {
+                session.setAttribute("coffeeOrderItemTos", orderItemTos);
                 response.sendRedirect("/order");
                 return;
             } else {
@@ -111,16 +120,23 @@ public class CoffeeServlet extends HttpServlet {
             String name = request.getParameter("name");
             String address = request.getParameter("address");
 
-            List<CoffeeOrderItem> coffeeOrderItems = (List<CoffeeOrderItem>) session.getAttribute("coffeeOrderItems");
+            List<CoffeeOrderItemTo> coffeeOrderItemTos = (List<CoffeeOrderItemTo>) session.getAttribute("coffeeOrderItemTos");
 
-            if (coffeeOrderItems == null || coffeeOrderItems.isEmpty()) {
-                session.removeAttribute("coffeeOrderItems");
+            if (coffeeOrderItemTos == null || coffeeOrderItemTos.isEmpty()) {
+                session.removeAttribute("coffeeOrderItemTos");
                 session.setAttribute("lastErrorMessage", "Your order is empty. Enter order quantity and try again.");
             } else if (name != null && !name.isEmpty() && address != null && !address.isEmpty()) {
+                double orderTotalCost = 0;
+                List<CoffeeOrderItem> coffeeOrderItems = new ArrayList<>();
+                for (CoffeeOrderItemTo coffeeOrderItemTo : coffeeOrderItemTos) {
+                    coffeeOrderItems.add(CoffeeOrderUtil.getCoffeeOrderItemFromTo(coffeeOrderItemTo));
+                    orderTotalCost += coffeeOrderItemTo.getCost();
+                }
+                orderTotalCost += CoffeeOrderUtil.getDeliveryCost(orderTotalCost);
                 CoffeeOrder coffeeOrder =
                         new CoffeeOrder(LocalDateTime.now().withNano(0),
                                 name, address, coffeeOrderItems,
-                                CoffeeOrderUtil.getOrderTotal(coffeeOrderItems));
+                                orderTotalCost);
                 coffeeOrderRepository.save(coffeeOrder);
                 session.invalidate();
                 response.sendRedirect("/confirmation");
