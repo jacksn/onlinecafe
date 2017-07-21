@@ -17,7 +17,7 @@ public final class CoffeeOrderTestData {
                     new CoffeeOrderItem(1, CoffeeTypeTestData.COFFEE_TYPE1, 2),
                     new CoffeeOrderItem(2, CoffeeTypeTestData.COFFEE_TYPE4, 2),
                     new CoffeeOrderItem(3, CoffeeTypeTestData.COFFEE_TYPE5, 2)),
-            25.50);
+            9.00);
     public static final CoffeeOrder COFFEE_ORDER2 = new CoffeeOrder(
             2,
             LocalDateTime.of(2017, 7, 1, 9, 1),
@@ -26,7 +26,7 @@ public final class CoffeeOrderTestData {
             Arrays.asList(
                     new CoffeeOrderItem(4, CoffeeTypeTestData.COFFEE_TYPE2, 2),
                     new CoffeeOrderItem(5, CoffeeTypeTestData.COFFEE_TYPE4, 1)),
-            11.00);
+            5.00);
     public static final CoffeeOrder COFFEE_ORDER3 = new CoffeeOrder(
             3,
             LocalDateTime.of(2017, 7, 2, 18, 0),
@@ -35,7 +35,7 @@ public final class CoffeeOrderTestData {
             Arrays.asList(
                     new CoffeeOrderItem(6, CoffeeTypeTestData.COFFEE_TYPE1, 1),
                     new CoffeeOrderItem(7, CoffeeTypeTestData.COFFEE_TYPE2, 1)),
-            7.00);
+            3.00);
     public static final CoffeeOrderItem COFFEE_ORDER_ITEM1 = new CoffeeOrderItem(null, CoffeeTypeTestData.COFFEE_TYPE2, 2);
     public static final CoffeeOrderItem COFFEE_ORDER_ITEM2 = new CoffeeOrderItem(null, CoffeeTypeTestData.COFFEE_TYPE4, 1);
 
