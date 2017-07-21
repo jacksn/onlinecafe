@@ -8,9 +8,9 @@ import java.sql.Statement;
 import java.util.Properties;
 
 public final class DbUtil {
-    private static final String DEFAULT_DB_CONFIG_LOCATION = "sql/db.properties";
+    private static final String DEFAULT_DB_CONFIG_LOCATION = "db/db.properties";
     private static Connection connection;
-    public static String schemaFile = "sql/coffee.sql";
+    public static String schemaFile = "db/coffee.sql";
 
     private DbUtil() {
     }
