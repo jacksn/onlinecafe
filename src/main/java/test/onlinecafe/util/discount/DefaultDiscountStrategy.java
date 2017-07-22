@@ -24,6 +24,6 @@ public class DefaultDiscountStrategy implements DiscountStrategy {
 
     @Override
     public double getDeliveryCost(double orderTotal) {
-        return m;
+        return orderTotal > x ? 0 : m;
     }
 }
