@@ -87,7 +87,7 @@ public class CoffeeServlet extends HttpServlet {
             request.getRequestDispatcher("WEB-INF/index.jsp").forward(request, response);
             return;
         } else if ("/order".equals(action)) {
-            List<?> orderItemToList = (List<?>) session.getAttribute("coffeeOrderItemTos");
+            List<?> orderItemToList = (List<?>) session.getAttribute("orderItemToList");
             if (orderItemToList != null) {
                 request.getRequestDispatcher("WEB-INF/order.jsp").forward(request, response);
                 LOG.info("Show confirm order page");
@@ -128,7 +128,7 @@ public class CoffeeServlet extends HttpServlet {
                 }
             }
             if (!orderItemToList.isEmpty()) {
-                session.setAttribute("coffeeOrderItemTos", orderItemToList);
+                session.setAttribute("orderItemToList", orderItemToList);
                 response.sendRedirect("/order");
                 return;
             } else {
@@ -138,10 +138,10 @@ public class CoffeeServlet extends HttpServlet {
             String name = request.getParameter("name");
             String address = request.getParameter("address");
 
-            List<CoffeeOrderItemTo> orderItemToList = (List<CoffeeOrderItemTo>) session.getAttribute("coffeeOrderItemTos");
+            List<CoffeeOrderItemTo> orderItemToList = (List<CoffeeOrderItemTo>) session.getAttribute("orderItemToList");
 
             if (orderItemToList == null || orderItemToList.isEmpty()) {
-                session.removeAttribute("coffeeOrderItemTos");
+                session.removeAttribute("orderItemToList");
                 session.setAttribute("lastErrorMessage", "Your order is empty. Enter order quantity and try again.");
             } else if (name != null && !name.isEmpty() && address != null && !address.isEmpty()) {
                 double orderTotalCost = 0;

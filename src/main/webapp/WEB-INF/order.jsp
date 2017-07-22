@@ -42,24 +42,24 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <%--@elvariable id="coffeeOrderItemTos" type="java.util.List"--%>
-                            <c:forEach items="${coffeeOrderItemTos}" var="coffeeOrderItemTo">
+                            <%--@elvariable id="orderItemToList" type="java.util.List"--%>
+                            <c:forEach items="${orderItemToList}" var="orderItemTo">
                                 <tr>
-                                    <td><c:out value="${coffeeOrderItemTo.coffeeType.typeName}"/></td>
+                                    <td><c:out value="${orderItemTo.coffeeType.typeName}"/></td>
                                     <td class="text-right">
                                         <fmt:formatNumber type="currency" currencySymbol="TGR"
                                                           minFractionDigits="2"
                                                           maxFractionDigits="2"
-                                                          value="${coffeeOrderItemTo.coffeeType.price}"/>
+                                                          value="${orderItemTo.coffeeType.price}"/>
                                     </td>
                                     <td align="center" width="15%">
-                                        <c:out value="${coffeeOrderItemTo.quantity}"/>
+                                        <c:out value="${orderItemTo.quantity}"/>
                                     </td>
                                     <td class="text-right">
                                         <fmt:formatNumber type="currency" currencySymbol="TGR"
                                                           minFractionDigits="2"
                                                           maxFractionDigits="2"
-                                                          value="${coffeeOrderItemTo.cost}"/>
+                                                          value="${orderItemTo.cost}"/>
                                     </td>
                                 </tr>
                             </c:forEach>
