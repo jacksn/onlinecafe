@@ -1,14 +1,48 @@
 package test.onlinecafe.to;
 
-import test.onlinecafe.model.CoffeeOrderItem;
 import test.onlinecafe.model.CoffeeType;
 
-public class CoffeeOrderItemTo extends CoffeeOrderItem {
+public class CoffeeOrderItemTo {
+    private Integer id;
+    private CoffeeType coffeeType;
+    private Integer quantity;
     private double cost;
+    private boolean discounted;
 
-    public CoffeeOrderItemTo(CoffeeType type, Integer quantity, double cost) {
-        super(type, quantity);
+    public CoffeeOrderItemTo(CoffeeType type, Integer quantity, double cost, boolean discounted) {
+        this(null, type, quantity, cost, discounted);
+    }
+
+    public CoffeeOrderItemTo(Integer id, CoffeeType coffeeType, Integer quantity, double cost, boolean discounted) {
+        this.id = id;
+        this.coffeeType = coffeeType;
+        this.quantity = quantity;
         this.cost = cost;
+        this.discounted = discounted;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public CoffeeType getCoffeeType() {
+        return coffeeType;
+    }
+
+    public void setCoffeeType(CoffeeType coffeeType) {
+        this.coffeeType = coffeeType;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 
     public double getCost() {
@@ -19,23 +53,49 @@ public class CoffeeOrderItemTo extends CoffeeOrderItem {
         this.cost = cost;
     }
 
+    public boolean isDiscounted() {
+        return discounted;
+    }
+
+    public void setDiscounted(boolean discounted) {
+        this.discounted = discounted;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
 
         CoffeeOrderItemTo that = (CoffeeOrderItemTo) o;
 
-        return Double.compare(that.cost, cost) == 0;
+        if (Double.compare(that.cost, cost) != 0) return false;
+        if (discounted != that.discounted) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (coffeeType != null ? !coffeeType.equals(that.coffeeType) : that.coffeeType != null) return false;
+        return quantity != null ? quantity.equals(that.quantity) : that.quantity == null;
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
+        int result;
         long temp;
+        result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (coffeeType != null ? coffeeType.hashCode() : 0);
+        result = 31 * result + (quantity != null ? quantity.hashCode() : 0);
         temp = Double.doubleToLongBits(cost);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (discounted ? 1 : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "CoffeeOrderItemTo{" +
+                "id=" + id +
+                ", coffeeType=" + coffeeType +
+                ", quantity=" + quantity +
+                ", cost=" + cost +
+                ", discounted=" + discounted +
+                '}';
     }
 }

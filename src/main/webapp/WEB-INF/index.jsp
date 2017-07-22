@@ -36,6 +36,7 @@
                                         <fmt:formatNumber type="currency" currencySymbol="TGR"
                                                           minFractionDigits="2"
                                                           maxFractionDigits="2"
+                                                          pattern="0.00 ¤"
                                                           value="${coffeeType.price}"/>
                                     </td>
                                     <td align="center" width="15%" class="order-count">

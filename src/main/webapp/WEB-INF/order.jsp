@@ -36,21 +36,18 @@
                             <thead>
                             <tr>
                                 <th>Coffee type</th>
-                                <th width="15%" class="text-center">Price</th>
                                 <th width="15%" class="text-center">Quantity</th>
+                                <th width="15%" class="text-center">Price</th>
                                 <th width="15%" class="text-center">Cost</th>
                             </tr>
                             </thead>
                             <tbody>
                             <%--@elvariable id="orderItemToList" type="java.util.List"--%>
-                            <c:forEach items="${orderItemToList}" var="orderItemTo">
+                            <%--@elvariable id="orderTo" type="test.onlinecafe.to.CoffeeOrderTo"--%>
+                            <c:forEach items="${orderTo.orderItems}" var="orderItemTo">
                                 <tr>
-                                    <td><c:out value="${orderItemTo.coffeeType.typeName}"/></td>
-                                    <td class="text-right">
-                                        <fmt:formatNumber type="currency" currencySymbol="TGR"
-                                                          minFractionDigits="2"
-                                                          maxFractionDigits="2"
-                                                          value="${orderItemTo.coffeeType.price}"/>
+                                    <td>
+                                        <c:out value="${orderItemTo.coffeeType.typeName}"/>
                                     </td>
                                     <td align="center" width="15%">
                                         <c:out value="${orderItemTo.quantity}"/>
@@ -59,28 +56,38 @@
                                         <fmt:formatNumber type="currency" currencySymbol="TGR"
                                                           minFractionDigits="2"
                                                           maxFractionDigits="2"
+                                                          pattern="0.00 ¤"
+                                                          value="${orderItemTo.coffeeType.price}"/>
+                                    </td>
+                                    <td class="text-right <c:if test="${orderItemTo.discounted}">text-danger</c:if>">
+                                        <fmt:formatNumber type="currency" currencySymbol="TGR"
+                                                          minFractionDigits="2"
+                                                          maxFractionDigits="2"
+                                                          pattern="0.00 ¤"
                                                           value="${orderItemTo.cost}"/>
                                     </td>
                                 </tr>
                             </c:forEach>
                             <tr>
                                 <td colspan="3" class="text-right"><strong>Delivery cost:</strong></td>
-                                <td class="text-right">
-                                    <%--@elvariable id="coffeeOrderDeliveryCost" type="double"--%>
+                                <td class="text-right <c:if test="${orderTo.deliveryCost==0}">text-danger</c:if>">
+                                    <%--@elvariable id="orderDeliveryCost" type="double"--%>
                                     <fmt:formatNumber type="currency" currencySymbol="TGR"
                                                       minFractionDigits="2"
                                                       maxFractionDigits="2"
-                                                      value="${coffeeOrderDeliveryCost}"/>
+                                                      pattern="0.00 ¤"
+                                                      value="${orderTo.deliveryCost}"/>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="3" class="text-right"><strong>Order total cost:</strong></td>
                                 <td class="text-right">
-                                    <%--@elvariable id="coffeeOrderTotalCost" type="double"--%>
+                                    <%--@elvariable id="orderTotalCost" type="double"--%>
                                     <fmt:formatNumber type="currency" currencySymbol="TGR"
                                                       minFractionDigits="2"
                                                       maxFractionDigits="2"
-                                                      value="${coffeeOrderTotalCost}"/>
+                                                      pattern="0.00 ¤"
+                                                      value="${orderTo.cost}"/>
                                 </td>
                             </tr>
                             </tbody>

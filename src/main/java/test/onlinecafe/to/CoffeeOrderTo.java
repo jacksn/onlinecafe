@@ -1,37 +1,38 @@
-package test.onlinecafe.model;
+package test.onlinecafe.to;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-public class CoffeeOrder extends BaseEntity {
-    private LocalDateTime orderDate = LocalDateTime.now();
+public class CoffeeOrderTo {
+    private Integer id;
     private String name;
     private String deliveryAddress;
-    private List<CoffeeOrderItem> orderItems;
+    private List<CoffeeOrderItemTo> orderItems;
+    private double deliveryCost;
     private double cost;
 
-    public CoffeeOrder() {
+    public CoffeeOrderTo(List<CoffeeOrderItemTo> orderItems, double deliveryCost, double cost) {
+        this(null, null, null, orderItems, deliveryCost, cost);
     }
 
-    public CoffeeOrder(LocalDateTime orderDate, String name, String deliveryAddress, List<CoffeeOrderItem> orderItems, Double cost) {
-        this(null, orderDate, name, deliveryAddress, orderItems, cost);
+    public CoffeeOrderTo(String name, String deliveryAddress, List<CoffeeOrderItemTo> orderItems, double deliveryCost, double cost) {
+        this(null, name, deliveryAddress, orderItems, deliveryCost, cost);
     }
 
-    public CoffeeOrder(Integer id, LocalDateTime orderDate, String name, String deliveryAddress, List<CoffeeOrderItem> orderItems, Double cost) {
-        super(id);
-        this.orderDate = orderDate;
+    public CoffeeOrderTo(Integer id, String name, String deliveryAddress, List<CoffeeOrderItemTo> orderItems, double deliveryCost, double cost) {
+        this.id = id;
         this.name = name;
         this.deliveryAddress = deliveryAddress;
         this.orderItems = orderItems;
+        this.deliveryCost = deliveryCost;
         this.cost = cost;
     }
 
-    public LocalDateTime getOrderDate() {
-        return orderDate;
+    public Integer getId() {
+        return id;
     }
 
-    public void setOrderDate(LocalDateTime orderDate) {
-        this.orderDate = orderDate;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -50,6 +51,22 @@ public class CoffeeOrder extends BaseEntity {
         this.deliveryAddress = deliveryAddress;
     }
 
+    public List<CoffeeOrderItemTo> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<CoffeeOrderItemTo> orderItems) {
+        this.orderItems = orderItems;
+    }
+
+    public double getDeliveryCost() {
+        return deliveryCost;
+    }
+
+    public void setDeliveryCost(double deliveryCost) {
+        this.deliveryCost = deliveryCost;
+    }
+
     public double getCost() {
         return cost;
     }
@@ -58,24 +75,16 @@ public class CoffeeOrder extends BaseEntity {
         this.cost = cost;
     }
 
-    public List<CoffeeOrderItem> getOrderItems() {
-        return orderItems;
-    }
-
-    public void setOrderItems(List<CoffeeOrderItem> orderItems) {
-        this.orderItems = orderItems;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
 
-        CoffeeOrder that = (CoffeeOrder) o;
+        CoffeeOrderTo that = (CoffeeOrderTo) o;
 
+        if (Double.compare(that.deliveryCost, deliveryCost) != 0) return false;
         if (Double.compare(that.cost, cost) != 0) return false;
-        if (orderDate != null ? !orderDate.equals(that.orderDate) : that.orderDate != null) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (deliveryAddress != null ? !deliveryAddress.equals(that.deliveryAddress) : that.deliveryAddress != null)
             return false;
@@ -84,12 +93,14 @@ public class CoffeeOrder extends BaseEntity {
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
+        int result;
         long temp;
-        result = 31 * result + (orderDate != null ? orderDate.hashCode() : 0);
+        result = id != null ? id.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (deliveryAddress != null ? deliveryAddress.hashCode() : 0);
         result = 31 * result + (orderItems != null ? orderItems.hashCode() : 0);
+        temp = Double.doubleToLongBits(deliveryCost);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(cost);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
@@ -97,12 +108,12 @@ public class CoffeeOrder extends BaseEntity {
 
     @Override
     public String toString() {
-        return "CoffeeOrder{" +
-                "id=" + getId() +
-                ", orderDate=" + orderDate +
+        return "CoffeeOrderTo{" +
+                "id=" + id +
                 ", name='" + name + '\'' +
                 ", deliveryAddress='" + deliveryAddress + '\'' +
                 ", orderItems=" + orderItems +
+                ", deliveryCost=" + deliveryCost +
                 ", cost=" + cost +
                 '}';
     }

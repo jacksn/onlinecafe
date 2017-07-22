@@ -32,11 +32,11 @@ public final class CoffeeOrderUtil {
         return discountStrategy.getDeliveryCost(orderTotalCost);
     }
 
-    public static double getDiscountedItemPrice(int quantity, double price) {
+    public static double getDiscountedItemCost(int quantity, double price) {
         return discountStrategy.getDiscountedItemCost(quantity, price);
     }
 
-    public static CoffeeOrderItem getCoffeeOrderItemFromTo(CoffeeOrderItemTo orderItemTo) {
+    public static CoffeeOrderItem getOrderItemFromTo(CoffeeOrderItemTo orderItemTo) {
         return new CoffeeOrderItem(orderItemTo.getId(),
                 orderItemTo.getCoffeeType(),
                 orderItemTo.getQuantity()
