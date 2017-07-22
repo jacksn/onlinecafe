@@ -1,6 +1,8 @@
 package test.onlinecafe.util;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -9,8 +11,8 @@ import java.util.Properties;
 
 public final class DbUtil {
     private static final String DEFAULT_DB_CONFIG_LOCATION = "db/db.properties";
-    private static Connection connection;
     public static String schemaFile = "db/coffee.sql";
+    private static Connection connection;
 
     private DbUtil() {
     }
@@ -59,9 +61,7 @@ public final class DbUtil {
         StringBuilder sb = new StringBuilder();
         try {
             BufferedReader br = new BufferedReader(
-                    new InputStreamReader(
-                            Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)
-                    )
+                    new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName))
             );
             String s;
             while ((s = br.readLine()) != null) {

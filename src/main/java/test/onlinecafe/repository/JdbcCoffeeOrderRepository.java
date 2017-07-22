@@ -3,7 +3,6 @@ package test.onlinecafe.repository;
 import test.onlinecafe.model.CoffeeOrder;
 import test.onlinecafe.model.CoffeeOrderItem;
 import test.onlinecafe.model.CoffeeType;
-import test.onlinecafe.util.DbUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -23,19 +22,19 @@ public class JdbcCoffeeOrderRepository implements CoffeeOrderRepository {
 
     private static List<CoffeeOrder> getCoffeeOrdersFromResultSetRow(ResultSet resultSet) throws SQLException {
         resultSet.beforeFirst();
-        Map<Integer, CoffeeOrder> coffeeOrderMap = new HashMap<>();
+        Map<Integer, CoffeeOrder> ordersMap = new HashMap<>();
         while (resultSet.next()) {
             int coffeeOrderId = resultSet.getInt("order_id");
-            CoffeeOrder coffeeOrder = coffeeOrderMap.get(coffeeOrderId);
-            if (coffeeOrder == null) {
-                coffeeOrder = new CoffeeOrder(
+            CoffeeOrder order = ordersMap.get(coffeeOrderId);
+            if (order == null) {
+                order = new CoffeeOrder(
                         coffeeOrderId,
                         resultSet.getTimestamp("order_date").toLocalDateTime(),
                         resultSet.getString("name"),
                         resultSet.getString("delivery_address"),
                         new ArrayList<>(),
                         resultSet.getDouble("cost"));
-                coffeeOrderMap.put(coffeeOrderId, coffeeOrder);
+                ordersMap.put(coffeeOrderId, order);
             }
             CoffeeOrderItem orderItem = new CoffeeOrderItem();
             orderItem.setId(resultSet.getInt("order_item_id"));
@@ -48,22 +47,22 @@ public class JdbcCoffeeOrderRepository implements CoffeeOrderRepository {
                     )
             );
             orderItem.setQuantity(resultSet.getInt("quantity"));
-            coffeeOrder.getOrderItems().add(orderItem);
+            order.getOrderItems().add(orderItem);
         }
-        return new ArrayList<>(coffeeOrderMap.values());
+        return new ArrayList<>(ordersMap.values());
     }
 
-    private static void fillStatementParameters(CoffeeOrder coffeeOrder, PreparedStatement statement) throws SQLException {
-        statement.setTimestamp(1, Timestamp.valueOf(coffeeOrder.getOrderDate()));
-        statement.setString(2, coffeeOrder.getName());
-        statement.setString(3, coffeeOrder.getDeliveryAddress());
-        statement.setDouble(4, coffeeOrder.getCost());
+    private static void fillStatementParameters(CoffeeOrder order, PreparedStatement statement) throws SQLException {
+        statement.setTimestamp(1, Timestamp.valueOf(order.getOrderDate()));
+        statement.setString(2, order.getName());
+        statement.setString(3, order.getDeliveryAddress());
+        statement.setDouble(4, order.getCost());
     }
 
     @Override
-    public CoffeeOrder save(CoffeeOrder coffeeOrder) {
+    public CoffeeOrder save(CoffeeOrder order) {
         boolean inTransaction = false;
-        if (coffeeOrder.isNew()) {
+        if (order.isNew()) {
             try (PreparedStatement orderStatement = connection.prepareStatement(INSERT_ORDER_QUERY, Statement.RETURN_GENERATED_KEYS);
                  PreparedStatement orderItemsStatement = connection.prepareStatement(INSERT_ORDER_ITEMS_QUERY, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -73,7 +72,7 @@ public class JdbcCoffeeOrderRepository implements CoffeeOrderRepository {
                     connection.setAutoCommit(false);
                 }
 
-                fillStatementParameters(coffeeOrder, orderStatement);
+                fillStatementParameters(order, orderStatement);
 
                 int affectedRows = orderStatement.executeUpdate();
                 if (affectedRows == 0) {
@@ -82,14 +81,14 @@ public class JdbcCoffeeOrderRepository implements CoffeeOrderRepository {
 
                 try (ResultSet generatedKeys = orderStatement.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        coffeeOrder.setId((int) generatedKeys.getLong(1));
+                        order.setId((int) generatedKeys.getLong(1));
                     } else {
                         throw new SQLException("Create of CoffeeOrder failed, no ID obtained.");
                     }
                 }
 
-                List<CoffeeOrderItem> orderItems = coffeeOrder.getOrderItems();
-                int orderId = coffeeOrder.getId();
+                List<CoffeeOrderItem> orderItems = order.getOrderItems();
+                int orderId = order.getId();
 
                 saveCoffeeOrderItems(orderId, orderItems, orderItemsStatement);
                 if (!inTransaction) {
@@ -114,23 +113,23 @@ public class JdbcCoffeeOrderRepository implements CoffeeOrderRepository {
                     connection.setAutoCommit(false);
                 }
 
-                CoffeeOrder oldOrder = get(coffeeOrder.getId());
+                CoffeeOrder oldOrder = get(order.getId());
                 if (oldOrder == null) {
                     throw new SQLException("Update of CoffeeOrder failed, order not found.");
                 }
                 List<CoffeeOrderItem> oldOrderItems = oldOrder.getOrderItems();
 
-                fillStatementParameters(coffeeOrder, orderStatement);
-                orderStatement.setInt(5, coffeeOrder.getId());
+                fillStatementParameters(order, orderStatement);
+                orderStatement.setInt(5, order.getId());
                 int affectedRows = orderStatement.executeUpdate();
                 if (affectedRows == 0) {
                     throw new SQLException("Update of CoffeeOrder failed, no rows affected.");
                 }
-                if (!coffeeOrder.getOrderItems().equals(oldOrderItems)) {
-                    int orderId = coffeeOrder.getId();
+                if (!order.getOrderItems().equals(oldOrderItems)) {
+                    int orderId = order.getId();
                     deleteOrderItemsStatement.setInt(1, orderId);
                     deleteOrderItemsStatement.execute();
-                    saveCoffeeOrderItems(orderId, coffeeOrder.getOrderItems(), orderItemsStatement);
+                    saveCoffeeOrderItems(orderId, order.getOrderItems(), orderItemsStatement);
                 }
 
                 if (!inTransaction) {
@@ -146,14 +145,14 @@ public class JdbcCoffeeOrderRepository implements CoffeeOrderRepository {
                 return null;
             }
         }
-        return coffeeOrder;
+        return order;
     }
 
     private static void saveCoffeeOrderItems(int orderId, List<CoffeeOrderItem> orderItems, PreparedStatement orderItemsStatement) throws SQLException {
-        for (CoffeeOrderItem coffeeOrderItem : orderItems) {
-            orderItemsStatement.setInt(1, coffeeOrderItem.getCoffeeType().getId());
+        for (CoffeeOrderItem orderItem : orderItems) {
+            orderItemsStatement.setInt(1, orderItem.getCoffeeType().getId());
             orderItemsStatement.setInt(2, orderId);
-            orderItemsStatement.setInt(3, coffeeOrderItem.getQuantity());
+            orderItemsStatement.setInt(3, orderItem.getQuantity());
             orderItemsStatement.addBatch();
         }
         orderItemsStatement.executeBatch();
@@ -199,9 +198,9 @@ public class JdbcCoffeeOrderRepository implements CoffeeOrderRepository {
         try (PreparedStatement statement = connection.prepareStatement(SELECT_QUERY)) {
             statement.setInt(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
-                List<CoffeeOrder> coffeeOrders = getCoffeeOrdersFromResultSetRow(resultSet);
-                if (!coffeeOrders.isEmpty()) {
-                    return coffeeOrders.get(0);
+                List<CoffeeOrder> orders = getCoffeeOrdersFromResultSetRow(resultSet);
+                if (!orders.isEmpty()) {
+                    return orders.get(0);
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -215,9 +214,9 @@ public class JdbcCoffeeOrderRepository implements CoffeeOrderRepository {
     @Override
     public List<CoffeeOrder> getAll() {
         try (ResultSet resultSet = connection.createStatement().executeQuery(SELECT_ALL_QUERY)) {
-            List<CoffeeOrder> coffeeOrders = getCoffeeOrdersFromResultSetRow(resultSet);
-            if (!coffeeOrders.isEmpty()) {
-                return coffeeOrders;
+            List<CoffeeOrder> orders = getCoffeeOrdersFromResultSetRow(resultSet);
+            if (!orders.isEmpty()) {
+                return orders;
             }
         } catch (SQLException e) {
             e.printStackTrace();

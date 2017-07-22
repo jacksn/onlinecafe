@@ -5,7 +5,7 @@ import test.onlinecafe.model.CoffeeOrder;
 import java.util.List;
 
 public interface CoffeeOrderRepository {
-    CoffeeOrder save(CoffeeOrder coffeeOrder);
+    CoffeeOrder save(CoffeeOrder order);
 
     void delete(int id);
 

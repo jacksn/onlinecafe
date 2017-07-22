@@ -6,8 +6,8 @@ import test.onlinecafe.model.CoffeeType;
 public class CoffeeOrderItemTo extends CoffeeOrderItem {
     private double cost;
 
-    public CoffeeOrderItemTo(CoffeeType coffeeType, Integer quantity, double cost) {
-        super(coffeeType, quantity);
+    public CoffeeOrderItemTo(CoffeeType type, Integer quantity, double cost) {
+        super(type, quantity);
         this.cost = cost;
     }
 

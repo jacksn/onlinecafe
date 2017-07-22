@@ -124,19 +124,19 @@ public class JdbcCoffeeOrderRepositoryTest extends AbstractJdbcRepositoryTest{
 
     @Test
     public void testGet() throws Exception {
-        CoffeeOrder coffeeType = repository.get(COFFEE_ORDER1.getId());
-        Assert.assertEquals(COFFEE_ORDER1, coffeeType);
+        CoffeeOrder order = repository.get(COFFEE_ORDER1.getId());
+        Assert.assertEquals(COFFEE_ORDER1, order);
     }
 
     @Test
     public void testGetAbsent() throws Exception {
-        CoffeeOrder coffeeOrder = repository.get(Integer.MAX_VALUE);
-        Assert.assertEquals(null, coffeeOrder);
+        CoffeeOrder order = repository.get(Integer.MAX_VALUE);
+        Assert.assertEquals(null, order);
     }
 
     @Test
     public void testGetAll() throws Exception {
-        List<CoffeeOrder> coffeeOrderList = repository.getAll();
-        Assert.assertEquals(COFFEE_ORDERS, coffeeOrderList);
+        List<CoffeeOrder> orders = repository.getAll();
+        Assert.assertEquals(COFFEE_ORDERS, orders);
     }
 }

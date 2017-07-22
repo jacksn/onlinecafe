@@ -128,14 +128,14 @@ public class JdbcCoffeeTypeRepositoryTest extends AbstractJdbcRepositoryTest{
 
     @Test
     public void testGet() throws Exception {
-        CoffeeType coffeeType = repository.get(COFFEE_TYPE1.getId());
-        Assert.assertEquals(COFFEE_TYPE1, coffeeType);
+        CoffeeType type = repository.get(COFFEE_TYPE1.getId());
+        Assert.assertEquals(COFFEE_TYPE1, type);
     }
 
     @Test
     public void testGetAbsent() throws Exception {
-        CoffeeType coffeeType = repository.get(Integer.MAX_VALUE);
-        Assert.assertEquals(null, coffeeType);
+        CoffeeType type = repository.get(Integer.MAX_VALUE);
+        Assert.assertEquals(null, type);
     }
 
     @Test

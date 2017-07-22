@@ -5,7 +5,7 @@ import test.onlinecafe.model.CoffeeType;
 import java.util.List;
 
 public interface CoffeeTypeRepository {
-    CoffeeType save(CoffeeType coffeeType);
+    CoffeeType save(CoffeeType type);
 
     void delete(int id);
 

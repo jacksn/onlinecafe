@@ -9,8 +9,8 @@ public final class CoffeeTypeUtil {
     private CoffeeTypeUtil() {
     }
 
-    public static List<CoffeeType> filterEnabled(List<CoffeeType> coffeeTypes) {
-        return coffeeTypes.stream()
+    public static List<CoffeeType> filterEnabled(List<CoffeeType> types) {
+        return types.stream()
                 .filter(t -> !t.getDisabled())
                 .collect(Collectors.toList());
     }

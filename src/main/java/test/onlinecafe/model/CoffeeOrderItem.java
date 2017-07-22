@@ -7,13 +7,13 @@ public class CoffeeOrderItem extends BaseEntity {
     public CoffeeOrderItem() {
     }
 
-    public CoffeeOrderItem(CoffeeType coffeeType, Integer quantity) {
-        this(null, coffeeType, quantity);
+    public CoffeeOrderItem(CoffeeType type, Integer quantity) {
+        this(null, type, quantity);
     }
 
-    public CoffeeOrderItem(Integer id, CoffeeType coffeeType, Integer quantity) {
+    public CoffeeOrderItem(Integer id, CoffeeType type, Integer quantity) {
         super(id);
-        this.coffeeType = coffeeType;
+        this.coffeeType = type;
         this.quantity = quantity;
     }
 
@@ -21,8 +21,8 @@ public class CoffeeOrderItem extends BaseEntity {
         return coffeeType;
     }
 
-    public void setCoffeeType(CoffeeType coffeeType) {
-        this.coffeeType = coffeeType;
+    public void setCoffeeType(CoffeeType type) {
+        this.coffeeType = type;
     }
 
     public Integer getQuantity() {

@@ -1,7 +1,6 @@
 package test.onlinecafe.repository;
 
 import test.onlinecafe.model.CoffeeType;
-import test.onlinecafe.util.DbUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -21,17 +20,17 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
     }
 
     @Override
-    public CoffeeType save(CoffeeType coffeeType) {
-        if (coffeeType.isNew()) {
+    public CoffeeType save(CoffeeType type) {
+        if (type.isNew()) {
             try (PreparedStatement statement = connection.prepareStatement(INSERT_QUERY, Statement.RETURN_GENERATED_KEYS)) {
-                fillStatementParameters(coffeeType, statement);
+                fillStatementParameters(type, statement);
                 int affectedRows = statement.executeUpdate();
                 if (affectedRows == 0) {
                     throw new SQLException("Create of CoffeeType failed, no rows affected.");
                 }
                 try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        coffeeType.setId((int) generatedKeys.getLong(1));
+                        type.setId((int) generatedKeys.getLong(1));
                     } else {
                         throw new SQLException("Create of CoffeeType failed, no ID obtained.");
                     }
@@ -42,8 +41,8 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
             }
         } else {
             try (PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY)) {
-                fillStatementParameters(coffeeType, statement);
-                statement.setInt(4, coffeeType.getId());
+                fillStatementParameters(type, statement);
+                statement.setInt(4, type.getId());
                 int affectedRows = statement.executeUpdate();
                 if (affectedRows == 0) {
                     throw new SQLException("Update of CoffeeType failed, no rows affected.");
@@ -53,13 +52,13 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
                 return null;
             }
         }
-        return coffeeType;
+        return type;
     }
 
-    private static void fillStatementParameters(CoffeeType coffeeType, PreparedStatement statement) throws SQLException {
-        statement.setString(1, coffeeType.getTypeName());
-        statement.setDouble(2, coffeeType.getPrice());
-        statement.setString(3, coffeeType.getDisabled() ? "Y" : "N");
+    private static void fillStatementParameters(CoffeeType type, PreparedStatement statement) throws SQLException {
+        statement.setString(1, type.getTypeName());
+        statement.setDouble(2, type.getPrice());
+        statement.setString(3, type.getDisabled() ? "Y" : "N");
     }
 
     @Override
@@ -96,12 +95,11 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
     public List<CoffeeType> getAll() {
         try (Statement statement = connection.createStatement()) {
             try (ResultSet resultSet = statement.executeQuery(SELECT_ALL_QUERY)) {
-                ArrayList<CoffeeType> coffeeTypes = new ArrayList<>();
+                ArrayList<CoffeeType> types = new ArrayList<>();
                 while (resultSet.next()) {
-                    CoffeeType coffeeType = getCoffeeType(resultSet);
-                    coffeeTypes.add(coffeeType);
+                    types.add(getCoffeeType(resultSet));
                 }
-                return coffeeTypes;
+                return types;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -112,11 +110,11 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
     }
 
     private static CoffeeType getCoffeeType(ResultSet resultSet) throws SQLException {
-        CoffeeType coffeeType = new CoffeeType();
-        coffeeType.setId(resultSet.getInt("id"));
-        coffeeType.setTypeName(resultSet.getString("type_name"));
-        coffeeType.setPrice(resultSet.getDouble("price"));
-        coffeeType.setDisabled("Y".equals(resultSet.getString("disabled")));
-        return coffeeType;
+        CoffeeType type = new CoffeeType();
+        type.setId(resultSet.getInt("id"));
+        type.setTypeName(resultSet.getString("type_name"));
+        type.setPrice(resultSet.getDouble("price"));
+        type.setDisabled("Y".equals(resultSet.getString("disabled")));
+        return type;
     }
 }

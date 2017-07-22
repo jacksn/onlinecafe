@@ -36,10 +36,10 @@ public final class CoffeeOrderUtil {
         return discountStrategy.getDiscountedItemCost(quantity, price);
     }
 
-    public static CoffeeOrderItem getCoffeeOrderItemFromTo(CoffeeOrderItemTo coffeeOrderItemTo) {
-        return new CoffeeOrderItem(coffeeOrderItemTo.getId(),
-                coffeeOrderItemTo.getCoffeeType(),
-                coffeeOrderItemTo.getQuantity()
+    public static CoffeeOrderItem getCoffeeOrderItemFromTo(CoffeeOrderItemTo orderItemTo) {
+        return new CoffeeOrderItem(orderItemTo.getId(),
+                orderItemTo.getCoffeeType(),
+                orderItemTo.getQuantity()
         );
     }
 }
