@@ -107,7 +107,6 @@ public class CoffeeServlet extends HttpServlet {
         response.sendRedirect("/");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getRequestURI();
@@ -119,9 +118,9 @@ public class CoffeeServlet extends HttpServlet {
             List<CoffeeOrderItemTo> orderItemToList = new ArrayList<>();
             double orderTotalCost = 0;
             for (int i = 0; i < typeIds.length; i++) {
-                int quantity = Integer.valueOf(typeQuantities[i]);
+                int quantity = Integer.parseInt(typeQuantities[i]);
                 if (quantity > 0) {
-                    int id = Integer.valueOf(typeIds[i]);
+                    int id = Integer.parseInt(typeIds[i]);
                     CoffeeType type = coffeeTypeRepository.get(id);
                     if (type == null) continue;
                     double itemCost = quantity * type.getPrice();
@@ -152,7 +151,7 @@ public class CoffeeServlet extends HttpServlet {
                 response.sendRedirect("/");
                 return;
             }
-            if (name != null && !name.isEmpty() && address != null && !address.isEmpty()) {
+            if (name != null && address != null && !address.isEmpty()) {
                 List<CoffeeOrderItem> orderItems = new ArrayList<>();
                 for (CoffeeOrderItemTo orderItemTo : orderTo.getOrderItems()) {
                     orderItems.add(CoffeeOrderUtil.getOrderItemFromTo(orderItemTo));

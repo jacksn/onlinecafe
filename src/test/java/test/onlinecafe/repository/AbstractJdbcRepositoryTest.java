@@ -9,8 +9,7 @@ public class AbstractJdbcRepositoryTest {
 
     public static void initDatabase() {
         connection = DbUtil.getConnection();
-        DbUtil.executeSQLScriptFile(DbUtil.schemaFile);
-        DbUtil.executeSQLScriptFile("db/testdata.sql");
+        DbUtil.initDatabase("db/testdata.sql");
     }
 
 }

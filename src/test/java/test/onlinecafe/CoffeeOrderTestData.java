@@ -5,6 +5,7 @@ import test.onlinecafe.model.CoffeeOrderItem;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public final class CoffeeOrderTestData {
@@ -51,7 +52,7 @@ public final class CoffeeOrderTestData {
     );
 
     public static final List<CoffeeOrder> COFFEE_ORDERS =
-            Arrays.asList(COFFEE_ORDER1, COFFEE_ORDER2, COFFEE_ORDER3);
+            Collections.unmodifiableList(Arrays.asList(COFFEE_ORDER1, COFFEE_ORDER2, COFFEE_ORDER3));
 
     private CoffeeOrderTestData() {
     }

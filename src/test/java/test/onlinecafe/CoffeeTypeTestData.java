@@ -3,6 +3,7 @@ package test.onlinecafe;
 import test.onlinecafe.model.CoffeeType;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public final class CoffeeTypeTestData {
@@ -13,10 +14,10 @@ public final class CoffeeTypeTestData {
     public static final CoffeeType COFFEE_TYPE5 = new CoffeeType(5, "Caramel Macchiato", 5.00, true);
 
     public static final List<CoffeeType> COFFEE_TYPES_ALL =
-            Arrays.asList(COFFEE_TYPE1, COFFEE_TYPE2, COFFEE_TYPE3, COFFEE_TYPE4, COFFEE_TYPE5);
+            Collections.unmodifiableList(Arrays.asList(COFFEE_TYPE1, COFFEE_TYPE2, COFFEE_TYPE3, COFFEE_TYPE4, COFFEE_TYPE5));
 
     public static final List<CoffeeType> COFFEE_TYPES_ENABLED =
-            Arrays.asList(COFFEE_TYPE1, COFFEE_TYPE2, COFFEE_TYPE3, COFFEE_TYPE4);
+            Collections.unmodifiableList(Arrays.asList(COFFEE_TYPE1, COFFEE_TYPE2, COFFEE_TYPE3, COFFEE_TYPE4));
 
     private CoffeeTypeTestData() {
     }

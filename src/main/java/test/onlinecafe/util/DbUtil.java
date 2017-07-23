@@ -3,6 +3,7 @@ package test.onlinecafe.util;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -11,7 +12,7 @@ import java.util.Properties;
 
 public final class DbUtil {
     private static final String DEFAULT_DB_CONFIG_LOCATION = "db/db.properties";
-    public static String schemaFile = "db/coffee.sql";
+    private static String schemaFile = "db/coffee.sql";
     private static Connection connection;
 
     private DbUtil() {
@@ -36,14 +37,9 @@ public final class DbUtil {
             }
             Class.forName(driver);
             connection = DriverManager.getConnection(url, user, password);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
+        } catch (IOException | ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
-
         return connection;
     }
 
@@ -58,28 +54,37 @@ public final class DbUtil {
     }
 
     public static void executeSQLScriptFile(String fileName) {
+        if (connection == null) {
+            getConnection();
+        }
         StringBuilder sb = new StringBuilder();
-        try {
-            BufferedReader br = new BufferedReader(
-                    new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName))
-            );
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName), Charset.forName("UTF-8")));
+             Statement sqlStatement = connection.createStatement()) {
             String s;
             while ((s = br.readLine()) != null) {
                 sb.append(s);
             }
-
-            String[] inst = sb.toString().split(";");
-
-            getConnection();
-            Statement sqlStatement = connection.createStatement();
-
-            for (String statement : inst) {
+            String[] statements = sb.toString().split(";");
+            for (String statement : statements) {
                 if (!statement.trim().equals("")) {
                     sqlStatement.executeUpdate(statement);
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void initDatabase(String dataFile){
+        initDatabase(schemaFile, dataFile);
+    }
+
+    public static void initDatabase(String dataFile, String schemaFile) {
+        if (connection == null) {
+            getConnection();
+        }
+        executeSQLScriptFile(schemaFile);
+        executeSQLScriptFile(dataFile);
     }
 }
