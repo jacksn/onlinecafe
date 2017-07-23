@@ -5,9 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import test.onlinecafe.model.BaseEntity;
 import test.onlinecafe.model.CoffeeType;
-import test.onlinecafe.util.DbUtil;
 
-import java.sql.Connection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -24,7 +22,6 @@ public class JdbcCoffeeTypeRepositoryTest extends AbstractJdbcRepositoryTest{
 
     @Test
     public void testUpdate() throws Exception {
-        Connection connection = DbUtil.getConnection();
         connection.setAutoCommit(false);
         int updatedId = COFFEE_TYPE1.getId();
         CoffeeType updated = repository.get(updatedId);
@@ -42,7 +39,6 @@ public class JdbcCoffeeTypeRepositoryTest extends AbstractJdbcRepositoryTest{
 
     @Test
     public void testUpdateInvalid() throws Exception {
-        Connection connection = DbUtil.getConnection();
         connection.setAutoCommit(false);
         int updatedId = COFFEE_TYPE1.getId();
         CoffeeType updated = repository.get(updatedId);
@@ -57,7 +53,6 @@ public class JdbcCoffeeTypeRepositoryTest extends AbstractJdbcRepositoryTest{
 
     @Test
     public void testUpdateAbsent() throws Exception {
-        Connection connection = DbUtil.getConnection();
         connection.setAutoCommit(false);
         int updatedId = COFFEE_TYPE1.getId();
         CoffeeType updated = repository.get(updatedId);
@@ -72,7 +67,6 @@ public class JdbcCoffeeTypeRepositoryTest extends AbstractJdbcRepositoryTest{
 
     @Test
     public void testCreate() throws Exception {
-        Connection connection = DbUtil.getConnection();
         connection.setAutoCommit(false);
         CoffeeType created = new CoffeeType(null, "New type", 7.00, false);
         created = repository.save(created);
@@ -86,7 +80,6 @@ public class JdbcCoffeeTypeRepositoryTest extends AbstractJdbcRepositoryTest{
 
     @Test
     public void testCreateInvalid() throws Exception {
-        Connection connection = DbUtil.getConnection();
         connection.setAutoCommit(false);
         CoffeeType created = new CoffeeType(null, null, 0.00, false);
         try {
@@ -99,7 +92,6 @@ public class JdbcCoffeeTypeRepositoryTest extends AbstractJdbcRepositoryTest{
 
     @Test
     public void testDelete() throws Exception {
-        Connection connection = DbUtil.getConnection();
         connection.setAutoCommit(false);
         repository.delete(5);
         List<CoffeeType> types = repository.getAll();
@@ -114,7 +106,6 @@ public class JdbcCoffeeTypeRepositoryTest extends AbstractJdbcRepositoryTest{
 
     @Test
     public void testDeleteAbsent() throws Exception {
-        Connection connection = DbUtil.getConnection();
         connection.setAutoCommit(false);
         repository.delete(Integer.MAX_VALUE);
         List<CoffeeType> types = repository.getAll();
