@@ -69,6 +69,17 @@
                                 </tr>
                             </c:forEach>
                             <tr>
+                                <td colspan="3" class="text-right"><strong>Subtotal cost:</strong></td>
+                                <td class="text-right">
+                                    <%--@elvariable id="orderTotalCost" type="double"--%>
+                                    <fmt:formatNumber type="currency" currencySymbol="TGR"
+                                                      minFractionDigits="2"
+                                                      maxFractionDigits="2"
+                                                      pattern="0.00 ¤"
+                                                      value="${orderTo.cost - orderTo.deliveryCost}"/>
+                                </td>
+                            </tr>
+                            <tr>
                                 <td colspan="3" class="text-right"><strong>Delivery cost:</strong></td>
                                 <td class="text-right <c:if test="${orderTo.deliveryCost==0}">text-danger</c:if>">
                                     <%--@elvariable id="orderDeliveryCost" type="double"--%>
