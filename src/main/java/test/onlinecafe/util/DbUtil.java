@@ -77,7 +77,7 @@ public final class DbUtil {
     }
 
     public static void initDatabase(String dataFile){
-        initDatabase(schemaFile, dataFile);
+        initDatabase(dataFile, schemaFile);
     }
 
     public static void initDatabase(String dataFile, String schemaFile) {
