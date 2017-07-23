@@ -19,7 +19,7 @@ public class DefaultDiscountStrategy implements DiscountStrategy {
 
     @Override
     public double getDiscountedItemCost(int quantity, double price) {
-        return (quantity - quantity / 5) * price;
+        return (quantity - quantity / n) * price;
     }
 
     @Override
