@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import test.onlinecafe.model.CoffeeOrder;
 import test.onlinecafe.model.CoffeeOrderItem;
 import test.onlinecafe.model.CoffeeType;
-import test.onlinecafe.repository.CoffeeOrderRepository;
-import test.onlinecafe.repository.CoffeeTypeRepository;
-import test.onlinecafe.repository.JdbcCoffeeOrderRepository;
-import test.onlinecafe.repository.JdbcCoffeeTypeRepository;
+import test.onlinecafe.repository.*;
 import test.onlinecafe.to.CoffeeOrderItemTo;
 import test.onlinecafe.to.CoffeeOrderTo;
 import test.onlinecafe.util.CoffeeOrderUtil;
@@ -25,6 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -46,6 +45,7 @@ public class CoffeeServlet extends HttpServlet {
         Connection connection = DbUtil.getConnection();
         coffeeTypeRepository = new JdbcCoffeeTypeRepository(connection);
         coffeeOrderRepository = new JdbcCoffeeOrderRepository(connection);
+        ConfigurationRepository configurationRepository = new JdbcConfigurationRepository(connection);
         Properties appProperties = null;
         try {
             appProperties = ConfigurationUtil.getPropertiesFromFile("app.properties");
@@ -56,13 +56,22 @@ public class CoffeeServlet extends HttpServlet {
         if (appProperties != null) {
             String discountStrategyClassName = appProperties.getProperty("app.discount.strategy");
             try {
-                discountStrategy = (DiscountStrategy) Class.forName(discountStrategyClassName).newInstance();
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                Constructor c = Class.forName(discountStrategyClassName).getConstructor(ConfigurationRepository.class);
+                discountStrategy = (DiscountStrategy) c.newInstance(configurationRepository);
+            } catch (ClassNotFoundException | InstantiationException | InvocationTargetException
+                    | IllegalAccessException | NoSuchMethodException e) {
                 e.printStackTrace();
-                discountStrategy = new DefaultDiscountStrategy();
+                discountStrategy = new DefaultDiscountStrategy(configurationRepository);
             }
         }
-        CoffeeOrderUtil.setDiscountStrategy(discountStrategy);
+        try {
+            if (discountStrategy != null) {
+                discountStrategy.initFromConfigurationRepository();
+                CoffeeOrderUtil.setDiscountStrategy(discountStrategy);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

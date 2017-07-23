@@ -22,3 +22,8 @@ INSERT INTO CoffeeOrderItem (id, type_id, order_id, quantity) VALUES
   (NULL, 4, 2, 1),
   (NULL, 1, 3, 1),
   (NULL, 2, 3, 1);
+
+INSERT INTO Configuration (id, value) VALUES
+  ('n', '5'),
+  ('x', '10'),
+  ('m', '2');
