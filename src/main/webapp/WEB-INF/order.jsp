@@ -17,14 +17,14 @@
                     <input type="hidden" name="action" value="confirm">
                     <div class="row">
                         <div class="form-group">
-                            <label for="name" class="col-md-2 control-label">Name</label>
-                            <div class="col-md-10">
+                            <label for="name" class="col-md-3 control-label">Name</label>
+                            <div class="col-md-8">
                                 <input class="form-control" id="name" name="name" placeholder="Name" type="text">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="address" class="col-md-2 control-label">Delivery address</label>
-                            <div class="col-md-10">
+                            <label for="address" class="col-md-3 control-label">Delivery address</label>
+                            <div class="col-md-8">
                                 <input class="form-control" id="address" name="address" placeholder="Delivery address"
                                        type="text">
                             </div>

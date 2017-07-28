@@ -14,7 +14,7 @@
             <jsp:include page="fragments/errorMessage.jsp"/>
             <div class="row">
                 <div class="col-md-offset-2 col-md-8">
-                    <form class="form-horizontal" name="coffeeform" method="post">
+                    <form class="form-horizontal" id="coffeeform" name="coffeeform" method="post" action="" onsubmit="return validate()">
                         <input type="hidden" name="action" value="create">
                         <table class="table">
                             <thead>
@@ -29,8 +29,13 @@
                             <%--@elvariable id="coffeeTypes" type="java.util.List"--%>
                             <c:forEach items="${coffeeTypes}" var="coffeeType">
                                 <jsp:useBean id="coffeeType" class="test.onlinecafe.model.CoffeeType"/>
-                                <tr>
-                                    <td><input type="hidden" name="id[]" value="<c:out value="${coffeeType.id}"/>"></td>
+                                <tr id="coffeerow_${coffeeType.id}">
+                                    <td>
+                                        <input type="hidden" id="id_${coffeeType.id}" name="id[]"
+                                               value="${coffeeType.id}" disabled="">
+                                        <input type="checkbox" id="selected_${coffeeType.id}" name="selected[]"
+                                               onclick="toggleRow(this, ${coffeeType.id})"/>
+                                    </td>
                                     <td><c:out value="${coffeeType.typeName}"/></td>
                                     <td align="center">
                                         <fmt:formatNumber type="currency" currencySymbol="TGR"
@@ -40,8 +45,9 @@
                                                           value="${coffeeType.price}"/>
                                     </td>
                                     <td align="center" width="15%" class="order-count">
-                                        <input class="form-control input-sm" name="quantity[]"
-                                               type="number" value="0" minlength="1" maxlength="2" min="0" max="99">
+                                        <input id="quantity_${coffeeType.id}" class="form-control input-sm" name="quantity[]"
+                                               type="number" value="0" minlength="1" maxlength="2" min="0" max="99" disabled=""
+                                               oninput="removeErrorHighlight(this)" oninvalid="addErrorHighlight(this)">
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -58,5 +64,6 @@
     </div>
 </div>
 <jsp:include page="fragments/footer.jsp"/>
+<script type="text/javascript" src="js/util.js"></script>
 </body>
 </html>
