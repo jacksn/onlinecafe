@@ -7,14 +7,18 @@
     <jsp:include page="fragments/headTag.jsp"/>
 </head>
 <body>
+<script type="text/javascript">
+    $(document).ready(function () {
+        <jsp:include page="fragments/errorMessage.jsp"/>
+    });
+</script>
 <jsp:include page="fragments/header.jsp"/>
 <div class="jumbotron">
     <div class="container pad">
         <div class="row">
-            <jsp:include page="fragments/errorMessage.jsp"/>
             <div class="col-md-offset-2 col-md-8">
-                <form class="form-horizontal" name="coffeeform" method="post">
-                    <input type="hidden" name="action" value="confirm">
+                <form class="form-horizontal" name="coffeeOrderForm" method="POST" action="order"
+                      onsubmit="return validate()">
                     <div class="row">
                         <div class="form-group">
                             <label for="name" class="col-md-3 control-label">Name</label>
@@ -26,7 +30,8 @@
                             <label for="address" class="col-md-3 control-label">Delivery address</label>
                             <div class="col-md-8">
                                 <input class="form-control" id="address" name="address" placeholder="Delivery address"
-                                       type="text">
+                                       type="text" oninput="removeErrorHighlight(this)"
+                                       oninvalid="addErrorHighlight(this)">
                             </div>
                         </div>
                     </div>
@@ -117,4 +122,16 @@
     </div>
 </div>
 <jsp:include page="fragments/footer.jsp"/>
+<script type="text/javascript">
+    function validate() {
+        var address = $('[id=address]');
+        if (!address.val()) {
+            showErrorMessage('Address must not be empty. Please enter address and try again.');
+            addErrorHighlight(address);
+            address.focus();
+            return false;
+        }
+    }
+</script>
+</body>
 </html>
