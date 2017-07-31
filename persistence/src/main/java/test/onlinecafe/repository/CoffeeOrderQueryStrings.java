@@ -17,7 +17,7 @@ public final class CoffeeOrderQueryStrings {
             "  LEFT JOIN coffeeorderitem " +
             "    ON coffeeorder.id = coffeeorderitem.order_id " +
             "  JOIN coffeetype ON coffeeorderitem.type_id = coffeetype.id " +
-            "ORDER BY coffeeorder.id";
+            "ORDER BY coffeeorder.id, coffeeorderitem.id";
 
     static final String SELECT_QUERY = "SELECT " +
             "  coffeeorder.id AS order_id, " +
@@ -35,7 +35,8 @@ public final class CoffeeOrderQueryStrings {
             "  LEFT JOIN coffeeorderitem " +
             "    ON coffeeorder.id = coffeeorderitem.order_id " +
             "  JOIN coffeetype ON coffeeorderitem.type_id = coffeetype.id\n" +
-            "WHERE order_id = ?";
+            "WHERE order_id = ? " +
+            "ORDER BY coffeeorderitem.id";
 
     static final String INSERT_ORDER_QUERY = "INSERT INTO CoffeeOrder (id, order_date, name, delivery_address, cost) " +
             "VALUES (NULL, ?, ?, ?, ?)";
