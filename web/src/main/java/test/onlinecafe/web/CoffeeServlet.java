@@ -11,6 +11,7 @@ import test.onlinecafe.util.CoffeeOrderUtil;
 import test.onlinecafe.util.CoffeeTypeUtil;
 import test.onlinecafe.util.DbUtil;
 import test.onlinecafe.util.discount.DiscountStrategy;
+import test.onlinecafe.util.discount.NoDiscountStrategy;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -25,62 +26,72 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import static org.slf4j.LoggerFactory.getLogger;
 import static test.onlinecafe.util.CoffeeOrderItemUtil.getOrderItemFromTo;
 
-@WebServlet({"/", "/order", "/confirmation", "/reset"})
+@WebServlet({"/", "/order", "/confirmation", "/cancel"})
 public class CoffeeServlet extends HttpServlet {
     private static final Logger log = getLogger(CoffeeServlet.class);
 
-    private static final String ERROR_MESSAGE_EMPTY_ORDER = "Your order is empty. Please enter quantity and try again.";
-    private static final String ERROR_MESSAGE_EMPTY_ADDRESS = "Address must not be empty. Please enter address and try again.";
     private static final String APP_PROPERTIES_FILE = "app.properties";
+    private static Set<String> supportedLanguages;
+    private static String defaultLanguage;
+
+    private ResourceBundle messages;
 
     private CoffeeTypeRepository coffeeTypeRepository;
     private CoffeeOrderRepository coffeeOrderRepository;
+
+    private static void removeSessionAttributes(HttpSession session) {
+        session.removeAttribute("lastErrorMessage");
+        session.removeAttribute("orderTo");
+        session.removeAttribute("name");
+        session.removeAttribute("address");
+    }
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         log.debug("Servlet initialization - start");
+        messages = ResourceBundle.getBundle("messages");
+
         Connection connection = DbUtil.getConnection();
 
         coffeeTypeRepository = new JdbcCoffeeTypeRepository(connection);
         coffeeOrderRepository = new JdbcCoffeeOrderRepository(connection);
         ConfigurationRepository configurationRepository = new JdbcConfigurationRepository(connection);
 
-        Properties appProperties = new Properties();
-        String discountStrategyClassName = null;
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(APP_PROPERTIES_FILE)) {
-            appProperties.load(inputStream);
-            discountStrategyClassName = appProperties.getProperty("app.discount.strategy");
-        } catch (IOException e) {
-            log.debug("Creating CoffeeTypeRepository");
-            e.printStackTrace();
-        }
         DiscountStrategy discountStrategy = null;
-        if (discountStrategyClassName != null) {
-            try {
-                Constructor c = Class.forName(discountStrategyClassName).getConstructor(ConfigurationRepository.class);
-                discountStrategy = (DiscountStrategy) c.newInstance(configurationRepository);
-            } catch (ClassNotFoundException | InstantiationException | InvocationTargetException
-                    | IllegalAccessException | NoSuchMethodException e) {
-                log.debug("Error instantiating discount strategy class {}", discountStrategyClassName);
-                e.printStackTrace();
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(APP_PROPERTIES_FILE)) {
+            Properties appProperties = new Properties();
+            appProperties.load(inputStream);
+            String discountStrategyClassName = appProperties.getProperty("app.discount.strategy");
+
+            if (discountStrategyClassName != null) {
+                try {
+                    Constructor c = Class.forName(discountStrategyClassName).getConstructor(ConfigurationRepository.class);
+                    discountStrategy = (DiscountStrategy) c.newInstance(configurationRepository);
+                } catch (ClassNotFoundException | InstantiationException | InvocationTargetException
+                        | IllegalAccessException | NoSuchMethodException e) {
+                    log.error("Error instantiating discount strategy class {}", discountStrategyClassName);
+                    e.printStackTrace();
+                }
             }
-        }
-        try {
-            if (discountStrategy != null) {
-                discountStrategy.init();
-                CoffeeOrderUtil.setDiscountStrategy(discountStrategy);
-            }
-        } catch (Exception e) {
+            List<String> languages = Arrays.asList(appProperties.getProperty("i18n.supported.languages").split(","));
+            defaultLanguage = languages.get(0);
+            supportedLanguages = Collections.unmodifiableSet(new HashSet<>(languages));
+        } catch (IOException e) {
+            log.error("Error loading application properties from {}", APP_PROPERTIES_FILE);
             e.printStackTrace();
         }
+
+        if (discountStrategy == null) {
+            discountStrategy = new NoDiscountStrategy(configurationRepository);
+        }
+        discountStrategy.init();
+        CoffeeOrderUtil.setDiscountStrategy(discountStrategy);
         log.debug("Servlet initialization - end");
     }
 
@@ -94,10 +105,24 @@ public class CoffeeServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
         String action = request.getRequestURI();
         log.debug("GET request received: {}", action);
 
         HttpSession session = request.getSession(true);
+
+        String langParam = request.getParameter("lang");
+        String sessionLanguage = (String) session.getAttribute("language");
+
+        if (langParam == null && sessionLanguage == null) {
+            session.setAttribute("language", defaultLanguage);
+        } else {
+            if (supportedLanguages.contains(langParam)) {
+                session.setAttribute("language", langParam);
+            } else if (sessionLanguage == null) {
+                session.setAttribute("language", defaultLanguage);
+            }
+        }
 
         if ("/".equals(action)) {
             log.debug("Show main page");
@@ -118,14 +143,15 @@ public class CoffeeServlet extends HttpServlet {
             } else {
                 log.debug("Order is empty. Redirect to main page.");
                 session.removeAttribute("orderTo");
-                session.setAttribute("lastErrorMessage", ERROR_MESSAGE_EMPTY_ORDER);
+                session.setAttribute("lastErrorMessage", messages.getString("error.empty.order"));
             }
         } else if ("/confirmation".equals(action)) {
+            removeSessionAttributes(session);
             request.getRequestDispatcher("WEB-INF/confirmation.jsp").forward(request, response);
             log.debug("Show order confirmation page");
             return;
-        } else if ("/reset".equals(action)) {
-            session.invalidate();
+        } else if ("/cancel".equals(action)) {
+            removeSessionAttributes(session);
         }
         response.sendRedirect("/");
     }
@@ -165,14 +191,14 @@ public class CoffeeServlet extends HttpServlet {
                     return;
                 }
             }
-            session.setAttribute("lastErrorMessage", ERROR_MESSAGE_EMPTY_ORDER);
+            session.setAttribute("lastErrorMessage", messages.getString("error.empty.order"));
         } else if ("/order".equals(action)) {
             String name = request.getParameter("name");
             String address = request.getParameter("address");
             CoffeeOrderTo orderTo = (CoffeeOrderTo) session.getAttribute("orderTo");
             if (orderTo == null || orderTo.getOrderItems() == null || orderTo.getOrderItems().isEmpty()) {
                 session.removeAttribute("orderTo");
-                session.setAttribute("lastErrorMessage", ERROR_MESSAGE_EMPTY_ORDER);
+                session.setAttribute("lastErrorMessage", messages.getString("error.empty.order"));
                 response.sendRedirect("/");
                 return;
             }
@@ -183,11 +209,10 @@ public class CoffeeServlet extends HttpServlet {
                 }
                 CoffeeOrder order = new CoffeeOrder(LocalDateTime.now().withNano(0), name, address, orderItems, orderTo.getCost());
                 coffeeOrderRepository.save(order);
-                session.invalidate();
                 response.sendRedirect("/confirmation");
                 return;
             } else {
-                session.setAttribute("lastErrorMessage", ERROR_MESSAGE_EMPTY_ADDRESS);
+                session.setAttribute("lastErrorMessage", messages.getString("error.empty.address"));
                 response.sendRedirect("/order");
                 return;
             }

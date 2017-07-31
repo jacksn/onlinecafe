@@ -1,9 +1,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<jsp:include page="fragments/lang.jsp"/>
 <html>
 <head>
-    <title>Online cafe - Order details</title>
+    <title><fmt:message key="label.site.name"/> - <fmt:message key="page.order.details"/></title>
     <jsp:include page="fragments/headTag.jsp"/>
 </head>
 <body>
@@ -21,15 +23,19 @@
                       onsubmit="return validate()">
                     <div class="row">
                         <div class="form-group">
-                            <label for="name" class="col-md-3 control-label">Name</label>
+                            <label for="name" class="col-md-3 control-label"><fmt:message key="label.name"/></label>
                             <div class="col-md-8">
-                                <input class="form-control" id="name" name="name" placeholder="Name" type="text">
+                                <input class="form-control" id="name" name="name"
+                                       placeholder="<fmt:message key="label.name"/>" type="text">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="address" class="col-md-3 control-label">Delivery address</label>
+                            <label for="address" class="col-md-3 control-label">
+                                <fmt:message key="label.delivery.address"/>
+                            </label>
                             <div class="col-md-8">
-                                <input class="form-control" id="address" name="address" placeholder="Delivery address"
+                                <input class="form-control" id="address" name="address"
+                                       placeholder="<fmt:message key="label.delivery.address"/>"
                                        type="text" oninput="removeErrorHighlight(this)"
                                        oninvalid="addErrorHighlight(this)">
                             </div>
@@ -40,10 +46,10 @@
                         <table class="table">
                             <thead>
                             <tr>
-                                <th>Coffee type</th>
-                                <th width="15%" class="text-center">Quantity</th>
-                                <th width="15%" class="text-center">Price</th>
-                                <th width="15%" class="text-center">Cost</th>
+                                <th><fmt:message key="label.coffee.type"/></th>
+                                <th width="15%" class="text-center"><fmt:message key="label.quantity"/></th>
+                                <th width="15%" class="text-center"><fmt:message key="label.price"/></th>
+                                <th width="15%" class="text-center"><fmt:message key="label.cost"/></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -74,7 +80,8 @@
                                 </tr>
                             </c:forEach>
                             <tr>
-                                <td colspan="3" class="text-right"><strong>Subtotal cost:</strong></td>
+                                <td colspan="3" class="text-right"><strong><fmt:message key="label.subtotal"/>:</strong>
+                                </td>
                                 <td class="text-right">
                                     <%--@elvariable id="orderTotalCost" type="double"--%>
                                     <fmt:formatNumber type="currency" currencySymbol="TGR"
@@ -85,7 +92,8 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="3" class="text-right"><strong>Delivery cost:</strong></td>
+                                <td colspan="3" class="text-right"><strong><fmt:message
+                                        key="label.delivery.cost"/>:</strong></td>
                                 <td class="text-right <c:if test="${orderTo.deliveryCost==0}">text-danger</c:if>">
                                     <%--@elvariable id="orderDeliveryCost" type="double"--%>
                                     <fmt:formatNumber type="currency" currencySymbol="TGR"
@@ -96,7 +104,8 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="3" class="text-right"><strong>Order total cost:</strong></td>
+                                <td colspan="3" class="text-right"><strong><fmt:message
+                                        key="label.total.cost"/>:</strong></td>
                                 <td class="text-right">
                                     <%--@elvariable id="orderTotalCost" type="double"--%>
                                     <fmt:formatNumber type="currency" currencySymbol="TGR"
@@ -109,9 +118,10 @@
                             </tbody>
                         </table>
                         <div class="row text-right">
-                            <button class="btn btn-primary btn-md" type="submit">Order</button>
-                            <a class="btn btn-danger btn-md"
-                               href="${pageContext.request.contextPath}/reset">Cancel</a>
+                            <button class="btn btn-primary btn-md" type="submit">
+                                <fmt:message key="button.order"/>
+                            </button>
+                            <a class="btn btn-danger btn-md" href="cancel"><fmt:message key="button.cancel"/></a>
                         </div>
 
                     </div>
@@ -126,7 +136,7 @@
     function validate() {
         var address = $('[id=address]');
         if (!address.val()) {
-            showErrorMessage('Address must not be empty. Please enter address and try again.');
+            showErrorMessage('<fmt:message key="error.empty.address"/>');
             addErrorHighlight(address);
             address.focus();
             return false;

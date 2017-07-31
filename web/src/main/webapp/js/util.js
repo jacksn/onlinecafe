@@ -20,3 +20,7 @@ function showErrorMessage(message) {
         }
     );
 }
+
+function setLanguage(language) {
+    window.location.replace('?lang=' + language);
+}

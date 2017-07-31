@@ -1,9 +1,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<jsp:include page="fragments/lang.jsp"/>
+
 <html>
 <head>
-    <title>Online cafe</title>
+    <title><fmt:message key="label.site.name"/></title>
     <jsp:include page="fragments/headTag.jsp"/>
 </head>
 <body>
@@ -23,9 +26,9 @@
                         <thead>
                         <tr>
                             <th></th>
-                            <th>Coffee type</th>
-                            <th class="text-center">Price</th>
-                            <th class="text-center">Quantity</th>
+                            <th><fmt:message key="label.coffee.type"/></th>
+                            <th class="text-center"><fmt:message key="label.price"/></th>
+                            <th class="text-center"><fmt:message key="label.quantity"/></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -59,8 +62,10 @@
                         </tbody>
                     </table>
                     <div class="row text-right">
-                        <button class="btn btn-primary btn-md" type="submit">Order</button>
-                        <button class="btn btn-danger btn-md" type="reset">Reset</button>
+                        <button class="btn btn-primary btn-md" type="submit"><fmt:message key="button.order"/></button>
+                        <button class="btn btn-danger btn-md" type="reset" onclick="resetForm()">
+                            <fmt:message key="button.reset"/>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -93,15 +98,23 @@
                 if (isNaN(quantity) || quantity === 0) {
                     addErrorHighlight(quantityField);
                     quantityField.focus();
-                    showErrorMessage('Please enter correct quantity and try again.');
+                    showErrorMessage('<fmt:message key="error.invalid.quantity"/>');
                     return false;
                 }
                 totalOrderQuantity += quantity;
             }
         }
         if (totalOrderQuantity === 0) {
-            showErrorMessage('Your order is empty. Please select coffee, enter quantity and try again.');
+            showErrorMessage('<fmt:message key="error.empty.order"/>');
             return false;
+        }
+    }
+
+    function resetForm() {
+        var rows = $('[id^=coffeerow_]');
+        for (var i = 0; i < rows.length; i++) {
+            $(rows[i]).find('[id^=id_]').prop('disabled', true);
+            removeErrorHighlight($(rows[i]).find('[id^=quantity_]').prop('disabled', true));
         }
     }
 </script>
