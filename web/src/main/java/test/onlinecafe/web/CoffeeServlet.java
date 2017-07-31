@@ -20,11 +20,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -39,7 +39,7 @@ public class CoffeeServlet extends HttpServlet {
     private static Set<String> supportedLanguages;
     private static String defaultLanguage;
 
-    private ResourceBundle messages;
+    private static ResourceBundle messages;
 
     private CoffeeTypeRepository coffeeTypeRepository;
     private CoffeeOrderRepository coffeeOrderRepository;
@@ -54,14 +54,15 @@ public class CoffeeServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
+
         log.debug("Servlet initialization - start");
         messages = ResourceBundle.getBundle("messages");
 
-        Connection connection = DbUtil.getConnection();
+        DataSource dataSource = DbUtil.getDataSource();
 
-        coffeeTypeRepository = new JdbcCoffeeTypeRepository(connection);
-        coffeeOrderRepository = new JdbcCoffeeOrderRepository(connection);
-        ConfigurationRepository configurationRepository = new JdbcConfigurationRepository(connection);
+        coffeeTypeRepository = new JdbcCoffeeTypeRepository(dataSource);
+        coffeeOrderRepository = new JdbcCoffeeOrderRepository(dataSource);
+        ConfigurationRepository configurationRepository = new JdbcConfigurationRepository(dataSource);
 
         DiscountStrategy discountStrategy = null;
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(APP_PROPERTIES_FILE)) {

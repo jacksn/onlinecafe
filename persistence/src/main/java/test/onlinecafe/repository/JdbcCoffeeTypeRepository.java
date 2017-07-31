@@ -2,6 +2,7 @@ package test.onlinecafe.repository;
 
 import test.onlinecafe.model.CoffeeType;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,16 +14,32 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
     private static final String UPDATE_QUERY = "UPDATE CoffeeType SET type_name = ?, price = ?, disabled = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM CoffeeType WHERE id=?";
 
-    private Connection connection;
+    private DataSource dataSource;
 
-    public JdbcCoffeeTypeRepository(Connection connection) {
-        this.connection = connection;
+    public JdbcCoffeeTypeRepository(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    private static void fillStatementParameters(CoffeeType type, PreparedStatement statement) throws SQLException {
+        statement.setString(1, type.getTypeName());
+        statement.setDouble(2, type.getPrice());
+        statement.setString(3, type.getDisabled() ? "Y" : "N");
+    }
+
+    private static CoffeeType getCoffeeType(ResultSet resultSet) throws SQLException {
+        CoffeeType type = new CoffeeType();
+        type.setId(resultSet.getInt("id"));
+        type.setTypeName(resultSet.getString("type_name"));
+        type.setPrice(resultSet.getDouble("price"));
+        type.setDisabled("Y".equals(resultSet.getString("disabled")));
+        return type;
     }
 
     @Override
     public CoffeeType save(CoffeeType type) {
+
         if (type.isNew()) {
-            try (PreparedStatement statement = connection.prepareStatement(INSERT_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement statement = dataSource.getConnection().prepareStatement(INSERT_QUERY, Statement.RETURN_GENERATED_KEYS)) {
                 fillStatementParameters(type, statement);
                 int affectedRows = statement.executeUpdate();
                 if (affectedRows == 0) {
@@ -40,7 +57,7 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
                 return null;
             }
         } else {
-            try (PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY)) {
+            try (PreparedStatement statement = dataSource.getConnection().prepareStatement(UPDATE_QUERY)) {
                 fillStatementParameters(type, statement);
                 statement.setInt(4, type.getId());
                 int affectedRows = statement.executeUpdate();
@@ -55,15 +72,9 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
         return type;
     }
 
-    private static void fillStatementParameters(CoffeeType type, PreparedStatement statement) throws SQLException {
-        statement.setString(1, type.getTypeName());
-        statement.setDouble(2, type.getPrice());
-        statement.setString(3, type.getDisabled() ? "Y" : "N");
-    }
-
     @Override
     public void delete(int id) {
-        try (PreparedStatement statement = connection.prepareStatement(DELETE_QUERY)) {
+        try (PreparedStatement statement = dataSource.getConnection().prepareStatement(DELETE_QUERY)) {
             statement.setInt(1, id);
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0) {
@@ -76,7 +87,7 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
 
     @Override
     public CoffeeType get(int id) {
-        try (PreparedStatement statement = connection.prepareStatement(SELECT_QUERY)) {
+        try (PreparedStatement statement = dataSource.getConnection().prepareStatement(SELECT_QUERY)) {
             statement.setInt(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
@@ -93,7 +104,8 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
 
     @Override
     public List<CoffeeType> getAll() {
-        try (Statement statement = connection.createStatement()) {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
             try (ResultSet resultSet = statement.executeQuery(SELECT_ALL_QUERY)) {
                 ArrayList<CoffeeType> types = new ArrayList<>();
                 while (resultSet.next()) {
@@ -107,14 +119,5 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
             e.printStackTrace();
         }
         return null;
-    }
-
-    private static CoffeeType getCoffeeType(ResultSet resultSet) throws SQLException {
-        CoffeeType type = new CoffeeType();
-        type.setId(resultSet.getInt("id"));
-        type.setTypeName(resultSet.getString("type_name"));
-        type.setPrice(resultSet.getDouble("price"));
-        type.setDisabled("Y".equals(resultSet.getString("disabled")));
-        return type;
     }
 }

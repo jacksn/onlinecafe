@@ -1,5 +1,7 @@
 package test.onlinecafe.util;
 
+import org.apache.tomcat.jdbc.pool.DataSource;
+import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.slf4j.Logger;
 
 import java.io.BufferedReader;
@@ -8,7 +10,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
@@ -18,18 +19,20 @@ import static org.slf4j.LoggerFactory.getLogger;
 public final class DbUtil {
     private static final Logger log = getLogger(DbUtil.class);
 
-    private static final String DB_CONFIG_SYSTEM_PROPERTY_NAME = "dbconfig.path";
+    public static final String DB_CONFIG_SYSTEM_PROPERTY_NAME = "dbconfig.path";
     private static final String DB_DEFAULT_CONFIG_LOCATION = "db/db.properties";
     private static String schemaFile = "db/coffee.sql";
     private static Connection connection;
+    private static DataSource dataSource;
 
     private DbUtil() {
     }
 
-    public static Connection getConnection() {
-        if (connection != null)
-            return connection;
-        log.debug("DB connection initialization - start");
+    public static DataSource getDataSource() {
+        if (dataSource != null) {
+            return dataSource;
+        }
+        log.debug("Data source initialization - start");
         String dbConfigLocation = System.getProperty(DB_CONFIG_SYSTEM_PROPERTY_NAME);
         if (dbConfigLocation == null) {
             log.debug("System property {} not found", DB_CONFIG_SYSTEM_PROPERTY_NAME);
@@ -49,19 +52,42 @@ public final class DbUtil {
             if (schema != null) {
                 DbUtil.schemaFile = schema;
             }
+            PoolProperties poolProperties = new PoolProperties();
+            poolProperties.setUrl(properties.getProperty("db.url"));
+            poolProperties.setDriverClassName(properties.getProperty("db.driver"));
+            poolProperties.setUsername(properties.getProperty("db.user"));
+            poolProperties.setPassword(properties.getProperty("db.password"));
+            poolProperties.setJmxEnabled(true);
+            poolProperties.setTestWhileIdle(false);
+            poolProperties.setTestOnBorrow(true);
+            poolProperties.setValidationQuery("SELECT 1");
+            poolProperties.setTestOnReturn(false);
+            poolProperties.setValidationInterval(30000);
+            poolProperties.setTimeBetweenEvictionRunsMillis(30000);
+            poolProperties.setMaxActive(100);
+            poolProperties.setInitialSize(10);
+            poolProperties.setMaxWait(10000);
+            poolProperties.setRemoveAbandonedTimeout(60);
+            poolProperties.setMinEvictableIdleTimeMillis(30000);
+            poolProperties.setMinIdle(10);
+            poolProperties.setLogAbandoned(true);
+            poolProperties.setRemoveAbandoned(true);
+            poolProperties.setRollbackOnReturn(true);
+            poolProperties.setDefaultTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+            poolProperties.setJdbcInterceptors("org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;" +
+                    "org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer");
+            dataSource = new DataSource();
+            dataSource.setPoolProperties(poolProperties);
 
-            String url = properties.getProperty("db.url");
-            String user = properties.getProperty("db.user");
-            String password = properties.getProperty("db.password");
-            connection = DriverManager.getConnection(url, user, password);
-            log.debug("DB connection successfully created");
-        } catch (IOException | ClassNotFoundException | SQLException e) {
-            log.debug("Error creating connection");
+            log.debug("Data source successfully created");
+        } catch (IOException | ClassNotFoundException | RuntimeException e) {
+            log.error("Error initializing data source");
             e.printStackTrace();
         }
-        log.debug("DB connection initialization - end");
-        return connection;
+        log.debug("Data source initialization - end");
+        return dataSource;
     }
+
 
     public static void closeConnection() {
         if (connection != null) {
@@ -69,21 +95,18 @@ public final class DbUtil {
                 log.debug("Closing DB connection");
                 connection.close();
             } catch (SQLException e) {
-                log.debug("Error closing DB connection");
+                log.error("Error closing DB connection");
                 e.printStackTrace();
             }
         }
     }
 
     public static void executeSQLScriptFile(String fileName) {
-        if (connection == null) {
-            getConnection();
-        }
         log.debug("Executing SQL script file: {}", fileName);
         StringBuilder sb = new StringBuilder();
         try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName), Charset.forName("UTF-8")));
-             Statement sqlStatement = connection.createStatement()) {
+                new InputStreamReader(DbUtil.class.getClassLoader().getResourceAsStream(fileName), Charset.forName("UTF-8")));
+             Statement sqlStatement = dataSource.getConnection().createStatement()) {
             String s;
             while ((s = br.readLine()) != null) {
                 sb.append(s);
@@ -95,7 +118,7 @@ public final class DbUtil {
                 }
             }
         } catch (IOException | SQLException e) {
-            log.debug("Error executing SQL script file: {}", fileName);
+            log.error("Error executing SQL script file: {}", fileName);
             e.printStackTrace();
         }
     }
@@ -106,9 +129,6 @@ public final class DbUtil {
 
     public static void initDatabase(String dataFile, String schemaFile) {
         log.debug("Initializing database with schema {} and data {}", schemaFile, dataFile);
-        if (connection == null) {
-            getConnection();
-        }
         executeSQLScriptFile(schemaFile);
         executeSQLScriptFile(dataFile);
     }

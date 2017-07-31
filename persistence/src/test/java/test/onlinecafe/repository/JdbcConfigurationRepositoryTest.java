@@ -5,6 +5,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import test.onlinecafe.model.ConfigurationItem;
 
+import java.sql.Connection;
+
 import static org.junit.Assert.assertEquals;
 
 public class JdbcConfigurationRepositoryTest extends AbstractJdbcRepositoryTest {
@@ -12,8 +14,7 @@ public class JdbcConfigurationRepositoryTest extends AbstractJdbcRepositoryTest 
 
     @BeforeClass
     public static void init() {
-        initDatabase();
-        repository = new JdbcConfigurationRepository(connection);
+        repository = new JdbcConfigurationRepository(dataSource);
     }
 
     @Test
@@ -33,14 +34,17 @@ public class JdbcConfigurationRepositoryTest extends AbstractJdbcRepositoryTest 
 
     @Test
     public void testDelete() throws Exception {
-        connection.setAutoCommit(false);
-        repository.delete("x");
-        try {
-            Assert.assertEquals(null, repository.get("x"));
-        } finally {
-            connection.rollback();
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+            repository.delete("x");
+            try {
+                Assert.assertEquals(null, repository.get("x"));
+            } finally {
+                connection.rollback();
+            }
+            connection.setAutoCommit(true);
+            connection.close();
         }
-        connection.setAutoCommit(true);
     }
 
     @Test
