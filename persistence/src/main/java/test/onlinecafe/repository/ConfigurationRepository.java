@@ -5,7 +5,7 @@ import test.onlinecafe.model.ConfigurationItem;
 public interface ConfigurationRepository {
     ConfigurationItem save(ConfigurationItem configurationItem);
 
-    void delete(String id);
+    boolean delete(String id);
 
     ConfigurationItem get(String id);
 

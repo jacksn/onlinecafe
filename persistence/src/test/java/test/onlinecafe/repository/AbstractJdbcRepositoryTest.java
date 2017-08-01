@@ -20,7 +20,7 @@ public class AbstractJdbcRepositoryTest {
     private static final Logger log = getLogger(AbstractJdbcRepositoryTest.class);
     private static StringBuilder results = new StringBuilder();
 
-    protected static DataSource dataSource;
+    static DataSource dataSource;
 
     @Before
     public void initDatabase() {
@@ -46,11 +46,11 @@ public class AbstractJdbcRepositoryTest {
 
     @AfterClass
     public static void printResult() {
-        log.info("\n--------------------------------------------------------" +
-                "\nTest                                        Duration, ms" +
-                "\n--------------------------------------------------------\n" +
-                results +
-                "--------------------------------------------------------\n");
+        log.info("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" +
+                 "\nTest                                                                                 Duration, ms" +
+                 "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+                 results +
+                   "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
         results.setLength(0);
     }
 

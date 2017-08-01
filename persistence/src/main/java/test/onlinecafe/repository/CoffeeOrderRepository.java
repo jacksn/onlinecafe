@@ -7,7 +7,7 @@ import java.util.List;
 public interface CoffeeOrderRepository {
     CoffeeOrder save(CoffeeOrder order);
 
-    void delete(int id);
+    boolean delete(int id);
 
     CoffeeOrder get(int id);
 

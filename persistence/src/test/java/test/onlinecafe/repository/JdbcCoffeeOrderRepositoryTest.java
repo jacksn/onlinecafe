@@ -3,14 +3,12 @@ package test.onlinecafe.repository;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import test.onlinecafe.model.BaseEntity;
 import test.onlinecafe.model.CoffeeOrder;
+import test.onlinecafe.util.exception.DataAccessException;
 
-import java.sql.Connection;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
 
 import static test.onlinecafe.CoffeeOrderTestData.*;
 
@@ -24,127 +22,74 @@ public class JdbcCoffeeOrderRepositoryTest extends AbstractJdbcRepositoryTest {
 
     @Test
     public void testUpdate() throws Exception {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
-            int updatedId = COFFEE_ORDER1.getId();
-            CoffeeOrder updated = COFFEE_ORDER1;
-            updated.setName("New name");
-            updated.setDeliveryAddress("New address");
-            updated.setOrderDate(LocalDateTime.of(2017, 7, 4, 15, 0));
-            updated.setOrderItems(NEW_COFFEE_ORDER.getOrderItems());
-            repository.save(updated);
-            try {
-                Assert.assertEquals(updated, repository.get(updatedId));
-            } finally {
-                connection.rollback();
-            }
-        }
+        int updatedId = COFFEE_ORDER1.getId();
+        CoffeeOrder updated = COFFEE_ORDER1;
+        updated.setName("New name");
+        updated.setDeliveryAddress("New address");
+        updated.setOrderDate(LocalDateTime.of(2017, 7, 4, 15, 0));
+        updated.setOrderItems(NEW_COFFEE_ORDER.getOrderItems());
+        repository.save(updated);
+        Assert.assertEquals(updated, repository.get(updatedId));
     }
 
-    @Test
+    @Test(expected = DataAccessException.class)
     public void testUpdateInvalid() throws Exception {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
-            int updatedId = COFFEE_ORDER1.getId();
-            CoffeeOrder updated = repository.get(updatedId);
-            updated.setDeliveryAddress(null);
-            repository.save(updated);
-            try {
-                Assert.assertEquals(COFFEE_ORDER1, repository.get(updatedId));
-            } finally {
-                connection.rollback();
-            }
-        }
+        int updatedId = COFFEE_ORDER1.getId();
+        CoffeeOrder updated = repository.get(updatedId);
+        updated.setDeliveryAddress(null);
+        repository.save(updated);
     }
 
-    @Test
+    @Test(expected = DataAccessException.class)
     public void testUpdateAbsent() throws Exception {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
-            int updatedId = COFFEE_ORDER1.getId();
-            CoffeeOrder updated = repository.get(updatedId);
-            updated.setId(Integer.MAX_VALUE);
-            try {
-                Assert.assertEquals(null, repository.save(updated));
-            } finally {
-                connection.rollback();
-            }
-        }
+        CoffeeOrder updated = new CoffeeOrder(
+                null,
+                COFFEE_ORDER1.getName(),
+                COFFEE_ORDER1.getDeliveryAddress(),
+                new ArrayList<>(),
+                0.0
+        );
+        updated.setId(Integer.MAX_VALUE);
+        repository.save(updated);
     }
 
     @Test
     public void testCreate() throws Exception {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
-            CoffeeOrder created = NEW_COFFEE_ORDER;
-            created = repository.save(created);
-            try {
-                Assert.assertEquals(created, repository.get(created.getId()));
-            } finally {
-                connection.rollback();
-            }
-        }
+        CoffeeOrder created = NEW_COFFEE_ORDER;
+        created = repository.save(created);
+        Assert.assertEquals(created, repository.get(NEW_COFFEE_ORDER.getId()));
     }
 
-    @Test
+    @Test(expected = DataAccessException.class)
     public void testCreateInvalid() throws Exception {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
-            CoffeeOrder created = NEW_COFFEE_ORDER;
-            created.setDeliveryAddress(null);
-            try {
-                Assert.assertEquals(null, repository.save(created));
-            } finally {
-                connection.rollback();
-            }
-        }
+        CoffeeOrder created = NEW_COFFEE_ORDER;
+        created.setDeliveryAddress(null);
+        repository.save(created);
     }
 
     @Test
     public void testDelete() throws Exception {
-
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
-            repository.delete(COFFEE_ORDER2.getId());
-            List<CoffeeOrder> orders = repository.getAll();
-            orders.sort(Comparator.comparingInt(BaseEntity::getId));
-            try {
-                Assert.assertEquals(Arrays.asList(COFFEE_ORDER1, COFFEE_ORDER3), orders);
-            } finally {
-                connection.rollback();
-            }
-        }
+        repository.delete(COFFEE_ORDER2.getId());
+        Assert.assertEquals(Arrays.asList(COFFEE_ORDER1, COFFEE_ORDER3), repository.getAll());
     }
 
     @Test
     public void testDeleteAbsent() throws Exception {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
-            repository.delete(Integer.MAX_VALUE);
-            List<CoffeeOrder> orders = repository.getAll();
-            try {
-                Assert.assertEquals(COFFEE_ORDERS, orders);
-            } finally {
-                connection.rollback();
-            }
-        }
+        Assert.assertEquals(false, repository.delete(Integer.MAX_VALUE));
     }
 
     @Test
     public void testGet() throws Exception {
-        CoffeeOrder order = repository.get(COFFEE_ORDER1.getId());
-        Assert.assertEquals(COFFEE_ORDER1, order);
+        Assert.assertEquals(COFFEE_ORDER1, repository.get(COFFEE_ORDER1.getId()));
     }
 
     @Test
     public void testGetAbsent() throws Exception {
-        CoffeeOrder order = repository.get(Integer.MAX_VALUE);
-        Assert.assertEquals(null, order);
+        Assert.assertEquals(null, repository.get(Integer.MAX_VALUE));
     }
 
     @Test
     public void testGetAll() throws Exception {
-        List<CoffeeOrder> orders = repository.getAll();
-        Assert.assertEquals(COFFEE_ORDERS, orders);
+        Assert.assertEquals(COFFEE_ORDERS, repository.getAll());
     }
 }

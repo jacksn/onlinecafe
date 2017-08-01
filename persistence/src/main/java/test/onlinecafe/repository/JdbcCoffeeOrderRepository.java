@@ -1,8 +1,11 @@
 package test.onlinecafe.repository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import test.onlinecafe.model.CoffeeOrder;
 import test.onlinecafe.model.CoffeeOrderItem;
 import test.onlinecafe.model.CoffeeType;
+import test.onlinecafe.util.exception.DataAccessException;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -14,6 +17,7 @@ import java.util.Map;
 import static test.onlinecafe.repository.CoffeeOrderQueryStrings.*;
 
 public class JdbcCoffeeOrderRepository implements CoffeeOrderRepository {
+    private static final Logger log = LoggerFactory.getLogger(JdbcCoffeeOrderRepository.class);
 
     private DataSource dataSource;
 
@@ -50,47 +54,39 @@ public class JdbcCoffeeOrderRepository implements CoffeeOrderRepository {
         }
     }
 
-    private static List<CoffeeOrder> getCoffeeOrders(PreparedStatement statement) throws SQLException {
-        List<CoffeeOrder> orders = null;
-        try (ResultSet resultSet = statement.executeQuery()) {
-            Map<Integer, CoffeeOrder> ordersMap = new HashMap<>();
-            while (resultSet.next()) {
-                int coffeeOrderId = resultSet.getInt("order_id");
-                CoffeeOrder order = ordersMap.get(coffeeOrderId);
-                if (order == null) {
-                    order = new CoffeeOrder(coffeeOrderId,
-                            resultSet.getTimestamp("order_date").toLocalDateTime(),
-                            resultSet.getString("name"),
-                            resultSet.getString("delivery_address"),
-                            new ArrayList<>(),
-                            resultSet.getDouble("cost"));
-                    ordersMap.put(coffeeOrderId, order);
-                }
-                CoffeeOrderItem orderItem = new CoffeeOrderItem();
-                orderItem.setId(resultSet.getInt("order_item_id"));
-                orderItem.setCoffeeType(new CoffeeType(resultSet.getInt("type_id"),
-                        resultSet.getString("type_name"),
-                        resultSet.getDouble("price"),
-                        "Y".equals(resultSet.getString("disabled"))));
-                orderItem.setQuantity(resultSet.getInt("quantity"));
-                order.getOrderItems().add(orderItem);
+    private static List<CoffeeOrder> getCoffeeOrders(ResultSet resultSet) throws SQLException {
+        Map<Integer, CoffeeOrder> ordersMap = new HashMap<>();
+        while (resultSet.next()) {
+            int coffeeOrderId = resultSet.getInt("order_id");
+            CoffeeOrder order = ordersMap.get(coffeeOrderId);
+            if (order == null) {
+                order = new CoffeeOrder(coffeeOrderId,
+                        resultSet.getTimestamp("order_date").toLocalDateTime(),
+                        resultSet.getString("name"),
+                        resultSet.getString("delivery_address"),
+                        new ArrayList<>(),
+                        resultSet.getDouble("cost"));
+                ordersMap.put(coffeeOrderId, order);
             }
-            orders = new ArrayList<>(ordersMap.values());
+            CoffeeOrderItem orderItem = new CoffeeOrderItem();
+            orderItem.setId(resultSet.getInt("order_item_id"));
+            orderItem.setCoffeeType(new CoffeeType(resultSet.getInt("type_id"),
+                    resultSet.getString("type_name"),
+                    resultSet.getDouble("price"),
+                    "Y".equals(resultSet.getString("disabled"))));
+            orderItem.setQuantity(resultSet.getInt("quantity"));
+            order.getOrderItems().add(orderItem);
         }
-        return orders;
+        return new ArrayList<>(ordersMap.values());
     }
 
     @Override
     public CoffeeOrder save(CoffeeOrder order) {
-        boolean inTransaction = false;
         try (Connection connection = dataSource.getConnection()) {
             if (order.isNew()) {
                 try (PreparedStatement orderStatement = connection.prepareStatement(INSERT_ORDER_QUERY, Statement.RETURN_GENERATED_KEYS);
                      PreparedStatement orderItemsStatement = connection.prepareStatement(INSERT_ORDER_ITEMS_QUERY, Statement.RETURN_GENERATED_KEYS)) {
-                    inTransaction = !connection.getAutoCommit();
-                    if (!inTransaction) {
-                        connection.setAutoCommit(false);
-                    }
+                    connection.setAutoCommit(false);
                     fillStatementParameters(order, orderStatement);
                     int affectedRows = orderStatement.executeUpdate();
                     if (affectedRows == 0) {
@@ -104,25 +100,19 @@ public class JdbcCoffeeOrderRepository implements CoffeeOrderRepository {
                         }
                     }
                     saveCoffeeOrderItems(order.getId(), order.getOrderItems(), orderItemsStatement);
-                    if (!inTransaction) {
-                        connection.commit();
-                        connection.setAutoCommit(true);
-                    }
+                    connection.commit();
+                    connection.setAutoCommit(true);
                 } catch (SQLException e) {
-                    e.printStackTrace();
-                    if (!inTransaction) {
-                        closeTransaction(connection);
-                    }
-                    return null;
+                    log.warn(e.getMessage());
+                    connection.rollback();
+                    connection.setAutoCommit(true);
+                    throw new DataAccessException(e);
                 }
             } else {
                 try (PreparedStatement orderStatement = connection.prepareStatement(UPDATE_ORDER_QUERY);
                      PreparedStatement orderItemsStatement = connection.prepareStatement(INSERT_ORDER_ITEMS_QUERY, Statement.RETURN_GENERATED_KEYS);
                      PreparedStatement deleteOrderItemsStatement = connection.prepareStatement(DELETE_ORDER_ITEMS_QUERY)) {
-                    inTransaction = !connection.getAutoCommit();
-                    if (!inTransaction) {
-                        connection.setAutoCommit(false);
-                    }
+                    connection.setAutoCommit(false);
                     CoffeeOrder oldOrder = get(order.getId());
                     if (oldOrder == null) {
                         throw new SQLException("Update of CoffeeOrder failed, order not found.");
@@ -140,71 +130,61 @@ public class JdbcCoffeeOrderRepository implements CoffeeOrderRepository {
                         deleteOrderItemsStatement.execute();
                         saveCoffeeOrderItems(orderId, order.getOrderItems(), orderItemsStatement);
                     }
-                    if (!inTransaction) {
-                        connection.commit();
-                        connection.setAutoCommit(true);
-                    }
+                    connection.commit();
+                    connection.setAutoCommit(true);
                 } catch (SQLException e) {
-                    e.printStackTrace();
-                    if (!inTransaction) {
-                        closeTransaction(connection);
-                    }
-                    return null;
+                    log.warn(e.getMessage());
+                    connection.rollback();
+                    connection.setAutoCommit(true);
+                    throw new DataAccessException(e);
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.warn(e.getMessage());
+            throw new DataAccessException(e);
         }
         return order;
     }
 
-    private void closeTransaction(Connection connection) {
-        try {
-            connection.rollback();
-            connection.setAutoCommit(true);
-        } catch (SQLException conEx) {
-            conEx.printStackTrace();
-        }
-    }
-
+    @SuppressWarnings("Duplicates")
     @Override
-    public void delete(int id) {
-        try (PreparedStatement statement = dataSource.getConnection().prepareStatement(DELETE_ORDER_QUERY)) {
+    public boolean delete(int id) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(DELETE_ORDER_QUERY)) {
             statement.setInt(1, id);
-            int affectedRows = statement.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("Deletion of CoffeeOrder failed, no rows affected.");
-            }
+            return statement.executeUpdate() != 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.warn(e.getMessage());
+            throw new DataAccessException(e);
         }
     }
 
     @Override
     public CoffeeOrder get(int id) {
-        try (PreparedStatement statement = dataSource.getConnection().prepareStatement(SELECT_QUERY)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SELECT_QUERY)) {
             statement.setInt(1, id);
-            List<CoffeeOrder> orders = getCoffeeOrders(statement);
-            if (!orders.isEmpty()) {
-                return orders.get(0);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                List<CoffeeOrder> orders = getCoffeeOrders(resultSet);
+                return orders.isEmpty() ? null : orders.get(0);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.warn(e.getMessage());
+            throw new DataAccessException(e);
         }
-        return null;
     }
 
     @Override
     public List<CoffeeOrder> getAll() {
-        try (PreparedStatement statement = dataSource.getConnection().prepareStatement(SELECT_ALL_QUERY)) {
-            List<CoffeeOrder> orders = getCoffeeOrders(statement);
-            if (!orders.isEmpty()) {
-                return orders;
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SELECT_ALL_QUERY)) {
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return getCoffeeOrders(resultSet);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.warn(e.getMessage());
+            throw new DataAccessException(e);
         }
-        return null;
     }
 
 }

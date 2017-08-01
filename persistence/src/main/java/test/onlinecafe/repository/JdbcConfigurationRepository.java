@@ -1,6 +1,9 @@
 package test.onlinecafe.repository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import test.onlinecafe.model.ConfigurationItem;
+import test.onlinecafe.util.exception.DataAccessException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -12,6 +15,8 @@ public class JdbcConfigurationRepository implements ConfigurationRepository {
     private static final String SELECT_QUERY = "SELECT * FROM Configuration WHERE id = ?";
     private static final String INSERT_QUERY = "INSERT INTO Configuration (id, value) VALUES (?, ?)";
     private static final String DELETE_QUERY = "DELETE FROM Configuration WHERE id=?";
+
+    private static final Logger log = LoggerFactory.getLogger(JdbcConfigurationRepository.class);
 
     private DataSource dataSource;
 
@@ -34,38 +39,35 @@ public class JdbcConfigurationRepository implements ConfigurationRepository {
                 throw new SQLException("Creation/update of configuration item failed, no rows affected.");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.warn(e.getMessage());
+            throw new DataAccessException(e);
         }
         return null;
     }
 
     @Override
-    public void delete(String id) {
-        try (PreparedStatement statement = dataSource.getConnection().prepareStatement(DELETE_QUERY)) {
+    public boolean delete(String id) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(DELETE_QUERY)) {
             statement.setString(1, id);
-            int affectedRows = statement.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("Deletion of configuration item failed, no rows affected.");
-            }
+            return statement.executeUpdate() != 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.warn(e.getMessage());
+            throw new DataAccessException(e);
         }
     }
 
     @Override
     public ConfigurationItem get(String id) {
-        try (PreparedStatement statement = dataSource.getConnection().prepareStatement(SELECT_QUERY)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SELECT_QUERY)) {
             statement.setString(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    return new ConfigurationItem(id, resultSet.getString("value"));
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+                return resultSet.next() ? new ConfigurationItem(id, resultSet.getString("value")) : null;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.warn(e.getMessage());
+            throw new DataAccessException(e);
         }
-        return null;
     }
 }

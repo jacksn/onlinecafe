@@ -1,6 +1,9 @@
 package test.onlinecafe.repository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import test.onlinecafe.model.CoffeeType;
+import test.onlinecafe.util.exception.DataAccessException;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -13,6 +16,8 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
     private static final String INSERT_QUERY = "INSERT INTO CoffeeType (id, type_name, price, disabled) VALUES (NULL, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE CoffeeType SET type_name = ?, price = ?, disabled = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM CoffeeType WHERE id=?";
+
+    private static final Logger log = LoggerFactory.getLogger(JdbcCoffeeTypeRepository.class);
 
     private DataSource dataSource;
 
@@ -37,9 +42,9 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
 
     @Override
     public CoffeeType save(CoffeeType type) {
-
         if (type.isNew()) {
-            try (PreparedStatement statement = dataSource.getConnection().prepareStatement(INSERT_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+            try (Connection connection = dataSource.getConnection();
+                 PreparedStatement statement = connection.prepareStatement(INSERT_QUERY, Statement.RETURN_GENERATED_KEYS)) {
                 fillStatementParameters(type, statement);
                 int affectedRows = statement.executeUpdate();
                 if (affectedRows == 0) {
@@ -53,11 +58,12 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
                     }
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
-                return null;
+                log.warn(e.getMessage());
+                throw new DataAccessException(e);
             }
         } else {
-            try (PreparedStatement statement = dataSource.getConnection().prepareStatement(UPDATE_QUERY)) {
+            try (Connection connection = dataSource.getConnection();
+                 PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY)) {
                 fillStatementParameters(type, statement);
                 statement.setInt(4, type.getId());
                 int affectedRows = statement.executeUpdate();
@@ -65,59 +71,52 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
                     throw new SQLException("Update of CoffeeType failed, no rows affected.");
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
-                return null;
+                log.warn(e.getMessage());
+                throw new DataAccessException(e);
             }
         }
         return type;
     }
 
+    @SuppressWarnings("Duplicates")
     @Override
-    public void delete(int id) {
-        try (PreparedStatement statement = dataSource.getConnection().prepareStatement(DELETE_QUERY)) {
+    public boolean delete(int id) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(DELETE_QUERY)) {
             statement.setInt(1, id);
-            int affectedRows = statement.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("Deletion of CoffeeType failed, no rows affected.");
-            }
+            return statement.executeUpdate() != 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.warn(e.getMessage());
+            throw new DataAccessException(e);
         }
     }
 
     @Override
     public CoffeeType get(int id) {
-        try (PreparedStatement statement = dataSource.getConnection().prepareStatement(SELECT_QUERY)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SELECT_QUERY)) {
             statement.setInt(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    return getCoffeeType(resultSet);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+                return resultSet.next() ? getCoffeeType(resultSet) : null;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.warn(e.getMessage());
+            throw new DataAccessException(e);
         }
-        return null;
     }
 
     @Override
     public List<CoffeeType> getAll() {
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            try (ResultSet resultSet = statement.executeQuery(SELECT_ALL_QUERY)) {
-                ArrayList<CoffeeType> types = new ArrayList<>();
-                while (resultSet.next()) {
-                    types.add(getCoffeeType(resultSet));
-                }
-                return types;
-            } catch (SQLException e) {
-                e.printStackTrace();
+             ResultSet resultSet = connection.createStatement().executeQuery(SELECT_ALL_QUERY)) {
+            ArrayList<CoffeeType> types = new ArrayList<>();
+            while (resultSet.next()) {
+                types.add(getCoffeeType(resultSet));
             }
+            return types;
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.warn(e.getMessage());
+            throw new DataAccessException(e);
         }
-        return null;
     }
 }
