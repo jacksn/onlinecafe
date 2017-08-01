@@ -7,6 +7,7 @@ import test.onlinecafe.model.ConfigurationItem;
 import test.onlinecafe.util.exception.DataAccessException;
 
 import static org.junit.Assert.assertEquals;
+import static test.onlinecafe.ConfigurationTestData.*;
 
 public class JdbcConfigurationRepositoryTest extends AbstractJdbcRepositoryTest {
     private static ConfigurationRepository repository;
@@ -31,15 +32,14 @@ public class JdbcConfigurationRepositoryTest extends AbstractJdbcRepositoryTest 
 
     @Test
     public void testDelete() throws Exception {
-            repository.delete("x");
-                Assert.assertEquals(null, repository.get("x"));
+        repository.delete(CONFIGURATION_ITEM1.getId());
+        Assert.assertEquals(null, repository.get(CONFIGURATION_ITEM1.getId()));
     }
 
     @Test
     public void testGet() throws Exception {
-        ConfigurationItem expected = new ConfigurationItem("x", "10");
-        ConfigurationItem actual = repository.get("x");
-        assertEquals(expected, actual);
+        ConfigurationItem actual = repository.get(CONFIGURATION_ITEM1.getId());
+        assertEquals(CONFIGURATION_ITEM1, actual);
     }
 
 }
