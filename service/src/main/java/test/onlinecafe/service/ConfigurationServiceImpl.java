@@ -5,7 +5,7 @@ import test.onlinecafe.repository.ConfigurationRepository;
 
 import java.util.Objects;
 
-import static test.onlinecafe.util.ValidationUtil.checkEntityNotNull;
+import static test.onlinecafe.util.ValidationUtil.requireNotNullEntity;
 import static test.onlinecafe.util.ValidationUtil.checkEntityPresence;
 import static test.onlinecafe.util.ValidationUtil.checkPresence;
 
@@ -16,22 +16,24 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         this.repository = repository;
     }
 
-    private static String requireIdNotNull(String id) {
+    private static String requireNotNullId(String id) {
         return Objects.requireNonNull(id, "Id must not be null");
     }
 
     @Override
     public ConfigurationItem save(ConfigurationItem configurationItem) {
-        return repository.save(checkEntityNotNull(configurationItem));
+        requireNotNullEntity(configurationItem);
+        return repository.save(configurationItem);
     }
 
     @Override
     public void delete(String id) {
-        checkPresence(id, repository.delete(requireIdNotNull(id)));
+        requireNotNullId(id);
+        checkPresence(id, repository.delete(id));
     }
 
     @Override
     public ConfigurationItem get(String id) {
-        return checkEntityPresence(id, repository.get(requireIdNotNull(id)));
+        return checkEntityPresence(id, repository.get(requireNotNullId(id)));
     }
 }

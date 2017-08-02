@@ -18,12 +18,16 @@ public class CoffeeTypeServiceImpl implements CoffeeTypeService {
 
     @Override
     public CoffeeType save(CoffeeType type) {
-        return repository.save(checkEntityNotNull(type));
+        requireNotNullEntity(type);
+        requireNullId(type);
+        return repository.save(type);
     }
 
     @Override
     public CoffeeType update(CoffeeType type) throws NotFoundException {
-        return checkEntityPresence(type.getId(), repository.save(checkEntityNotNull(type)));
+        requireNotNullEntity(type);
+        requireNotNullId(type);
+        return checkEntityPresence(type.getId(), repository.save(type));
     }
 
     @Override
