@@ -1,14 +1,14 @@
 package test.onlinecafe.util;
 
+import test.onlinecafe.dto.CoffeeOrderItemDto;
 import test.onlinecafe.model.CoffeeOrderItem;
-import test.onlinecafe.to.CoffeeOrderItemTo;
 
 public final class CoffeeOrderItemUtil {
 
     private CoffeeOrderItemUtil() {
     }
 
-    public static CoffeeOrderItem getOrderItemFromTo(CoffeeOrderItemTo orderItemTo) {
+    public static CoffeeOrderItem getOrderItemFromDto(CoffeeOrderItemDto orderItemTo) {
         return new CoffeeOrderItem(orderItemTo.getId(),
                 orderItemTo.getCoffeeType(),
                 orderItemTo.getQuantity()

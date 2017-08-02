@@ -1,24 +1,24 @@
-package test.onlinecafe.to;
+package test.onlinecafe.dto;
 
 import java.util.List;
 
-public class CoffeeOrderTo {
+public class CoffeeOrderDto {
     private Integer id;
     private String name;
     private String deliveryAddress;
-    private List<CoffeeOrderItemTo> orderItems;
+    private List<CoffeeOrderItemDto> orderItems;
     private double deliveryCost;
     private double cost;
 
-    public CoffeeOrderTo(List<CoffeeOrderItemTo> orderItems, double deliveryCost, double cost) {
+    public CoffeeOrderDto(List<CoffeeOrderItemDto> orderItems, double deliveryCost, double cost) {
         this(null, null, null, orderItems, deliveryCost, cost);
     }
 
-    public CoffeeOrderTo(String name, String deliveryAddress, List<CoffeeOrderItemTo> orderItems, double deliveryCost, double cost) {
+    public CoffeeOrderDto(String name, String deliveryAddress, List<CoffeeOrderItemDto> orderItems, double deliveryCost, double cost) {
         this(null, name, deliveryAddress, orderItems, deliveryCost, cost);
     }
 
-    public CoffeeOrderTo(Integer id, String name, String deliveryAddress, List<CoffeeOrderItemTo> orderItems, double deliveryCost, double cost) {
+    public CoffeeOrderDto(Integer id, String name, String deliveryAddress, List<CoffeeOrderItemDto> orderItems, double deliveryCost, double cost) {
         this.id = id;
         this.name = name;
         this.deliveryAddress = deliveryAddress;
@@ -47,15 +47,11 @@ public class CoffeeOrderTo {
         return deliveryAddress;
     }
 
-    public void setDeliveryAddress(String deliveryAddress) {
-        this.deliveryAddress = deliveryAddress;
-    }
-
-    public List<CoffeeOrderItemTo> getOrderItems() {
+    public List<CoffeeOrderItemDto> getOrderItems() {
         return orderItems;
     }
 
-    public void setOrderItems(List<CoffeeOrderItemTo> orderItems) {
+    public void setOrderItems(List<CoffeeOrderItemDto> orderItems) {
         this.orderItems = orderItems;
     }
 
@@ -80,7 +76,7 @@ public class CoffeeOrderTo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        CoffeeOrderTo that = (CoffeeOrderTo) o;
+        CoffeeOrderDto that = (CoffeeOrderDto) o;
 
         if (Double.compare(that.deliveryCost, deliveryCost) != 0) return false;
         if (Double.compare(that.cost, cost) != 0) return false;
@@ -108,7 +104,7 @@ public class CoffeeOrderTo {
 
     @Override
     public String toString() {
-        return "CoffeeOrderTo{" +
+        return "CoffeeOrderDto{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", deliveryAddress='" + deliveryAddress + '\'' +

@@ -1,19 +1,19 @@
-package test.onlinecafe.to;
+package test.onlinecafe.dto;
 
 import test.onlinecafe.model.CoffeeType;
 
-public class CoffeeOrderItemTo {
+public class CoffeeOrderItemDto {
     private Integer id;
     private CoffeeType coffeeType;
     private Integer quantity;
     private double cost;
     private boolean discounted;
 
-    public CoffeeOrderItemTo(CoffeeType type, Integer quantity, double cost, boolean discounted) {
+    public CoffeeOrderItemDto(CoffeeType type, Integer quantity, double cost, boolean discounted) {
         this(null, type, quantity, cost, discounted);
     }
 
-    public CoffeeOrderItemTo(Integer id, CoffeeType coffeeType, Integer quantity, double cost, boolean discounted) {
+    public CoffeeOrderItemDto(Integer id, CoffeeType coffeeType, Integer quantity, double cost, boolean discounted) {
         this.id = id;
         this.coffeeType = coffeeType;
         this.quantity = quantity;
@@ -66,7 +66,7 @@ public class CoffeeOrderItemTo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        CoffeeOrderItemTo that = (CoffeeOrderItemTo) o;
+        CoffeeOrderItemDto that = (CoffeeOrderItemDto) o;
 
         if (Double.compare(that.cost, cost) != 0) return false;
         if (discounted != that.discounted) return false;
@@ -90,7 +90,7 @@ public class CoffeeOrderItemTo {
 
     @Override
     public String toString() {
-        return "CoffeeOrderItemTo{" +
+        return "CoffeeOrderItemDto{" +
                 "id=" + id +
                 ", coffeeType=" + coffeeType +
                 ", quantity=" + quantity +
