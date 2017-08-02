@@ -30,12 +30,31 @@ import java.util.*;
 
 import static org.slf4j.LoggerFactory.getLogger;
 import static test.onlinecafe.util.CoffeeOrderItemUtil.getOrderItemFromDto;
+import static test.onlinecafe.web.CoffeeServlet.*;
 
-@WebServlet({"/", "/order", "/confirmation", "/cancel"})
+@WebServlet({PATH_ROOT, PATH_ORDER, PATH_CONFIRMATION, PATH_CANCEL})
 public class CoffeeServlet extends HttpServlet {
-    private static final Logger log = getLogger(CoffeeServlet.class);
 
     private static final String APP_PROPERTIES_FILE = "app.properties";
+    
+    static final String JSP_ROOT = "WEB-INF/";
+    static final String PAGE_COFFEE_TYPES_LIST = JSP_ROOT + "index.jsp";
+    static final String PAGE_ORDER_DETAILS = JSP_ROOT + "order.jsp";
+    static final String PAGE_ORDER_CONFIRMATION = JSP_ROOT + "confirmation.jsp";
+    
+    static final String PATH_ROOT = "/";
+    static final String PATH_ORDER = "/order";
+    static final String PATH_CONFIRMATION = "/confirmation";
+    static final String PATH_CANCEL = "/cancel";
+    
+    private static final String MODEL_ATTR_LANGUAGE = "language";
+    private static final String MODEL_ATTR_ORDER = "orderDto";
+    private static final String MODEL_ATTR_ORDER_NAME = "name";
+    private static final String MODEL_ATTR_ORDER_ADDRESS = "address";
+    private static final String MODEL_ATTR_COFFEE_TYPES = "coffeeTypes";
+    private static final String MODEL_ATTR_ERROR_MESSAGE = "lastErrorMessage";
+
+    private static final Logger log = getLogger(CoffeeServlet.class);
     private static Set<String> supportedLanguages;
     private static String defaultLanguage;
 
@@ -45,10 +64,10 @@ public class CoffeeServlet extends HttpServlet {
     private CoffeeOrderRepository coffeeOrderRepository;
 
     private static void removeSessionAttributes(HttpSession session) {
-        session.removeAttribute("lastErrorMessage");
-        session.removeAttribute("orderDto");
-        session.removeAttribute("name");
-        session.removeAttribute("address");
+        session.removeAttribute(MODEL_ATTR_ERROR_MESSAGE);
+        session.removeAttribute(MODEL_ATTR_ORDER);
+        session.removeAttribute(MODEL_ATTR_ORDER_NAME);
+        session.removeAttribute(MODEL_ATTR_ORDER_ADDRESS);
     }
 
     @Override
@@ -113,48 +132,48 @@ public class CoffeeServlet extends HttpServlet {
         HttpSession session = request.getSession(true);
 
         String langParam = request.getParameter("lang");
-        String sessionLanguage = (String) session.getAttribute("language");
+        String sessionLanguage = (String) session.getAttribute(MODEL_ATTR_LANGUAGE);
 
         if (langParam == null && sessionLanguage == null) {
-            session.setAttribute("language", defaultLanguage);
+            session.setAttribute(MODEL_ATTR_LANGUAGE, defaultLanguage);
         } else {
             if (supportedLanguages.contains(langParam)) {
-                session.setAttribute("language", langParam);
+                session.setAttribute(MODEL_ATTR_LANGUAGE, langParam);
             } else if (sessionLanguage == null) {
-                session.setAttribute("language", defaultLanguage);
+                session.setAttribute(MODEL_ATTR_LANGUAGE, defaultLanguage);
             }
         }
 
-        if ("/".equals(action)) {
+        if (PATH_ROOT.equals(action)) {
             log.debug("Show main page");
-            String lastErrorMessage = (String) session.getAttribute("lastErrorMessage");
+            String lastErrorMessage = (String) session.getAttribute(MODEL_ATTR_ERROR_MESSAGE);
             if (lastErrorMessage != null) {
-                session.removeAttribute("lastErrorMessage");
+                session.removeAttribute(MODEL_ATTR_ERROR_MESSAGE);
             }
-            request.setAttribute("lastErrorMessage", lastErrorMessage);
-            request.setAttribute("coffeeTypes", CoffeeTypeUtil.filterEnabled(coffeeTypeRepository.getAll()));
-            request.getRequestDispatcher("WEB-INF/index.jsp").forward(request, response);
+            request.setAttribute(MODEL_ATTR_ERROR_MESSAGE, lastErrorMessage);
+            request.setAttribute(MODEL_ATTR_COFFEE_TYPES, CoffeeTypeUtil.filterEnabled(coffeeTypeRepository.getAll()));
+            request.getRequestDispatcher(PAGE_COFFEE_TYPES_LIST).forward(request, response);
             return;
-        } else if ("/order".equals(action)) {
-            CoffeeOrderDto orderDto = (CoffeeOrderDto) session.getAttribute("orderDto");
+        } else if (PATH_ORDER.equals(action)) {
+            CoffeeOrderDto orderDto = (CoffeeOrderDto) session.getAttribute(MODEL_ATTR_ORDER);
             if (orderDto != null && orderDto.getOrderItems() != null && !orderDto.getOrderItems().isEmpty()) {
-                request.getRequestDispatcher("WEB-INF/order.jsp").forward(request, response);
+                request.getRequestDispatcher(PAGE_ORDER_DETAILS).forward(request, response);
                 log.debug("Show order details page");
                 return;
             } else {
                 log.debug("Order is empty. Redirect to main page.");
-                session.removeAttribute("orderDto");
-                session.setAttribute("lastErrorMessage", messages.getString("error.empty.order"));
+                session.removeAttribute(MODEL_ATTR_ORDER);
+                session.setAttribute(MODEL_ATTR_ERROR_MESSAGE, messages.getString("error.empty.order"));
             }
-        } else if ("/confirmation".equals(action)) {
+        } else if (PATH_CONFIRMATION.equals(action)) {
             removeSessionAttributes(session);
-            request.getRequestDispatcher("WEB-INF/confirmation.jsp").forward(request, response);
+            request.getRequestDispatcher(PAGE_ORDER_CONFIRMATION).forward(request, response);
             log.debug("Show order confirmation page");
             return;
-        } else if ("/cancel".equals(action)) {
+        } else if (PATH_CANCEL.equals(action)) {
             removeSessionAttributes(session);
         }
-        response.sendRedirect("/");
+        response.sendRedirect(PATH_ROOT);
     }
 
     @Override
@@ -163,7 +182,7 @@ public class CoffeeServlet extends HttpServlet {
         log.debug("POST request received: {}", action);
         HttpSession session = request.getSession(true);
 
-        if ("/".equals(action)) {
+        if (PATH_ROOT.equals(action)) {
             String[] typeIds = request.getParameterValues("id[]");
             String[] typeQuantities = request.getParameterValues("quantity[]");
             if (typeIds != null && typeQuantities != null && typeIds.length == typeQuantities.length) {
@@ -187,20 +206,20 @@ public class CoffeeServlet extends HttpServlet {
                 orderTotalCost += deliveryCost;
                 if (!orderItemDtoList.isEmpty()) {
                     CoffeeOrderDto orderDto = new CoffeeOrderDto(orderItemDtoList, deliveryCost, orderTotalCost);
-                    session.setAttribute("orderDto", orderDto);
-                    response.sendRedirect("/order");
+                    session.setAttribute(MODEL_ATTR_ORDER, orderDto);
+                    response.sendRedirect(PATH_ORDER);
                     return;
                 }
             }
-            session.setAttribute("lastErrorMessage", messages.getString("error.empty.order"));
-        } else if ("/order".equals(action)) {
-            String name = request.getParameter("name");
-            String address = request.getParameter("address");
-            CoffeeOrderDto orderDto = (CoffeeOrderDto) session.getAttribute("orderDto");
+            session.setAttribute(MODEL_ATTR_ERROR_MESSAGE, messages.getString("error.empty.order"));
+        } else if (PATH_ORDER.equals(action)) {
+            String name = request.getParameter(MODEL_ATTR_ORDER_NAME);
+            String address = request.getParameter(MODEL_ATTR_ORDER_ADDRESS);
+            CoffeeOrderDto orderDto = (CoffeeOrderDto) session.getAttribute(MODEL_ATTR_ORDER);
             if (orderDto == null || orderDto.getOrderItems() == null || orderDto.getOrderItems().isEmpty()) {
-                session.removeAttribute("orderDto");
-                session.setAttribute("lastErrorMessage", messages.getString("error.empty.order"));
-                response.sendRedirect("/");
+                session.removeAttribute(MODEL_ATTR_ORDER);
+                session.setAttribute(MODEL_ATTR_ERROR_MESSAGE, messages.getString("error.empty.order"));
+                response.sendRedirect(PATH_ROOT);
                 return;
             }
             if (name != null && address != null && !address.isEmpty()) {
@@ -210,14 +229,14 @@ public class CoffeeServlet extends HttpServlet {
                 }
                 CoffeeOrder order = new CoffeeOrder(LocalDateTime.now().withNano(0), name, address, orderItems, orderDto.getCost());
                 coffeeOrderRepository.save(order);
-                response.sendRedirect("/confirmation");
+                response.sendRedirect(PATH_CONFIRMATION);
                 return;
             } else {
-                session.setAttribute("lastErrorMessage", messages.getString("error.empty.address"));
-                response.sendRedirect("/order");
+                session.setAttribute(MODEL_ATTR_ERROR_MESSAGE, messages.getString("error.empty.address"));
+                response.sendRedirect(PATH_ORDER);
                 return;
             }
         }
-        response.sendRedirect("/");
+        response.sendRedirect(PATH_ROOT);
     }
 }
