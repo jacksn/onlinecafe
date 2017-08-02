@@ -2,10 +2,11 @@ package test.onlinecafe.service;
 
 import test.onlinecafe.model.ConfigurationItem;
 import test.onlinecafe.repository.ConfigurationRepository;
-import test.onlinecafe.util.exception.NotFoundException;
 
 import java.util.Objects;
 
+import static test.onlinecafe.util.ValidationUtil.checkEntityNotNull;
+import static test.onlinecafe.util.ValidationUtil.checkEntityPresence;
 import static test.onlinecafe.util.ValidationUtil.checkPresence;
 
 public class ConfigurationServiceImpl implements ConfigurationService {
@@ -15,23 +16,22 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         this.repository = repository;
     }
 
+    private static String requireIdNotNull(String id) {
+        return Objects.requireNonNull(id, "Id must not be null");
+    }
+
     @Override
     public ConfigurationItem save(ConfigurationItem configurationItem) {
-        return repository.save(Objects.requireNonNull(configurationItem, "Configuration item must not be null"));
+        return repository.save(checkEntityNotNull(configurationItem));
     }
 
     @Override
     public void delete(String id) {
-        boolean result = repository.delete(Objects.requireNonNull(id, "Id must not be null"));
-        if (!result) {
-            throw new NotFoundException("Configuration item with id \"" + id + "\" not found");
-        }
+        checkPresence(id, repository.delete(requireIdNotNull(id)));
     }
 
     @Override
     public ConfigurationItem get(String id) {
-        ConfigurationItem item = repository.get(Objects.requireNonNull(id, "Id must not be null"));
-        checkPresence(id, item);
-        return item;
+        return checkEntityPresence(id, repository.get(requireIdNotNull(id)));
     }
 }

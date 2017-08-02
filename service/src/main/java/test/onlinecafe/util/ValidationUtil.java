@@ -2,6 +2,8 @@ package test.onlinecafe.util;
 
 import test.onlinecafe.util.exception.NotFoundException;
 
+import java.util.Objects;
+
 public final class ValidationUtil {
     private ValidationUtil() {
     }
@@ -12,7 +14,12 @@ public final class ValidationUtil {
         }
     }
 
-    public static <T1, T2> void checkPresence(T1 id, T2 entity) {
+    public static <T, E> E checkEntityPresence(T id, E entity) {
         checkPresence(id, entity != null);
+        return entity;
+    }
+
+    public static <E> E checkEntityNotNull(E entity) {
+        return Objects.requireNonNull(entity, "Entity must not be null");
     }
 }
