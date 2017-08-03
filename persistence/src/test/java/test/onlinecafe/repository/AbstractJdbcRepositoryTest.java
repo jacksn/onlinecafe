@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class AbstractJdbcRepositoryTest {
+public abstract class AbstractJdbcRepositoryTest {
     private static final String TEST_DB_CONFIG = "db/db_hsqldb.properties";
 
     private static final Logger log = getLogger(AbstractJdbcRepositoryTest.class);
