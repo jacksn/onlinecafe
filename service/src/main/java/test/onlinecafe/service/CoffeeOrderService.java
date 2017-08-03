@@ -7,6 +7,8 @@ import java.util.List;
 public interface CoffeeOrderService {
     CoffeeOrder save(CoffeeOrder order);
 
+    CoffeeOrder update(CoffeeOrder order);
+
     void delete(int id);
 
     CoffeeOrder get(int id);
