@@ -20,7 +20,7 @@ public final class ValidationUtil {
         return entity;
     }
 
-    public static <E> E requireNotNullEntity(E entity) {
+    public static <E> E requireEntity(E entity) {
         return Objects.requireNonNull(entity, "Entity must not be null");
     }
 
@@ -30,7 +30,7 @@ public final class ValidationUtil {
         }
     }
 
-    public static <E extends BaseEntity> void requireNotNullId(E entity) {
+    public static <E extends BaseEntity> void requireId(E entity) {
         if (entity.isNew()) {
             throw new IllegalArgumentException("Entity id must not be null");
         }

@@ -5,7 +5,7 @@ import test.onlinecafe.repository.ConfigurationRepository;
 
 import java.util.Objects;
 
-import static test.onlinecafe.util.ValidationUtil.requireNotNullEntity;
+import static test.onlinecafe.util.ValidationUtil.requireEntity;
 import static test.onlinecafe.util.ValidationUtil.checkEntityPresence;
 import static test.onlinecafe.util.ValidationUtil.checkPresence;
 
@@ -22,7 +22,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public ConfigurationItem save(ConfigurationItem configurationItem) {
-        requireNotNullEntity(configurationItem);
+        requireEntity(configurationItem);
         return repository.save(configurationItem);
     }
 
