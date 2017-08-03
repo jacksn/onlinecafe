@@ -2,7 +2,6 @@ package test.onlinecafe.service;
 
 import org.junit.Before;
 import org.junit.Test;
-import test.onlinecafe.model.ConfigurationItem;
 import test.onlinecafe.repository.ConfigurationRepository;
 import test.onlinecafe.util.exception.DataAccessException;
 import test.onlinecafe.util.exception.NotFoundException;
@@ -25,19 +24,20 @@ public class ConfigurationServiceTest {
 
     @Test
     public void testSave() throws Exception {
-        String id = "New id";
-        ConfigurationItem configurationItem = new ConfigurationItem(id, "New value");
-        when(repository.save(configurationItem)).thenReturn(configurationItem);
-        assertEquals(configurationItem, service.save(configurationItem));
-        verify(repository).save(configurationItem);
+        when(repository.save(CONFIGURATION_ITEM1)).thenReturn(CONFIGURATION_ITEM1);
+        assertEquals(CONFIGURATION_ITEM1, service.save(CONFIGURATION_ITEM1));
+        verify(repository).save(CONFIGURATION_ITEM1);
     }
 
     @Test(expected = DataAccessException.class)
     public void testSaveInvalid() throws Exception {
-        ConfigurationItem invalidItem = new ConfigurationItem(null, "Invalid");
-        when(repository.save(invalidItem)).thenThrow(new DataAccessException(new SQLException()));
-        when(repository.save(CONFIGURATION_ITEM1)).thenReturn(CONFIGURATION_ITEM1);
-        service.save(invalidItem);
+        when(repository.save(CONFIGURATION_ITEM1)).thenThrow(new DataAccessException(new SQLException()));
+        service.save(CONFIGURATION_ITEM1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testSaveNull() throws Exception {
+        service.save(null);
     }
 
     @Test
@@ -55,6 +55,11 @@ public class ConfigurationServiceTest {
         service.delete(id);
     }
 
+    @Test(expected = NullPointerException.class)
+    public void testDeleteNull() throws Exception {
+        service.delete(null);
+    }
+
     @Test
     public void testGet() throws Exception {
         String id = CONFIGURATION_ITEM1.getId();
@@ -69,4 +74,10 @@ public class ConfigurationServiceTest {
         when(repository.get(id)).thenReturn(null);
         service.get(id);
     }
+
+    @Test(expected = NullPointerException.class)
+    public void testGetNull() throws Exception {
+        service.get(null);
+    }
+
 }
