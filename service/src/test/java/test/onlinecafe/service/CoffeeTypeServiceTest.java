@@ -11,11 +11,10 @@ import test.onlinecafe.util.exception.NotFoundException;
 import java.sql.SQLException;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static test.onlinecafe.CoffeeTypeTestData.COFFEE_TYPE1;
-import static test.onlinecafe.CoffeeTypeTestData.COFFEE_TYPES_ALL;
-import static test.onlinecafe.CoffeeTypeTestData.COFFEE_TYPES_ENABLED;
+import static test.onlinecafe.CoffeeTypeTestData.*;
 
 public class CoffeeTypeServiceTest {
     private CoffeeTypeService service;
@@ -29,48 +28,65 @@ public class CoffeeTypeServiceTest {
 
     @Test
     public void testSave() throws Exception {
-        CoffeeType newType = new CoffeeType(null, "New type", 1.0, false);
-        CoffeeType savedType = new CoffeeType(1, "New type", 1.0, false);
-        when(repository.save(newType)).thenReturn(savedType);
-        assertEquals(savedType, service.save(newType));
+        CoffeeType newType = getNewCoffeeType();
+        when(repository.save(newType)).thenReturn(newType);
+        assertEquals(newType, service.save(newType));
         verify(repository).save(newType);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testSaveNull() throws Exception {
+        service.save(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSaveNotNew() throws Exception {
+        service.save(COFFEE_TYPE1);
     }
 
     @Test(expected = DataAccessException.class)
     public void testSaveInvalid() throws Exception {
-        CoffeeType invalid = new CoffeeType(null, 0.0, null);
-        when(repository.save(invalid)).thenThrow(new DataAccessException(new SQLException()));
-        service.save(invalid);
+        CoffeeType newType = getNewCoffeeType();
+        when(repository.save(newType)).thenThrow(new DataAccessException(new SQLException()));
+        service.save(newType);
     }
 
     @Test
     public void testUpdate() throws Exception {
-        CoffeeType updatedType = new CoffeeType(1, "Updated type", 2.0, true);
-        when(repository.save(updatedType)).thenReturn(updatedType);
-        assertEquals(updatedType, service.save(updatedType));
-        verify(repository).save(updatedType);
+        when(repository.save(COFFEE_TYPE1)).thenReturn(COFFEE_TYPE1);
+        assertEquals(COFFEE_TYPE1, service.update(COFFEE_TYPE1));
+        verify(repository).save(COFFEE_TYPE1);
     }
 
     @Test(expected = DataAccessException.class)
     public void testUpdateInvalid() throws Exception {
-        CoffeeType invalid = new CoffeeType(null, 0.0, null);
-        when(repository.save(invalid)).thenThrow(new DataAccessException(new SQLException()));
-        service.save(invalid);
+        when(repository.save(COFFEE_TYPE1)).thenThrow(new DataAccessException(new SQLException()));
+        service.update(COFFEE_TYPE1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testUpdateNull() throws Exception {
+        service.update(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUpdateNew() throws Exception {
+        CoffeeType newType = getNewCoffeeType();
+        when(repository.save(newType)).thenThrow(new DataAccessException(new SQLException()));
+        service.update(newType);
     }
 
     @Test
     public void testDelete() throws Exception {
-        int id = COFFEE_TYPE1.getId();
-        when(repository.delete(id)).thenReturn(true);
-        service.delete(id);
-        verify(repository).delete(id);
+        when(repository.delete(anyInt())).thenReturn(true);
+        service.delete(0);
+        verify(repository).delete(0);
     }
 
     @Test(expected = NotFoundException.class)
     public void testDeleteAbsent() throws Exception {
-        int id = Integer.MAX_VALUE;
-        when(repository.delete(id)).thenReturn(false);
-        service.delete(id);
+        when(repository.delete(anyInt())).thenReturn(false);
+        service.delete(0);
     }
 
     @Test

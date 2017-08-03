@@ -22,4 +22,8 @@ public final class CoffeeTypeTestData {
     private CoffeeTypeTestData() {
     }
 
+    public static CoffeeType getNewCoffeeType() {
+        return new CoffeeType(null, "New type", 1.0, false);
+    }
+
 }

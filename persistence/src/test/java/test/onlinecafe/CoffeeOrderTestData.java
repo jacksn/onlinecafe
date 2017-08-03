@@ -40,19 +40,21 @@ public final class CoffeeOrderTestData {
     public static final CoffeeOrderItem COFFEE_ORDER_ITEM1 = new CoffeeOrderItem(null, CoffeeTypeTestData.COFFEE_TYPE2, 2);
     public static final CoffeeOrderItem COFFEE_ORDER_ITEM2 = new CoffeeOrderItem(null, CoffeeTypeTestData.COFFEE_TYPE4, 1);
 
-    public static final CoffeeOrder NEW_COFFEE_ORDER = new CoffeeOrder(
-            LocalDateTime.of(2017, 7, 3, 9, 0),
-            "New name",
-            "New delivery address",
-            Arrays.asList(
-                    COFFEE_ORDER_ITEM1,
-                    COFFEE_ORDER_ITEM2
-            ),
-            10.0
-    );
-
     public static final List<CoffeeOrder> COFFEE_ORDERS =
             Collections.unmodifiableList(Arrays.asList(COFFEE_ORDER1, COFFEE_ORDER2, COFFEE_ORDER3));
+
+    public static CoffeeOrder getNewCoffeeOrder() {
+        return new CoffeeOrder(
+                LocalDateTime.of(2017, 7, 3, 9, 0),
+                "New name",
+                "New delivery address",
+                Arrays.asList(
+                        COFFEE_ORDER_ITEM1,
+                        COFFEE_ORDER_ITEM2
+                ),
+                10.0
+        );
+    }
 
     private CoffeeOrderTestData() {
     }
