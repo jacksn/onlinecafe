@@ -35,18 +35,15 @@ import static test.onlinecafe.web.CoffeeServlet.*;
 @WebServlet({PATH_ROOT, PATH_ORDER, PATH_CONFIRMATION, PATH_CANCEL})
 public class CoffeeServlet extends HttpServlet {
 
-    private static final String APP_PROPERTIES_FILE = "app.properties";
-    
-    static final String JSP_ROOT = "WEB-INF/";
-    static final String PAGE_COFFEE_TYPES_LIST = JSP_ROOT + "index.jsp";
-    static final String PAGE_ORDER_DETAILS = JSP_ROOT + "order.jsp";
-    static final String PAGE_ORDER_CONFIRMATION = JSP_ROOT + "confirmation.jsp";
-    
     static final String PATH_ROOT = "/";
     static final String PATH_ORDER = "/order";
     static final String PATH_CONFIRMATION = "/confirmation";
     static final String PATH_CANCEL = "/cancel";
-    
+    private static final String APP_PROPERTIES_FILE = "app.properties";
+    private static final String JSP_ROOT = "WEB-INF/";
+    private static final String PAGE_COFFEE_TYPES_LIST = JSP_ROOT + "index.jsp";
+    private static final String PAGE_ORDER_DETAILS = JSP_ROOT + "order.jsp";
+    private static final String PAGE_ORDER_CONFIRMATION = JSP_ROOT + "confirmation.jsp";
     private static final String MODEL_ATTR_LANGUAGE = "language";
     private static final String MODEL_ATTR_ORDER = "orderDto";
     private static final String MODEL_ATTR_ORDER_NAME = "name";
@@ -166,10 +163,12 @@ public class CoffeeServlet extends HttpServlet {
                 session.setAttribute(MODEL_ATTR_ERROR_MESSAGE, messages.getString("error.empty.order"));
             }
         } else if (PATH_CONFIRMATION.equals(action)) {
-            removeSessionAttributes(session);
-            request.getRequestDispatcher(PAGE_ORDER_CONFIRMATION).forward(request, response);
-            log.debug("Show order confirmation page");
-            return;
+            if (session.getAttribute(MODEL_ATTR_ORDER) != null) {
+                removeSessionAttributes(session);
+                request.getRequestDispatcher(PAGE_ORDER_CONFIRMATION).forward(request, response);
+                log.debug("Show order confirmation page");
+                return;
+            }
         } else if (PATH_CANCEL.equals(action)) {
             removeSessionAttributes(session);
         }
@@ -183,35 +182,16 @@ public class CoffeeServlet extends HttpServlet {
         HttpSession session = request.getSession(true);
 
         if (PATH_ROOT.equals(action)) {
-            String[] typeIds = request.getParameterValues("id[]");
-            String[] typeQuantities = request.getParameterValues("quantity[]");
-            if (typeIds != null && typeQuantities != null && typeIds.length == typeQuantities.length) {
-                List<CoffeeOrderItemDto> orderItemDtoList = new ArrayList<>();
-                double orderTotalCost = 0;
-                for (int i = 0; i < typeIds.length; i++) {
-                    int quantity = Integer.parseInt(typeQuantities[i]);
-                    if (quantity > 0) {
-                        int id = Integer.parseInt(typeIds[i]);
-                        CoffeeType type = coffeeTypeRepository.get(id);
-                        if (type == null) continue;
-                        double itemCost = quantity * type.getPrice();
-                        double discountedItemCost = CoffeeOrderUtil.getDiscountedItemCost(quantity, type.getPrice());
-                        boolean discounted = discountedItemCost < itemCost;
-                        CoffeeOrderItemDto orderItemDto = new CoffeeOrderItemDto(type, quantity, discountedItemCost, discounted);
-                        orderItemDtoList.add(orderItemDto);
-                        orderTotalCost += discountedItemCost;
-                    }
-                }
-                double deliveryCost = CoffeeOrderUtil.getDeliveryCost(orderTotalCost);
-                orderTotalCost += deliveryCost;
-                if (!orderItemDtoList.isEmpty()) {
-                    CoffeeOrderDto orderDto = new CoffeeOrderDto(orderItemDtoList, deliveryCost, orderTotalCost);
-                    session.setAttribute(MODEL_ATTR_ORDER, orderDto);
-                    response.sendRedirect(PATH_ORDER);
-                    return;
-                }
+            String[] typeIds = request.getParameterValues("id");
+            String[] typeQuantities = request.getParameterValues("quantity");
+            CoffeeOrderDto orderDto = createCoffeeOrder(typeIds, typeQuantities);
+            if (orderDto != null) {
+                session.setAttribute(MODEL_ATTR_ORDER, orderDto);
+                response.sendRedirect(PATH_ORDER);
+                return;
+            } else {
+                session.setAttribute(MODEL_ATTR_ERROR_MESSAGE, messages.getString("error.empty.order"));
             }
-            session.setAttribute(MODEL_ATTR_ERROR_MESSAGE, messages.getString("error.empty.order"));
         } else if (PATH_ORDER.equals(action)) {
             String name = request.getParameter(MODEL_ATTR_ORDER_NAME);
             String address = request.getParameter(MODEL_ATTR_ORDER_ADDRESS);
@@ -238,5 +218,32 @@ public class CoffeeServlet extends HttpServlet {
             }
         }
         response.sendRedirect(PATH_ROOT);
+    }
+
+    private CoffeeOrderDto createCoffeeOrder(String[] typeIds, String[] typeQuantities) {
+        if (typeIds != null && typeQuantities != null && typeIds.length == typeQuantities.length) {
+            List<CoffeeOrderItemDto> orderItemDtoList = new ArrayList<>();
+            double orderTotalCost = 0;
+            for (int i = 0; i < typeIds.length; i++) {
+                int quantity = Integer.parseInt(typeQuantities[i]);
+                if (quantity > 0) {
+                    int id = Integer.parseInt(typeIds[i]);
+                    CoffeeType type = coffeeTypeRepository.get(id);
+                    if (type == null) continue;
+                    double itemCost = quantity * type.getPrice();
+                    double discountedItemCost = CoffeeOrderUtil.getDiscountedItemCost(quantity, type.getPrice());
+                    boolean discounted = discountedItemCost < itemCost;
+                    CoffeeOrderItemDto orderItemDto = new CoffeeOrderItemDto(type, quantity, discountedItemCost, discounted);
+                    orderItemDtoList.add(orderItemDto);
+                    orderTotalCost += discountedItemCost;
+                }
+            }
+            double deliveryCost = CoffeeOrderUtil.getDeliveryCost(orderTotalCost);
+            orderTotalCost += deliveryCost;
+            if (!orderItemDtoList.isEmpty()) {
+                return new CoffeeOrderDto(orderItemDtoList, deliveryCost, orderTotalCost);
+            }
+        }
+        return null;
     }
 }

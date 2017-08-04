@@ -37,22 +37,23 @@
                             <jsp:useBean id="coffeeType" class="test.onlinecafe.model.CoffeeType"/>
                             <tr id="coffeerow_${coffeeType.id}">
                                 <td>
-                                    <input type="hidden" id="id_${coffeeType.id}" name="id[]"
+                                    <input type="hidden" id="id_${coffeeType.id}" name="id"
                                            value="${coffeeType.id}" disabled="">
-                                    <input type="checkbox" id="selected_${coffeeType.id}" name="selected[]"
+                                    <input type="checkbox" id="selected_${coffeeType.id}" name="selected"
                                            onclick="toggleRow(this, ${coffeeType.id})"/>
                                 </td>
                                 <td><c:out value="${coffeeType.typeName}"/></td>
                                 <td align="center">
-                                    <fmt:formatNumber type="currency" currencySymbol="TGR"
+                                    <fmt:formatNumber type="currency"
                                                       minFractionDigits="2"
                                                       maxFractionDigits="2"
-                                                      pattern="0.00 ¤"
+                                                      pattern="0.00 "
                                                       value="${coffeeType.price}"/>
+                                    <fmt:message key="label.currency.symbol"/>
                                 </td>
                                 <td align="center" width="15%" class="order-count">
                                     <input id="quantity_${coffeeType.id}" class="form-control input-sm"
-                                           name="quantity[]"
+                                           name="quantity"
                                            type="number" value="0" minlength="1" maxlength="2" min="0" max="99"
                                            disabled=""
                                            oninput="removeErrorHighlight(this)" oninvalid="addErrorHighlight(this)">

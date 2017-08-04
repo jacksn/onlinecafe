@@ -64,18 +64,20 @@
                                         <c:out value="${orderItemDto.quantity}"/>
                                     </td>
                                     <td class="text-right">
-                                        <fmt:formatNumber type="currency" currencySymbol="TGR"
+                                        <fmt:formatNumber type="currency"
                                                           minFractionDigits="2"
                                                           maxFractionDigits="2"
-                                                          pattern="0.00 ¤"
+                                                          pattern="0.00 "
                                                           value="${orderItemDto.coffeeType.price}"/>
+                                        <fmt:message key="label.currency.symbol"/>
                                     </td>
                                     <td class="text-right <c:if test="${orderItemDto.discounted}">text-danger</c:if>">
-                                        <fmt:formatNumber type="currency" currencySymbol="TGR"
+                                        <fmt:formatNumber type="currency"
                                                           minFractionDigits="2"
                                                           maxFractionDigits="2"
-                                                          pattern="0.00 ¤"
+                                                          pattern="0.00 "
                                                           value="${orderItemDto.cost}"/>
+                                        <fmt:message key="label.currency.symbol"/>
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -84,11 +86,12 @@
                                 </td>
                                 <td class="text-right">
                                     <%--@elvariable id="orderTotalCost" type="double"--%>
-                                    <fmt:formatNumber type="currency" currencySymbol="TGR"
+                                    <fmt:formatNumber type="currency"
                                                       minFractionDigits="2"
                                                       maxFractionDigits="2"
-                                                      pattern="0.00 ¤"
+                                                      pattern="0.00 "
                                                       value="${orderDto.cost - orderDto.deliveryCost}"/>
+                                        <fmt:message key="label.currency.symbol"/>
                                 </td>
                             </tr>
                             <tr>
@@ -96,11 +99,12 @@
                                         key="label.delivery.cost"/>:</strong></td>
                                 <td class="text-right <c:if test="${orderDto.deliveryCost==0}">text-danger</c:if>">
                                     <%--@elvariable id="orderDeliveryCost" type="double"--%>
-                                    <fmt:formatNumber type="currency" currencySymbol="TGR"
+                                    <fmt:formatNumber type="currency"
                                                       minFractionDigits="2"
                                                       maxFractionDigits="2"
-                                                      pattern="0.00 ¤"
+                                                      pattern="0.00 "
                                                       value="${orderDto.deliveryCost}"/>
+                                        <fmt:message key="label.currency.symbol"/>
                                 </td>
                             </tr>
                             <tr>
@@ -108,11 +112,12 @@
                                         key="label.total.cost"/>:</strong></td>
                                 <td class="text-right">
                                     <%--@elvariable id="orderTotalCost" type="double"--%>
-                                    <fmt:formatNumber type="currency" currencySymbol="TGR"
+                                    <fmt:formatNumber type="currency"
                                                       minFractionDigits="2"
                                                       maxFractionDigits="2"
-                                                      pattern="0.00 ¤"
+                                                      pattern="0.00 "
                                                       value="${orderDto.cost}"/>
+                                        <fmt:message key="label.currency.symbol"/>
                                 </td>
                             </tr>
                             </tbody>
