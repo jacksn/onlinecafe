@@ -6,12 +6,19 @@ import test.onlinecafe.dto.CoffeeOrderItemDto;
 import test.onlinecafe.model.CoffeeOrder;
 import test.onlinecafe.model.CoffeeOrderItem;
 import test.onlinecafe.model.CoffeeType;
-import test.onlinecafe.repository.*;
+import test.onlinecafe.repository.ConfigurationRepository;
+import test.onlinecafe.repository.JdbcCoffeeOrderRepository;
+import test.onlinecafe.repository.JdbcCoffeeTypeRepository;
+import test.onlinecafe.repository.JdbcConfigurationRepository;
+import test.onlinecafe.service.CoffeeOrderService;
+import test.onlinecafe.service.CoffeeOrderServiceImpl;
+import test.onlinecafe.service.CoffeeTypeService;
+import test.onlinecafe.service.CoffeeTypeServiceImpl;
 import test.onlinecafe.util.CoffeeOrderUtil;
-import test.onlinecafe.util.CoffeeTypeUtil;
 import test.onlinecafe.util.DbUtil;
 import test.onlinecafe.util.discount.DiscountStrategy;
 import test.onlinecafe.util.discount.NoDiscountStrategy;
+import test.onlinecafe.util.exception.NotFoundException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -57,8 +64,8 @@ public class CoffeeServlet extends HttpServlet {
 
     private static ResourceBundle messages;
 
-    private CoffeeTypeRepository coffeeTypeRepository;
-    private CoffeeOrderRepository coffeeOrderRepository;
+    private CoffeeTypeService coffeeTypeService;
+    private CoffeeOrderService coffeeOrderService;
 
     private static void removeSessionAttributes(HttpSession session) {
         session.removeAttribute(MODEL_ATTR_ERROR_MESSAGE);
@@ -75,9 +82,8 @@ public class CoffeeServlet extends HttpServlet {
         messages = ResourceBundle.getBundle("messages");
 
         DataSource dataSource = DbUtil.getDataSource();
-
-        coffeeTypeRepository = new JdbcCoffeeTypeRepository(dataSource);
-        coffeeOrderRepository = new JdbcCoffeeOrderRepository(dataSource);
+        coffeeTypeService = new CoffeeTypeServiceImpl(new JdbcCoffeeTypeRepository(dataSource));
+        coffeeOrderService = new CoffeeOrderServiceImpl(new JdbcCoffeeOrderRepository(dataSource));
         ConfigurationRepository configurationRepository = new JdbcConfigurationRepository(dataSource);
 
         DiscountStrategy discountStrategy = null;
@@ -148,7 +154,7 @@ public class CoffeeServlet extends HttpServlet {
                 session.removeAttribute(MODEL_ATTR_ERROR_MESSAGE);
             }
             request.setAttribute(MODEL_ATTR_ERROR_MESSAGE, lastErrorMessage);
-            request.setAttribute(MODEL_ATTR_COFFEE_TYPES, CoffeeTypeUtil.filterEnabled(coffeeTypeRepository.getAll()));
+            request.setAttribute(MODEL_ATTR_COFFEE_TYPES, coffeeTypeService.getEnabled());
             request.getRequestDispatcher(PAGE_COFFEE_TYPES_LIST).forward(request, response);
             return;
         } else if (PATH_ORDER.equals(action)) {
@@ -208,7 +214,7 @@ public class CoffeeServlet extends HttpServlet {
                     orderItems.add(getOrderItemFromDto(orderItemDto));
                 }
                 CoffeeOrder order = new CoffeeOrder(LocalDateTime.now().withNano(0), name, address, orderItems, orderDto.getCost());
-                coffeeOrderRepository.save(order);
+                coffeeOrderService.save(order);
                 response.sendRedirect(PATH_CONFIRMATION);
                 return;
             } else {
@@ -227,15 +233,18 @@ public class CoffeeServlet extends HttpServlet {
             for (int i = 0; i < typeIds.length; i++) {
                 int quantity = Integer.parseInt(typeQuantities[i]);
                 if (quantity > 0) {
-                    int id = Integer.parseInt(typeIds[i]);
-                    CoffeeType type = coffeeTypeRepository.get(id);
-                    if (type == null) continue;
-                    double itemCost = quantity * type.getPrice();
-                    double discountedItemCost = CoffeeOrderUtil.getDiscountedItemCost(quantity, type.getPrice());
-                    boolean discounted = discountedItemCost < itemCost;
-                    CoffeeOrderItemDto orderItemDto = new CoffeeOrderItemDto(type, quantity, discountedItemCost, discounted);
-                    orderItemDtoList.add(orderItemDto);
-                    orderTotalCost += discountedItemCost;
+                    try {
+                        int id = Integer.parseInt(typeIds[i]);
+                        CoffeeType type = coffeeTypeService.get(id);
+                        double itemCost = quantity * type.getPrice();
+                        double discountedItemCost = CoffeeOrderUtil.getDiscountedItemCost(quantity, type.getPrice());
+                        boolean discounted = discountedItemCost < itemCost;
+                        CoffeeOrderItemDto orderItemDto = new CoffeeOrderItemDto(type, quantity, discountedItemCost, discounted);
+                        orderItemDtoList.add(orderItemDto);
+                        orderTotalCost += discountedItemCost;
+                    } catch (NumberFormatException | NotFoundException e) {
+                        log.warn(e.getMessage());
+                    }
                 }
             }
             double deliveryCost = CoffeeOrderUtil.getDeliveryCost(orderTotalCost);
