@@ -5,14 +5,14 @@ import org.slf4j.LoggerFactory;
 import test.onlinecafe.service.ConfigurationService;
 import test.onlinecafe.util.exception.NotFoundException;
 
-public class NoDiscountStrategy implements DiscountStrategy {
-    private static final Logger log = LoggerFactory.getLogger(NoDiscountStrategy.class);
+public class NoDiscount implements Discount {
+    private static final Logger log = LoggerFactory.getLogger(NoDiscount.class);
     private ConfigurationService service;
 
     // delivery cost
     private double m = 2;
 
-    public NoDiscountStrategy(ConfigurationService configurationService) {
+    public NoDiscount(ConfigurationService configurationService) {
         this.service = configurationService;
     }
 

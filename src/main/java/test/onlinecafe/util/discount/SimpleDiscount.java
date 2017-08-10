@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 import test.onlinecafe.service.ConfigurationService;
 import test.onlinecafe.util.exception.NotFoundException;
 
-public class SimpleDiscountStrategy implements DiscountStrategy {
-    private static final Logger log = LoggerFactory.getLogger(SimpleDiscountStrategy.class);
+public class SimpleDiscount implements Discount {
+    private static final Logger log = LoggerFactory.getLogger(SimpleDiscount.class);
     public static final String ERROR_GETTING_PARAMETER = "Unable to get configuration parameter {}, using default value {}";
     private ConfigurationService service;
 
@@ -17,7 +17,7 @@ public class SimpleDiscountStrategy implements DiscountStrategy {
     // delivery cost
     private double m = 2;
 
-    public SimpleDiscountStrategy(ConfigurationService configurationService) {
+    public SimpleDiscount(ConfigurationService configurationService) {
         this.service = configurationService;
     }
 

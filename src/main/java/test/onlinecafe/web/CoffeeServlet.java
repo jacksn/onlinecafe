@@ -14,8 +14,8 @@ import test.onlinecafe.repository.JdbcConfigurationRepository;
 import test.onlinecafe.service.*;
 import test.onlinecafe.util.CoffeeOrderUtil;
 import test.onlinecafe.util.DbUtil;
-import test.onlinecafe.util.discount.DiscountStrategy;
-import test.onlinecafe.util.discount.NoDiscountStrategy;
+import test.onlinecafe.util.discount.Discount;
+import test.onlinecafe.util.discount.NoDiscount;
 import test.onlinecafe.util.exception.NotFoundException;
 
 import javax.servlet.ServletConfig;
@@ -69,7 +69,7 @@ public class CoffeeServlet extends HttpServlet {
         coffeeOrderService = new CoffeeOrderServiceImpl(new JdbcCoffeeOrderRepository(dataSource));
         ConfigurationService configurationService = new ConfigurationServiceImpl(new JdbcConfigurationRepository(dataSource));
 
-        DiscountStrategy discountStrategy = null;
+        Discount discount = null;
         Locale.setDefault(Locale.forLanguageTag(defaultLanguage));
         List<String> languages;
         String discountStrategyClassName;
@@ -105,18 +105,18 @@ public class CoffeeServlet extends HttpServlet {
         if (discountStrategyClassName != null) {
             try {
                 Constructor c = Class.forName(discountStrategyClassName).getConstructor(ConfigurationService.class);
-                discountStrategy = (DiscountStrategy) c.newInstance(configurationService);
+                discount = (Discount) c.newInstance(configurationService);
             } catch (Exception e) {
                 log.error("Error instantiating discount strategy class {}", discountStrategyClassName);
                 e.printStackTrace();
                 throw new ServletException(e);
             }
         }
-        if (discountStrategy == null) {
-            discountStrategy = new NoDiscountStrategy(configurationService);
+        if (discount == null) {
+            discount = new NoDiscount(configurationService);
         }
-        discountStrategy.init();
-        CoffeeOrderUtil.setDiscountStrategy(discountStrategy);
+        discount.init();
+        CoffeeOrderUtil.setDiscount(discount);
 
         log.debug("Servlet initialization - end");
     }
