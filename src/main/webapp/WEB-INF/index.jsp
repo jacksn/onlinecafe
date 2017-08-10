@@ -19,6 +19,15 @@
 <div class="jumbotron">
     <div class="container pad">
         <div class="row">
+            <div class="row">
+                <h2><fmt:message key="label.welcome"/></h2>
+            </div>
+            <div class="row">
+                <h4><fmt:message key="label.slogan"/></h4>
+            </div>
+        </div>
+        <br/>
+        <div class="row">
             <div class="col-md-offset-2 col-md-8">
                 <div class="row">
                     <form class="form-horizontal" id="coffeeForm" name="coffeeForm" method="POST" action=""
