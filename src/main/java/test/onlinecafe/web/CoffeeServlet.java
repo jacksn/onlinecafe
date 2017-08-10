@@ -41,7 +41,7 @@ public class CoffeeServlet extends HttpServlet {
     static final String PATH_ROOT = "/";
     static final String PATH_ORDER = "/order";
     static final String PATH_CANCEL = "/cancel";
-    private static final String APP_PROPERTIES_FILE = "app.properties";
+    private static final String APP_PROPERTIES_FILE = "application.properties";
     private static final String JSP_ROOT = "WEB-INF/";
     private static final String PAGE_COFFEE_TYPES_LIST = JSP_ROOT + "index.jsp";
     private static final String PAGE_ORDER_DETAILS = JSP_ROOT + "order.jsp";
