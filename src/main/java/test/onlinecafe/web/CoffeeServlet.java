@@ -55,7 +55,6 @@ public class CoffeeServlet extends HttpServlet {
     private static final String MODEL_ATTR_ORDER_ADDRESS = "address";
     private static final String MODEL_ATTR_COFFEE_TYPES = "coffeeTypes";
     private static final String MODEL_ATTR_NOTIFICATION = "notification";
-    private static final String LANGUAGE_BUNDLE_NAME = "messages";
 
     private static final Logger log = getLogger(CoffeeServlet.class);
     private static String defaultLanguage = "en";
@@ -128,7 +127,7 @@ public class CoffeeServlet extends HttpServlet {
 
     private ResourceBundle getResourceBundle(String language) {
         try {
-            return ResourceBundle.getBundle(LANGUAGE_BUNDLE_NAME, Locale.forLanguageTag(language));
+            return ResourceBundle.getBundle("messages.app", Locale.forLanguageTag(language));
         } catch (MissingResourceException e) {
             log.error("No resource bundle found for language \"{}\"", language);
         }
