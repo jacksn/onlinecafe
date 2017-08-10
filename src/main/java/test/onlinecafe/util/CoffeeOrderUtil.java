@@ -1,21 +1,11 @@
 package test.onlinecafe.util;
 
-import test.onlinecafe.model.ConfigurationItem;
 import test.onlinecafe.util.discount.DiscountStrategy;
 
 public final class CoffeeOrderUtil {
     private static DiscountStrategy discountStrategy;
-    private static ConfigurationItem discountConfiguration;
 
     private CoffeeOrderUtil() {
-    }
-
-    public static ConfigurationItem getConfiguration() {
-        return discountConfiguration;
-    }
-
-    public static void setConfiguration(ConfigurationItem configuration) {
-        CoffeeOrderUtil.discountConfiguration = configuration;
     }
 
     public static DiscountStrategy getDiscountStrategy() {

@@ -8,14 +8,10 @@ import test.onlinecafe.dto.NotificationType;
 import test.onlinecafe.model.CoffeeOrder;
 import test.onlinecafe.model.CoffeeOrderItem;
 import test.onlinecafe.model.CoffeeType;
-import test.onlinecafe.repository.ConfigurationRepository;
 import test.onlinecafe.repository.JdbcCoffeeOrderRepository;
 import test.onlinecafe.repository.JdbcCoffeeTypeRepository;
 import test.onlinecafe.repository.JdbcConfigurationRepository;
-import test.onlinecafe.service.CoffeeOrderService;
-import test.onlinecafe.service.CoffeeOrderServiceImpl;
-import test.onlinecafe.service.CoffeeTypeService;
-import test.onlinecafe.service.CoffeeTypeServiceImpl;
+import test.onlinecafe.service.*;
 import test.onlinecafe.util.CoffeeOrderUtil;
 import test.onlinecafe.util.DbUtil;
 import test.onlinecafe.util.discount.DiscountStrategy;
@@ -71,7 +67,7 @@ public class CoffeeServlet extends HttpServlet {
         DataSource dataSource = DbUtil.getDataSource();
         coffeeTypeService = new CoffeeTypeServiceImpl(new JdbcCoffeeTypeRepository(dataSource));
         coffeeOrderService = new CoffeeOrderServiceImpl(new JdbcCoffeeOrderRepository(dataSource));
-        ConfigurationRepository configurationRepository = new JdbcConfigurationRepository(dataSource);
+        ConfigurationService configurationService = new ConfigurationServiceImpl(new JdbcConfigurationRepository(dataSource));
 
         DiscountStrategy discountStrategy = null;
         Locale.setDefault(Locale.forLanguageTag(defaultLanguage));
@@ -108,8 +104,8 @@ public class CoffeeServlet extends HttpServlet {
 
         if (discountStrategyClassName != null) {
             try {
-                Constructor c = Class.forName(discountStrategyClassName).getConstructor(ConfigurationRepository.class);
-                discountStrategy = (DiscountStrategy) c.newInstance(configurationRepository);
+                Constructor c = Class.forName(discountStrategyClassName).getConstructor(ConfigurationService.class);
+                discountStrategy = (DiscountStrategy) c.newInstance(configurationService);
             } catch (Exception e) {
                 log.error("Error instantiating discount strategy class {}", discountStrategyClassName);
                 e.printStackTrace();
@@ -117,7 +113,7 @@ public class CoffeeServlet extends HttpServlet {
             }
         }
         if (discountStrategy == null) {
-            discountStrategy = new NoDiscountStrategy(configurationRepository);
+            discountStrategy = new NoDiscountStrategy(configurationService);
         }
         discountStrategy.init();
         CoffeeOrderUtil.setDiscountStrategy(discountStrategy);

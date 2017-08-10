@@ -1,10 +1,15 @@
 package test.onlinecafe.util.discount;
 
-import test.onlinecafe.model.ConfigurationItem;
-import test.onlinecafe.repository.ConfigurationRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import test.onlinecafe.service.ConfigurationService;
+import test.onlinecafe.util.exception.NotFoundException;
 
 public class SimpleDiscountStrategy implements DiscountStrategy {
-    private ConfigurationRepository configurationRepository;
+    private static final Logger log = LoggerFactory.getLogger(SimpleDiscountStrategy.class);
+    public static final String ERROR_GETTING_PARAMETER = "Unable to get configuration parameter {}, using default value {}";
+    private ConfigurationService service;
+
     // n'th cup of one type if free
     private int n = 5;
     // if order total > x then delivery is free
@@ -12,34 +17,26 @@ public class SimpleDiscountStrategy implements DiscountStrategy {
     // delivery cost
     private double m = 2;
 
-    public SimpleDiscountStrategy(ConfigurationRepository configurationRepository) {
-        this.configurationRepository = configurationRepository;
+    public SimpleDiscountStrategy(ConfigurationService configurationService) {
+        this.service = configurationService;
     }
 
     public void init() {
-        ConfigurationItem configurationItem = configurationRepository.get("n");
-        if (configurationItem != null) {
-            try {
-                this.n = Integer.parseInt(configurationItem.getValue());
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
+        try {
+            this.n = Integer.parseInt(service.get("n").getValue());
+        } catch (NumberFormatException e) {
+            log.error(ERROR_GETTING_PARAMETER, "n",  n);
         }
-        configurationItem = configurationRepository.get("x");
-        if (configurationItem != null) {
-            try {
-                this.x = Double.parseDouble(configurationItem.getValue());
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
+        try {
+            this.x = Double.parseDouble(service.get("x").getValue());
+        } catch (NumberFormatException e) {
+            log.error(ERROR_GETTING_PARAMETER, "x",  x);
         }
-        configurationItem = configurationRepository.get("m");
-        if (configurationItem != null) {
-            try {
-                this.m = Double.parseDouble(configurationItem.getValue());
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
+        try {
+            this.m = Double.parseDouble(service.get("m").getValue());
+        }
+        catch (NotFoundException | NumberFormatException e){
+            log.error(ERROR_GETTING_PARAMETER, "m",  m);
         }
     }
 
