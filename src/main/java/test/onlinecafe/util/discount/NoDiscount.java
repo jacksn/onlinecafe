@@ -34,4 +34,9 @@ public class NoDiscount implements Discount {
     public double getDeliveryCost(double orderTotal) {
         return m;
     }
+
+    @Override
+    public String getDescription(String template, String currencySymbol) {
+        return "";
+    }
 }

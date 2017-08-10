@@ -51,10 +51,14 @@ public class CoffeeServlet extends HttpServlet {
     private static final String MODEL_ATTR_ORDER_ADDRESS = "address";
     private static final String MODEL_ATTR_COFFEE_TYPES = "coffeeTypes";
     private static final String MODEL_ATTR_NOTIFICATION = "notification";
+    private static final String MODEL_ATTR_DISCOUNT_DESCRIPTION = "discountDescription";
 
     private static final Logger log = getLogger(CoffeeServlet.class);
+
     private static String defaultLanguage = "en";
     private static Map<String, ResourceBundle> supportedLanguages;
+
+    private String discountDescriptionMessageKey;
 
     private CoffeeTypeService coffeeTypeService;
     private CoffeeOrderService coffeeOrderService;
@@ -72,12 +76,12 @@ public class CoffeeServlet extends HttpServlet {
         Discount discount = null;
         Locale.setDefault(Locale.forLanguageTag(defaultLanguage));
         List<String> languages;
-        String discountStrategyClassName;
+        String discountClassName;
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(APP_PROPERTIES_FILE)) {
             Properties appProperties = new Properties();
             appProperties.load(inputStream);
 
-            discountStrategyClassName = appProperties.getProperty("app.discount.strategy");
+            discountClassName = appProperties.getProperty("app.discount.strategy");
             languages = Arrays.asList(appProperties.getProperty("i18n.supported.languages").split(","));
         } catch (IOException e) {
             log.error(e.getMessage());
@@ -102,12 +106,12 @@ public class CoffeeServlet extends HttpServlet {
             supportedLanguages = Collections.singletonMap(defaultLanguage, b);
         }
 
-        if (discountStrategyClassName != null) {
+        if (discountClassName != null) {
             try {
-                Constructor c = Class.forName(discountStrategyClassName).getConstructor(ConfigurationService.class);
+                Constructor c = Class.forName(discountClassName).getConstructor(ConfigurationService.class);
                 discount = (Discount) c.newInstance(configurationService);
             } catch (Exception e) {
-                log.error("Error instantiating discount strategy class {}", discountStrategyClassName);
+                log.error("Error instantiating discount strategy class {}", discountClassName);
                 e.printStackTrace();
                 throw new ServletException(e);
             }
@@ -116,6 +120,7 @@ public class CoffeeServlet extends HttpServlet {
             discount = new NoDiscount(configurationService);
         }
         discount.init();
+        this.discountDescriptionMessageKey = "discount." + discount.getClass().getSimpleName() + ".description";
         CoffeeOrderUtil.setDiscount(discount);
 
         log.debug("Servlet initialization - end");
@@ -164,8 +169,10 @@ public class CoffeeServlet extends HttpServlet {
         } else {
             if (supportedLanguages.containsKey(langParam)) {
                 session.setAttribute(MODEL_ATTR_LANGUAGE, langParam);
+                return langParam;
             } else if (language == null) {
                 session.setAttribute(MODEL_ATTR_LANGUAGE, defaultLanguage);
+                return defaultLanguage;
             }
         }
         return language;
@@ -194,6 +201,10 @@ public class CoffeeServlet extends HttpServlet {
 
         if (PATH_ROOT.equals(action)) {
             log.debug("Show main page");
+            String discountDescription = CoffeeOrderUtil.getDiscount().getDescription(
+                    getLocalizedMessage(language, discountDescriptionMessageKey),
+                    getLocalizedMessage(language, "label.currency.symbol"));
+            request.setAttribute(MODEL_ATTR_DISCOUNT_DESCRIPTION, discountDescription);
             request.setAttribute(MODEL_ATTR_COFFEE_TYPES, coffeeTypeService.getEnabled());
             request.getRequestDispatcher(PAGE_COFFEE_TYPES_LIST).forward(request, response);
             return;

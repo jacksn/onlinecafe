@@ -6,16 +6,16 @@ import test.onlinecafe.service.ConfigurationService;
 import test.onlinecafe.util.exception.NotFoundException;
 
 public class SimpleDiscount implements Discount {
-    private static final Logger log = LoggerFactory.getLogger(SimpleDiscount.class);
     public static final String ERROR_GETTING_PARAMETER = "Unable to get configuration parameter {}, using default value {}";
+    private static final Logger log = LoggerFactory.getLogger(SimpleDiscount.class);
     private ConfigurationService service;
 
     // n'th cup of one type if free
-    private int n = 5;
+    private Integer n = 5;
     // if order total > x then delivery is free
-    private double x = 10;
+    private Double x = 10.0;
     // delivery cost
-    private double m = 2;
+    private Double m = 2.0;
 
     public SimpleDiscount(ConfigurationService configurationService) {
         this.service = configurationService;
@@ -25,18 +25,17 @@ public class SimpleDiscount implements Discount {
         try {
             this.n = Integer.parseInt(service.get("n").getValue());
         } catch (NumberFormatException e) {
-            log.error(ERROR_GETTING_PARAMETER, "n",  n);
+            log.error(ERROR_GETTING_PARAMETER, "n", n);
         }
         try {
             this.x = Double.parseDouble(service.get("x").getValue());
         } catch (NumberFormatException e) {
-            log.error(ERROR_GETTING_PARAMETER, "x",  x);
+            log.error(ERROR_GETTING_PARAMETER, "x", x);
         }
         try {
             this.m = Double.parseDouble(service.get("m").getValue());
-        }
-        catch (NotFoundException | NumberFormatException e){
-            log.error(ERROR_GETTING_PARAMETER, "m",  m);
+        } catch (NotFoundException | NumberFormatException e) {
+            log.error(ERROR_GETTING_PARAMETER, "m", m);
         }
     }
 
@@ -48,5 +47,10 @@ public class SimpleDiscount implements Discount {
     @Override
     public double getDeliveryCost(double orderTotal) {
         return orderTotal > x ? 0 : m;
+    }
+
+    @Override
+    public String getDescription(String template, String currencySymbol) {
+        return String.format(template, n, x, currencySymbol);
     }
 }
