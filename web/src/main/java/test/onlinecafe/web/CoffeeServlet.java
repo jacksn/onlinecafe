@@ -3,6 +3,8 @@ package test.onlinecafe.web;
 import org.slf4j.Logger;
 import test.onlinecafe.dto.CoffeeOrderDto;
 import test.onlinecafe.dto.CoffeeOrderItemDto;
+import test.onlinecafe.dto.Notification;
+import test.onlinecafe.dto.NotificationType;
 import test.onlinecafe.model.CoffeeOrder;
 import test.onlinecafe.model.CoffeeOrderItem;
 import test.onlinecafe.model.CoffeeType;
@@ -31,7 +33,6 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -39,47 +40,34 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static test.onlinecafe.util.CoffeeOrderItemUtil.getOrderItemFromDto;
 import static test.onlinecafe.web.CoffeeServlet.*;
 
-@WebServlet({PATH_ROOT, PATH_ORDER, PATH_CONFIRMATION, PATH_CANCEL})
+@WebServlet({PATH_ROOT, PATH_ORDER, PATH_CANCEL})
 public class CoffeeServlet extends HttpServlet {
-
     static final String PATH_ROOT = "/";
     static final String PATH_ORDER = "/order";
-    static final String PATH_CONFIRMATION = "/confirmation";
     static final String PATH_CANCEL = "/cancel";
     private static final String APP_PROPERTIES_FILE = "app.properties";
     private static final String JSP_ROOT = "WEB-INF/";
     private static final String PAGE_COFFEE_TYPES_LIST = JSP_ROOT + "index.jsp";
     private static final String PAGE_ORDER_DETAILS = JSP_ROOT + "order.jsp";
-    private static final String PAGE_ORDER_CONFIRMATION = JSP_ROOT + "confirmation.jsp";
     private static final String MODEL_ATTR_LANGUAGE = "language";
     private static final String MODEL_ATTR_ORDER = "orderDto";
     private static final String MODEL_ATTR_ORDER_NAME = "name";
     private static final String MODEL_ATTR_ORDER_ADDRESS = "address";
     private static final String MODEL_ATTR_COFFEE_TYPES = "coffeeTypes";
-    private static final String MODEL_ATTR_ERROR_MESSAGE = "lastErrorMessage";
+    private static final String MODEL_ATTR_NOTIFICATION = "notification";
+    private static final String LANGUAGE_BUNDLE_NAME = "messages";
 
     private static final Logger log = getLogger(CoffeeServlet.class);
-    private static Set<String> supportedLanguages;
-    private static String defaultLanguage;
-
-    private static ResourceBundle messages;
+    private static String defaultLanguage = "en";
+    private static Map<String, ResourceBundle> supportedLanguages;
 
     private CoffeeTypeService coffeeTypeService;
     private CoffeeOrderService coffeeOrderService;
 
-    private static void removeSessionAttributes(HttpSession session) {
-        session.removeAttribute(MODEL_ATTR_ERROR_MESSAGE);
-        session.removeAttribute(MODEL_ATTR_ORDER);
-        session.removeAttribute(MODEL_ATTR_ORDER_NAME);
-        session.removeAttribute(MODEL_ATTR_ORDER_ADDRESS);
-    }
-
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-
         log.debug("Servlet initialization - start");
-        messages = ResourceBundle.getBundle("messages");
 
         DataSource dataSource = DbUtil.getDataSource();
         coffeeTypeService = new CoffeeTypeServiceImpl(new JdbcCoffeeTypeRepository(dataSource));
@@ -87,35 +75,64 @@ public class CoffeeServlet extends HttpServlet {
         ConfigurationRepository configurationRepository = new JdbcConfigurationRepository(dataSource);
 
         DiscountStrategy discountStrategy = null;
+        Locale.setDefault(Locale.forLanguageTag(defaultLanguage));
+        List<String> languages;
+        String discountStrategyClassName;
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(APP_PROPERTIES_FILE)) {
             Properties appProperties = new Properties();
             appProperties.load(inputStream);
-            String discountStrategyClassName = appProperties.getProperty("app.discount.strategy");
 
-            if (discountStrategyClassName != null) {
-                try {
-                    Constructor c = Class.forName(discountStrategyClassName).getConstructor(ConfigurationRepository.class);
-                    discountStrategy = (DiscountStrategy) c.newInstance(configurationRepository);
-                } catch (ClassNotFoundException | InstantiationException | InvocationTargetException
-                        | IllegalAccessException | NoSuchMethodException e) {
-                    log.error("Error instantiating discount strategy class {}", discountStrategyClassName);
-                    e.printStackTrace();
-                }
-            }
-            List<String> languages = Arrays.asList(appProperties.getProperty("i18n.supported.languages").split(","));
-            defaultLanguage = languages.get(0);
-            supportedLanguages = Collections.unmodifiableSet(new HashSet<>(languages));
+            discountStrategyClassName = appProperties.getProperty("app.discount.strategy");
+            languages = Arrays.asList(appProperties.getProperty("i18n.supported.languages").split(","));
         } catch (IOException e) {
-            log.error("Error loading application properties from {}", APP_PROPERTIES_FILE);
-            e.printStackTrace();
+            log.error(e.getMessage());
+            throw new ServletException(e);
         }
 
+        supportedLanguages = new HashMap<>();
+        if (!languages.isEmpty()) {
+            defaultLanguage = languages.get(0);
+            for (String language : languages) {
+                ResourceBundle bundle = getResourceBundle(language);
+                if (bundle != null) {
+                    supportedLanguages.put(language, bundle);
+                }
+            }
+            supportedLanguages = Collections.unmodifiableMap(supportedLanguages);
+        } else {
+            ResourceBundle b = getResourceBundle(defaultLanguage);
+            if (b == null) {
+                throw new ServletException("No message bundles found");
+            }
+            supportedLanguages = Collections.singletonMap(defaultLanguage, b);
+        }
+
+        if (discountStrategyClassName != null) {
+            try {
+                Constructor c = Class.forName(discountStrategyClassName).getConstructor(ConfigurationRepository.class);
+                discountStrategy = (DiscountStrategy) c.newInstance(configurationRepository);
+            } catch (Exception e) {
+                log.error("Error instantiating discount strategy class {}", discountStrategyClassName);
+                e.printStackTrace();
+                throw new ServletException(e);
+            }
+        }
         if (discountStrategy == null) {
             discountStrategy = new NoDiscountStrategy(configurationRepository);
         }
         discountStrategy.init();
         CoffeeOrderUtil.setDiscountStrategy(discountStrategy);
+
         log.debug("Servlet initialization - end");
+    }
+
+    private ResourceBundle getResourceBundle(String language) {
+        try {
+            return ResourceBundle.getBundle(LANGUAGE_BUNDLE_NAME, Locale.forLanguageTag(language));
+        } catch (MissingResourceException e) {
+            log.error("No resource bundle found for language \"{}\"", language);
+        }
+        return null;
     }
 
     @Override
@@ -126,34 +143,62 @@ public class CoffeeServlet extends HttpServlet {
         log.debug("Servlet deinitialization - end");
     }
 
+    private String getLocalizedMessage(String language, String key) {
+        if (supportedLanguages.containsKey(language)) {
+            try {
+                return supportedLanguages.get(language).getString(key);
+            } catch (MissingResourceException | ClassCastException e) {
+                log.error(e.getMessage());
+            }
+        }
+        try {
+            return supportedLanguages.get(defaultLanguage).getString(key);
+        } catch (MissingResourceException | ClassCastException e) {
+            log.error(e.getMessage());
+        }
+        log.error("ERROR! Message {} for language {} not found!", key, language);
+        return "No message";
+    }
+
+    private String resolveCurrentLanguage(HttpServletRequest request, HttpSession session) {
+        String language = (String) session.getAttribute(MODEL_ATTR_LANGUAGE);
+        String langParam = request.getParameter("lang");
+
+        if (langParam == null && language == null) {
+            session.setAttribute(MODEL_ATTR_LANGUAGE, defaultLanguage);
+        } else {
+            if (supportedLanguages.containsKey(langParam)) {
+                session.setAttribute(MODEL_ATTR_LANGUAGE, langParam);
+            } else if (language == null) {
+                session.setAttribute(MODEL_ATTR_LANGUAGE, defaultLanguage);
+            }
+        }
+        return language;
+    }
+
+    private void removeSessionAttributes(HttpSession session) {
+        session.removeAttribute(MODEL_ATTR_NOTIFICATION);
+        session.removeAttribute(MODEL_ATTR_ORDER);
+        session.removeAttribute(MODEL_ATTR_ORDER_NAME);
+        session.removeAttribute(MODEL_ATTR_ORDER_ADDRESS);
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String action = request.getRequestURI();
         log.debug("GET request received: {}", action);
-
         HttpSession session = request.getSession(true);
+        String language = resolveCurrentLanguage(request, session);
 
-        String langParam = request.getParameter("lang");
-        String sessionLanguage = (String) session.getAttribute(MODEL_ATTR_LANGUAGE);
-
-        if (langParam == null && sessionLanguage == null) {
-            session.setAttribute(MODEL_ATTR_LANGUAGE, defaultLanguage);
-        } else {
-            if (supportedLanguages.contains(langParam)) {
-                session.setAttribute(MODEL_ATTR_LANGUAGE, langParam);
-            } else if (sessionLanguage == null) {
-                session.setAttribute(MODEL_ATTR_LANGUAGE, defaultLanguage);
-            }
+        Notification notification = (Notification) session.getAttribute(MODEL_ATTR_NOTIFICATION);
+        if (notification != null) {
+            session.removeAttribute(MODEL_ATTR_NOTIFICATION);
+            request.setAttribute(MODEL_ATTR_NOTIFICATION, notification);
         }
 
         if (PATH_ROOT.equals(action)) {
             log.debug("Show main page");
-            String lastErrorMessage = (String) session.getAttribute(MODEL_ATTR_ERROR_MESSAGE);
-            if (lastErrorMessage != null) {
-                session.removeAttribute(MODEL_ATTR_ERROR_MESSAGE);
-            }
-            request.setAttribute(MODEL_ATTR_ERROR_MESSAGE, lastErrorMessage);
             request.setAttribute(MODEL_ATTR_COFFEE_TYPES, coffeeTypeService.getEnabled());
             request.getRequestDispatcher(PAGE_COFFEE_TYPES_LIST).forward(request, response);
             return;
@@ -166,62 +211,11 @@ public class CoffeeServlet extends HttpServlet {
             } else {
                 log.debug("Order is empty. Redirect to main page.");
                 session.removeAttribute(MODEL_ATTR_ORDER);
-                session.setAttribute(MODEL_ATTR_ERROR_MESSAGE, messages.getString("error.empty.order"));
-            }
-        } else if (PATH_CONFIRMATION.equals(action)) {
-            if (session.getAttribute(MODEL_ATTR_ORDER) != null) {
-                removeSessionAttributes(session);
-                request.getRequestDispatcher(PAGE_ORDER_CONFIRMATION).forward(request, response);
-                log.debug("Show order confirmation page");
-                return;
+                session.setAttribute(MODEL_ATTR_NOTIFICATION,
+                        new Notification(NotificationType.ERROR, getLocalizedMessage(language, "error.empty.order")));
             }
         } else if (PATH_CANCEL.equals(action)) {
             removeSessionAttributes(session);
-        }
-        response.sendRedirect(PATH_ROOT);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getRequestURI();
-        log.debug("POST request received: {}", action);
-        HttpSession session = request.getSession(true);
-
-        if (PATH_ROOT.equals(action)) {
-            String[] typeIds = request.getParameterValues("id");
-            String[] typeQuantities = request.getParameterValues("quantity");
-            CoffeeOrderDto orderDto = createCoffeeOrder(typeIds, typeQuantities);
-            if (orderDto != null) {
-                session.setAttribute(MODEL_ATTR_ORDER, orderDto);
-                response.sendRedirect(PATH_ORDER);
-                return;
-            } else {
-                session.setAttribute(MODEL_ATTR_ERROR_MESSAGE, messages.getString("error.empty.order"));
-            }
-        } else if (PATH_ORDER.equals(action)) {
-            String name = request.getParameter(MODEL_ATTR_ORDER_NAME);
-            String address = request.getParameter(MODEL_ATTR_ORDER_ADDRESS);
-            CoffeeOrderDto orderDto = (CoffeeOrderDto) session.getAttribute(MODEL_ATTR_ORDER);
-            if (orderDto == null || orderDto.getOrderItems() == null || orderDto.getOrderItems().isEmpty()) {
-                session.removeAttribute(MODEL_ATTR_ORDER);
-                session.setAttribute(MODEL_ATTR_ERROR_MESSAGE, messages.getString("error.empty.order"));
-                response.sendRedirect(PATH_ROOT);
-                return;
-            }
-            if (name != null && address != null && !address.isEmpty()) {
-                List<CoffeeOrderItem> orderItems = new ArrayList<>();
-                for (CoffeeOrderItemDto orderItemDto : orderDto.getOrderItems()) {
-                    orderItems.add(getOrderItemFromDto(orderItemDto));
-                }
-                CoffeeOrder order = new CoffeeOrder(LocalDateTime.now().withNano(0), name, address, orderItems, orderDto.getCost());
-                coffeeOrderService.save(order);
-                response.sendRedirect(PATH_CONFIRMATION);
-                return;
-            } else {
-                session.setAttribute(MODEL_ATTR_ERROR_MESSAGE, messages.getString("error.empty.address"));
-                response.sendRedirect(PATH_ORDER);
-                return;
-            }
         }
         response.sendRedirect(PATH_ROOT);
     }
@@ -254,5 +248,55 @@ public class CoffeeServlet extends HttpServlet {
             }
         }
         return null;
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getRequestURI();
+        log.debug("POST request received: {}", action);
+        HttpSession session = request.getSession(true);
+        String language = resolveCurrentLanguage(request, session);
+
+        if (PATH_ROOT.equals(action)) {
+            String[] typeIds = request.getParameterValues("id");
+            String[] typeQuantities = request.getParameterValues("quantity");
+            CoffeeOrderDto orderDto = createCoffeeOrder(typeIds, typeQuantities);
+            if (orderDto != null) {
+                session.setAttribute(MODEL_ATTR_ORDER, orderDto);
+                response.sendRedirect(PATH_ORDER);
+                return;
+            } else {
+                session.setAttribute(MODEL_ATTR_NOTIFICATION,
+                        new Notification(NotificationType.ERROR, getLocalizedMessage(language, "error.empty.order")));
+            }
+        } else if (PATH_ORDER.equals(action)) {
+            String name = request.getParameter(MODEL_ATTR_ORDER_NAME);
+            String address = request.getParameter(MODEL_ATTR_ORDER_ADDRESS);
+            CoffeeOrderDto orderDto = (CoffeeOrderDto) session.getAttribute(MODEL_ATTR_ORDER);
+            if (orderDto == null || orderDto.getOrderItems() == null || orderDto.getOrderItems().isEmpty()) {
+                session.removeAttribute(MODEL_ATTR_ORDER);
+                session.setAttribute(MODEL_ATTR_NOTIFICATION,
+                        new Notification(NotificationType.ERROR, getLocalizedMessage(language, "error.empty.order")));
+                response.sendRedirect(PATH_ROOT);
+                return;
+            }
+            if (name != null && address != null && !address.isEmpty()) {
+                List<CoffeeOrderItem> orderItems = new ArrayList<>();
+                for (CoffeeOrderItemDto orderItemDto : orderDto.getOrderItems()) {
+                    orderItems.add(getOrderItemFromDto(orderItemDto));
+                }
+                CoffeeOrder order = new CoffeeOrder(LocalDateTime.now().withNano(0), name, address, orderItems, orderDto.getCost());
+                coffeeOrderService.save(order);
+                removeSessionAttributes(session);
+                session.setAttribute(MODEL_ATTR_NOTIFICATION,
+                        new Notification(NotificationType.SUCCESS, getLocalizedMessage(language, "label.order.accepted")));
+            } else {
+                session.setAttribute(MODEL_ATTR_NOTIFICATION,
+                        new Notification(NotificationType.ERROR, getLocalizedMessage(language, "error.empty.address")));
+                response.sendRedirect(PATH_ORDER);
+                return;
+            }
+        }
+        response.sendRedirect(PATH_ROOT);
     }
 }

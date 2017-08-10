@@ -11,7 +11,7 @@
 <body>
 <script type="text/javascript">
     $(document).ready(function () {
-        <jsp:include page="fragments/errorMessage.jsp"/>
+        <jsp:include page="fragments/notification.jsp"/>
     });
 </script>
 <jsp:include page="fragments/header.jsp"/>
@@ -141,7 +141,7 @@
     function validate() {
         var address = $('[id=address]');
         if (!address.val()) {
-            showErrorMessage('<fmt:message key="error.empty.address"/>');
+            showNotification('danger', '<fmt:message key="error.empty.address"/>');
             addErrorHighlight(address);
             address.focus();
             return false;

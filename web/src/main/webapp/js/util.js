@@ -6,17 +6,16 @@ function removeErrorHighlight(field) {
     $(field).parent().removeClass('has-error');
 }
 
-function showErrorMessage(message) {
+function showNotification(type, message) {
     $.notify({
-            icon: 'glyphicon glyphicon-warning-sign',
             message: message
         }, {
-            type: "danger",
+            type: type,
             placement: {
                 from: "bottom",
                 align: "right"
             },
-            mouse_over: 'pause'
+            mouse_over: "pause"
         }
     );
 }

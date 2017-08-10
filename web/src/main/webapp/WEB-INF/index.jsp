@@ -12,7 +12,7 @@
 <body>
 <script type="text/javascript">
     $(document).ready(function () {
-        <jsp:include page="fragments/errorMessage.jsp"/>
+        <jsp:include page="fragments/notification.jsp"/>
     });
 </script>
 <jsp:include page="fragments/header.jsp"/>
@@ -99,14 +99,14 @@
                 if (isNaN(quantity) || quantity === 0) {
                     addErrorHighlight(quantityField);
                     quantityField.focus();
-                    showErrorMessage('<fmt:message key="error.invalid.quantity"/>');
+                    showNotification('danger', '<fmt:message key="error.invalid.quantity"/>');
                     return false;
                 }
                 totalOrderQuantity += quantity;
             }
         }
         if (totalOrderQuantity === 0) {
-            showErrorMessage('<fmt:message key="error.empty.order"/>');
+            showNotification('danger', '<fmt:message key="error.empty.order"/>');
             return false;
         }
     }
