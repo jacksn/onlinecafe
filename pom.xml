@@ -5,11 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>test.onlinecafe</groupId>
-    <artifactId>OnlineCafe</artifactId>
-    <name>Online cafe</name>
-    <url>http://onlinecafe.herokuapp.com/</url>
+    <artifactId>onlinecafe</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
+
+    <name>Online cafe</name>
+    <url>http://onlinecafe.herokuapp.com/</url>
 
     <properties>
         <java.version>1.8</java.version>
@@ -18,6 +19,7 @@
     </properties>
 
     <build>
+        <finalName>onlinecafe</finalName>
         <defaultGoal>package</defaultGoal>
         <plugins>
             <plugin>
@@ -66,7 +68,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>jstl</groupId>
+            <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
             <version>1.2</version>
         </dependency>
