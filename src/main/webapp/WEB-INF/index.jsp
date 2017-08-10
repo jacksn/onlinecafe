@@ -27,7 +27,7 @@
                             <thead>
                             <tr>
                                 <th></th>
-                                <th><fmt:message key="label.coffee.type"/></th>
+                                <th><fmt:message key="label.coffee_type"/></th>
                                 <th class="text-center"><fmt:message key="label.price"/></th>
                                 <th class="text-center"><fmt:message key="label.quantity"/></th>
                             </tr>
@@ -50,7 +50,7 @@
                                                           maxFractionDigits="2"
                                                           pattern="0.00 "
                                                           value="${coffeeType.price}"/>
-                                        <fmt:message key="label.currency.symbol"/>
+                                        <fmt:message key="label.currency_symbol"/>
                                     </td>
                                     <td align="center" width="15%" class="order-count">
                                         <input id="quantity_${coffeeType.id}" class="form-control input-sm"
@@ -110,14 +110,14 @@
                 if (isNaN(quantity) || quantity === 0) {
                     addErrorHighlight(quantityField);
                     quantityField.focus();
-                    showNotification('danger', '<fmt:message key="error.invalid.quantity"/>');
+                    showNotification('danger', '<fmt:message key="error.invalid_quantity"/>');
                     return false;
                 }
                 totalOrderQuantity += quantity;
             }
         }
         if (totalOrderQuantity === 0) {
-            showNotification('danger', '<fmt:message key="error.empty.order"/>');
+            showNotification('danger', '<fmt:message key="error.empty_order"/>');
             return false;
         }
     }

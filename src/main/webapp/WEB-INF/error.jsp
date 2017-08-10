@@ -15,18 +15,18 @@
         <div class="row">
             <div class="panel panel-danger">
                 <div class="panel-heading text-center">
-                    <h2><fmt:message key="label.error.panel.header"/></h2>
+                    <h2><fmt:message key="label.error_panel_header"/></h2>
                 </div>
 
                 <div class="panel-body">
                     <div class="col-md-2"></div>
                     <div class="col-md-8">
-                        <p><b><fmt:message key="label.error.code"/>:</b> ${pageContext.errorData.statusCode}</p>
+                        <p><b><fmt:message key="label.error_code"/>:</b> ${pageContext.errorData.statusCode}</p>
                         <p>
                             <b>URL:</b>
                             ${pageContext.request.scheme}://${header.host}${pageContext.errorData.requestURI}
                         </p>
-                        <p><a href="${pageContext.request.contextPath}/"><fmt:message key="label.back.to.main"/></a></p>
+                        <p><a href="${pageContext.request.contextPath}/"><fmt:message key="label.back_to_main"/></a></p>
                     </div>
                 </div>
             </div>

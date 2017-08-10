@@ -22,7 +22,7 @@
                 <li>
                     <a href="https://github.com/jacksn/onlinecafe">
                         <i class="fa fa-github fa-lg"></i>
-                        <fmt:message key="label.source.code"/>
+                        <fmt:message key="label.source_code"/>
                     </a>
                 </li>
                 <li class="dropdown">

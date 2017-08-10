@@ -203,7 +203,7 @@ public class CoffeeServlet extends HttpServlet {
             log.debug("Show main page");
             String discountDescription = CoffeeOrderUtil.getDiscount().getDescription(
                     getLocalizedMessage(language, discountDescriptionMessageKey),
-                    getLocalizedMessage(language, "label.currency.symbol"));
+                    getLocalizedMessage(language, "label.currency_symbol"));
             request.setAttribute(MODEL_ATTR_DISCOUNT_DESCRIPTION, discountDescription);
             request.setAttribute(MODEL_ATTR_COFFEE_TYPES, coffeeTypeService.getEnabled());
             request.getRequestDispatcher(PAGE_COFFEE_TYPES_LIST).forward(request, response);
@@ -218,7 +218,7 @@ public class CoffeeServlet extends HttpServlet {
                 log.debug("Order is empty. Redirect to main page.");
                 session.removeAttribute(MODEL_ATTR_ORDER);
                 session.setAttribute(MODEL_ATTR_NOTIFICATION,
-                        new Notification(NotificationType.ERROR, getLocalizedMessage(language, "error.empty.order")));
+                        new Notification(NotificationType.ERROR, getLocalizedMessage(language, "error.empty_order")));
             }
         } else if (PATH_CANCEL.equals(action)) {
             removeSessionAttributes(session);
@@ -273,7 +273,7 @@ public class CoffeeServlet extends HttpServlet {
                 return;
             } else {
                 session.setAttribute(MODEL_ATTR_NOTIFICATION,
-                        new Notification(NotificationType.ERROR, getLocalizedMessage(language, "error.empty.order")));
+                        new Notification(NotificationType.ERROR, getLocalizedMessage(language, "error.empty_order")));
             }
         } else if (PATH_ORDER.equals(action)) {
             String name = request.getParameter(MODEL_ATTR_ORDER_NAME);
@@ -282,7 +282,7 @@ public class CoffeeServlet extends HttpServlet {
             if (orderDto == null || orderDto.getOrderItems() == null || orderDto.getOrderItems().isEmpty()) {
                 session.removeAttribute(MODEL_ATTR_ORDER);
                 session.setAttribute(MODEL_ATTR_NOTIFICATION,
-                        new Notification(NotificationType.ERROR, getLocalizedMessage(language, "error.empty.order")));
+                        new Notification(NotificationType.ERROR, getLocalizedMessage(language, "error.empty_order")));
                 response.sendRedirect(PATH_ROOT);
                 return;
             }
@@ -295,10 +295,10 @@ public class CoffeeServlet extends HttpServlet {
                 coffeeOrderService.save(order);
                 removeSessionAttributes(session);
                 session.setAttribute(MODEL_ATTR_NOTIFICATION,
-                        new Notification(NotificationType.SUCCESS, getLocalizedMessage(language, "label.order.accepted")));
+                        new Notification(NotificationType.SUCCESS, getLocalizedMessage(language, "label.order_accepted")));
             } else {
                 session.setAttribute(MODEL_ATTR_NOTIFICATION,
-                        new Notification(NotificationType.ERROR, getLocalizedMessage(language, "error.empty.address")));
+                        new Notification(NotificationType.ERROR, getLocalizedMessage(language, "error.empty_address")));
                 response.sendRedirect(PATH_ORDER);
                 return;
             }

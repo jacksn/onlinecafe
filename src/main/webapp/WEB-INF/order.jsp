@@ -5,7 +5,7 @@
 <jsp:include page="fragments/lang.jsp"/>
 <html>
 <head>
-    <title><fmt:message key="label.site.name"/> - <fmt:message key="page.order.details"/></title>
+    <title><fmt:message key="label.site.name"/> - <fmt:message key="page.order_details"/></title>
     <jsp:include page="fragments/headTag.jsp"/>
 </head>
 <body>
@@ -31,11 +31,11 @@
                         </div>
                         <div class="form-group">
                             <label for="address" class="col-md-3 control-label">
-                                <fmt:message key="label.delivery.address"/>
+                                <fmt:message key="label.delivery_address"/>
                             </label>
                             <div class="col-md-8">
                                 <input class="form-control" id="address" name="address"
-                                       placeholder="<fmt:message key="label.delivery.address"/>"
+                                       placeholder="<fmt:message key="label.delivery_address"/>"
                                        type="text" oninput="removeErrorHighlight(this)"
                                        oninvalid="addErrorHighlight(this)">
                             </div>
@@ -46,7 +46,7 @@
                         <table class="table">
                             <thead>
                             <tr>
-                                <th><fmt:message key="label.coffee.type"/></th>
+                                <th><fmt:message key="label.coffee_type"/></th>
                                 <th width="15%" class="text-center"><fmt:message key="label.quantity"/></th>
                                 <th width="15%" class="text-center"><fmt:message key="label.price"/></th>
                                 <th width="15%" class="text-center"><fmt:message key="label.cost"/></th>
@@ -69,7 +69,7 @@
                                                           maxFractionDigits="2"
                                                           pattern="0.00 "
                                                           value="${orderItemDto.coffeeType.price}"/>
-                                        <fmt:message key="label.currency.symbol"/>
+                                        <fmt:message key="label.currency_symbol"/>
                                     </td>
                                     <td class="text-right <c:if test="${orderItemDto.discounted}">text-danger</c:if>">
                                         <fmt:formatNumber type="currency"
@@ -77,7 +77,7 @@
                                                           maxFractionDigits="2"
                                                           pattern="0.00 "
                                                           value="${orderItemDto.cost}"/>
-                                        <fmt:message key="label.currency.symbol"/>
+                                        <fmt:message key="label.currency_symbol"/>
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -91,12 +91,12 @@
                                                       maxFractionDigits="2"
                                                       pattern="0.00 "
                                                       value="${orderDto.cost - orderDto.deliveryCost}"/>
-                                        <fmt:message key="label.currency.symbol"/>
+                                        <fmt:message key="label.currency_symbol"/>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="3" class="text-right"><strong><fmt:message
-                                        key="label.delivery.cost"/>:</strong></td>
+                                        key="label.delivery_cost"/>:</strong></td>
                                 <td class="text-right <c:if test="${orderDto.deliveryCost==0}">text-danger</c:if>">
                                     <%--@elvariable id="orderDeliveryCost" type="double"--%>
                                     <fmt:formatNumber type="currency"
@@ -104,12 +104,12 @@
                                                       maxFractionDigits="2"
                                                       pattern="0.00 "
                                                       value="${orderDto.deliveryCost}"/>
-                                        <fmt:message key="label.currency.symbol"/>
+                                        <fmt:message key="label.currency_symbol"/>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="3" class="text-right"><strong><fmt:message
-                                        key="label.total.cost"/>:</strong></td>
+                                        key="label.total_cost"/>:</strong></td>
                                 <td class="text-right">
                                     <%--@elvariable id="orderTotalCost" type="double"--%>
                                     <fmt:formatNumber type="currency"
@@ -117,7 +117,7 @@
                                                       maxFractionDigits="2"
                                                       pattern="0.00 "
                                                       value="${orderDto.cost}"/>
-                                        <fmt:message key="label.currency.symbol"/>
+                                        <fmt:message key="label.currency_symbol"/>
                                 </td>
                             </tr>
                             </tbody>
@@ -141,7 +141,7 @@
     function validate() {
         var address = $('[id=address]');
         if (!address.val()) {
-            showNotification('danger', '<fmt:message key="error.empty.address"/>');
+            showNotification('danger', '<fmt:message key="error.empty_address"/>');
             addErrorHighlight(address);
             address.focus();
             return false;
