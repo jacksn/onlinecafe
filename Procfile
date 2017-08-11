@@ -1,0 +1,1 @@
+web:    java $JAVA_OPTS -Ddb_config_path=db_heroku.properties -DTOPJAVA_ROOT="." -jar target/dependency/webapp-runner.jar --port $PORT target/*.war
