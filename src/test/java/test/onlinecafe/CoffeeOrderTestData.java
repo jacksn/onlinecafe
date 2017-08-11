@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static test.onlinecafe.CoffeeTypeTestData.*;
+
 public final class CoffeeOrderTestData {
     public static final CoffeeOrder COFFEE_ORDER1 = new CoffeeOrder(
             1,
@@ -15,9 +17,9 @@ public final class CoffeeOrderTestData {
             "John Smith",
             "John's address",
             Arrays.asList(
-                    new CoffeeOrderItem(1, CoffeeTypeTestData.COFFEE_TYPE1, 2),
-                    new CoffeeOrderItem(2, CoffeeTypeTestData.COFFEE_TYPE4, 2),
-                    new CoffeeOrderItem(3, CoffeeTypeTestData.COFFEE_TYPE5, 2)),
+                    new CoffeeOrderItem(1, COFFEE_TYPE1, 2),
+                    new CoffeeOrderItem(2, COFFEE_TYPE4, 2),
+                    new CoffeeOrderItem(3, COFFEE_TYPE5, 2)),
             9.00);
     public static final CoffeeOrder COFFEE_ORDER2 = new CoffeeOrder(
             2,
@@ -25,8 +27,8 @@ public final class CoffeeOrderTestData {
             "Jane Smith",
             "Jane's address",
             Arrays.asList(
-                    new CoffeeOrderItem(4, CoffeeTypeTestData.COFFEE_TYPE2, 2),
-                    new CoffeeOrderItem(5, CoffeeTypeTestData.COFFEE_TYPE4, 1)),
+                    new CoffeeOrderItem(4, COFFEE_TYPE2, 2),
+                    new CoffeeOrderItem(5, COFFEE_TYPE4, 1)),
             5.00);
     public static final CoffeeOrder COFFEE_ORDER3 = new CoffeeOrder(
             3,
@@ -34,11 +36,11 @@ public final class CoffeeOrderTestData {
             "John Smith",
             "John's address",
             Arrays.asList(
-                    new CoffeeOrderItem(6, CoffeeTypeTestData.COFFEE_TYPE1, 1),
-                    new CoffeeOrderItem(7, CoffeeTypeTestData.COFFEE_TYPE2, 1)),
+                    new CoffeeOrderItem(6, COFFEE_TYPE1, 1),
+                    new CoffeeOrderItem(7, COFFEE_TYPE2, 1)),
             3.00);
-    public static final CoffeeOrderItem COFFEE_ORDER_ITEM1 = new CoffeeOrderItem(null, CoffeeTypeTestData.COFFEE_TYPE2, 2);
-    public static final CoffeeOrderItem COFFEE_ORDER_ITEM2 = new CoffeeOrderItem(null, CoffeeTypeTestData.COFFEE_TYPE4, 1);
+    public static final CoffeeOrderItem COFFEE_ORDER_ITEM1 = new CoffeeOrderItem(null, COFFEE_TYPE2, 2);
+    public static final CoffeeOrderItem COFFEE_ORDER_ITEM2 = new CoffeeOrderItem(null, COFFEE_TYPE4, 1);
 
     public static final List<CoffeeOrder> COFFEE_ORDERS =
             Collections.unmodifiableList(Arrays.asList(COFFEE_ORDER1, COFFEE_ORDER2, COFFEE_ORDER3));

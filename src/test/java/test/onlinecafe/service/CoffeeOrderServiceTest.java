@@ -3,6 +3,7 @@ package test.onlinecafe.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import test.onlinecafe.dto.CoffeeOrderDto;
 import test.onlinecafe.model.CoffeeOrder;
 import test.onlinecafe.repository.CoffeeOrderRepository;
 import test.onlinecafe.util.exception.DataAccessException;
@@ -35,8 +36,15 @@ public class CoffeeOrderServiceTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void testSaveNull() throws Exception {
-        service.save(null);
+    public void testSaveNullOrder() throws Exception {
+        CoffeeOrder order = null;
+        service.save(order);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testSaveNullOrderDto() throws Exception {
+        CoffeeOrderDto orderDto = null;
+        service.save(orderDto);
     }
 
     @Test(expected = IllegalArgumentException.class)
