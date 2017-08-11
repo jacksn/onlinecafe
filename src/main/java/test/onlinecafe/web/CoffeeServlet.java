@@ -1,5 +1,6 @@
 package test.onlinecafe.web;
 
+import org.apache.tomcat.jdbc.pool.DataSource;
 import org.slf4j.Logger;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -12,10 +13,9 @@ import test.onlinecafe.dto.NotificationType;
 import test.onlinecafe.model.CoffeeType;
 import test.onlinecafe.service.CoffeeOrderService;
 import test.onlinecafe.service.CoffeeTypeService;
-import test.onlinecafe.service.ConfigurationService;
 import test.onlinecafe.util.CoffeeOrderUtil;
+import test.onlinecafe.util.DbUtil;
 import test.onlinecafe.util.discount.Discount;
-import test.onlinecafe.util.discount.NoDiscount;
 import test.onlinecafe.util.exception.NotFoundException;
 
 import javax.servlet.ServletConfig;
@@ -70,21 +70,49 @@ public class CoffeeServlet extends HttpServlet {
         coffeeTypeService = springContext.getBean(CoffeeTypeService.class);
         coffeeOrderService = springContext.getBean(CoffeeOrderService.class);
         messageSource = springContext.getBean(ResourceBundleMessageSource.class);
-        ConfigurationService configurationService = springContext.getBean(ConfigurationService.class);
 
-        List<String> languages;
-        String discountClassName;
+        List<String> languages = new ArrayList<>();
+        String discountClassName = "noDiscount";
+        boolean initDatabase = false;
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(APP_PROPERTIES_FILE)) {
             Properties appProperties = new Properties();
             appProperties.load(inputStream);
 
             discountClassName = appProperties.getProperty("app.discount_class_name");
-            languages = Arrays.asList(appProperties.getProperty("i18n.supported_languages").split(","));
-        } catch (IOException e) {
+            languages.addAll(Arrays.asList(appProperties.getProperty("app.i18n.supported_languages").split(",")));
+            initDatabase = Boolean.parseBoolean(appProperties.getProperty("app.initialize_database"));
+        } catch (Exception e) {
             log.error(e.getMessage());
             throw new ServletException(e);
         }
 
+        DbUtil.setDataSource(springContext.getBean(DataSource.class));
+        if (initDatabase) {
+            DbUtil.initDatabase();
+        }
+
+        initI18n(languages);
+        initDiscount(discountClassName);
+
+        log.debug("Servlet initialization - end");
+    }
+
+    private void initDiscount(String discountClassName) {
+        Discount discount = null;
+        try {
+            discount = springContext.getBean(discountClassName, Discount.class);
+        }
+        catch (Exception e){
+            log.error("Unable to get discount bean", e);
+        }
+        if (discount != null) {
+            discount.init();
+            this.discountDescriptionMessageKey = "discount." + discount.getClass().getSimpleName() + ".description";
+            CoffeeOrderUtil.setDiscount(discount);
+        }
+    }
+
+    private void initI18n(List<String> languages) throws ServletException {
         supportedLanguages = new HashSet<>();
         if (!languages.isEmpty()) {
             defaultLanguage = languages.get(0);
@@ -103,18 +131,6 @@ public class CoffeeServlet extends HttpServlet {
             supportedLanguages = Collections.singleton(defaultLanguage);
         }
         Locale.setDefault(Locale.forLanguageTag(defaultLanguage));
-
-
-        Discount discount = springContext.getBean(discountClassName, Discount.class);
-
-        if (discount == null) {
-            discount = new NoDiscount(configurationService);
-        }
-        discount.init();
-        this.discountDescriptionMessageKey = "discount." + discount.getClass().getSimpleName() + ".description";
-        CoffeeOrderUtil.setDiscount(discount);
-
-        log.debug("Servlet initialization - end");
     }
 
     @Override
@@ -165,36 +181,6 @@ public class CoffeeServlet extends HttpServlet {
         response.sendRedirect(PATH_ROOT);
     }
 
-    private CoffeeOrderDto createCoffeeOrder(String[] typeIds, String[] typeQuantities) {
-        if (typeIds != null && typeQuantities != null && typeIds.length == typeQuantities.length) {
-            List<CoffeeOrderItemDto> orderItemDtoList = new ArrayList<>();
-            double orderTotalCost = 0;
-            for (int i = 0; i < typeIds.length; i++) {
-                int quantity = Integer.parseInt(typeQuantities[i]);
-                if (quantity > 0) {
-                    try {
-                        int id = Integer.parseInt(typeIds[i]);
-                        CoffeeType type = coffeeTypeService.get(id);
-                        double itemCost = quantity * type.getPrice();
-                        double discountedItemCost = CoffeeOrderUtil.getDiscountedItemCost(quantity, type.getPrice());
-                        boolean discounted = discountedItemCost < itemCost;
-                        CoffeeOrderItemDto orderItemDto = new CoffeeOrderItemDto(type, quantity, discountedItemCost, discounted);
-                        orderItemDtoList.add(orderItemDto);
-                        orderTotalCost += discountedItemCost;
-                    } catch (NumberFormatException | NotFoundException e) {
-                        log.warn(e.getMessage());
-                    }
-                }
-            }
-            double deliveryCost = CoffeeOrderUtil.getDeliveryCost(orderTotalCost);
-            orderTotalCost += deliveryCost;
-            if (!orderItemDtoList.isEmpty()) {
-                return new CoffeeOrderDto(orderItemDtoList, deliveryCost, orderTotalCost);
-            }
-        }
-        return null;
-    }
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getRequestURI();
@@ -236,6 +222,36 @@ public class CoffeeServlet extends HttpServlet {
             }
         }
         response.sendRedirect(PATH_ROOT);
+    }
+
+    private CoffeeOrderDto createCoffeeOrder(String[] typeIds, String[] typeQuantities) {
+        if (typeIds != null && typeQuantities != null && typeIds.length == typeQuantities.length) {
+            List<CoffeeOrderItemDto> orderItemDtoList = new ArrayList<>();
+            double orderTotalCost = 0;
+            for (int i = 0; i < typeIds.length; i++) {
+                int quantity = Integer.parseInt(typeQuantities[i]);
+                if (quantity > 0) {
+                    try {
+                        int id = Integer.parseInt(typeIds[i]);
+                        CoffeeType type = coffeeTypeService.get(id);
+                        double itemCost = quantity * type.getPrice();
+                        double discountedItemCost = CoffeeOrderUtil.getDiscountedItemCost(quantity, type.getPrice());
+                        boolean discounted = discountedItemCost < itemCost;
+                        CoffeeOrderItemDto orderItemDto = new CoffeeOrderItemDto(type, quantity, discountedItemCost, discounted);
+                        orderItemDtoList.add(orderItemDto);
+                        orderTotalCost += discountedItemCost;
+                    } catch (NumberFormatException | NotFoundException e) {
+                        log.warn(e.getMessage());
+                    }
+                }
+            }
+            double deliveryCost = CoffeeOrderUtil.getDeliveryCost(orderTotalCost);
+            orderTotalCost += deliveryCost;
+            if (!orderItemDtoList.isEmpty()) {
+                return new CoffeeOrderDto(orderItemDtoList, deliveryCost, orderTotalCost);
+            }
+        }
+        return null;
     }
 
     private Locale resolveLocale(HttpServletRequest request, HttpSession session) {

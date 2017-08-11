@@ -1,20 +1,14 @@
 package test.onlinecafe.util;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
-import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -26,10 +20,19 @@ public final class DbUtil {
     }
 
     private static String schemaFile = "db/coffee.sql";
+    private static String dataFile = "db/testdata.sql";
 
     private static DataSource dataSource;
 
     private DbUtil() {
+    }
+
+    public static void setSchemaFile(String schemaFile) {
+        DbUtil.schemaFile = schemaFile;
+    }
+
+    public static void setDataFile(String dataFile) {
+        DbUtil.dataFile = dataFile;
     }
 
     public static void executeSQLScriptFile(String fileName) {
@@ -53,8 +56,7 @@ public final class DbUtil {
             e.printStackTrace();
         }
     }
-
-    public static void initDatabase(String dataFile) {
+    public static void initDatabase() {
         initDatabase(dataFile, schemaFile);
     }
 

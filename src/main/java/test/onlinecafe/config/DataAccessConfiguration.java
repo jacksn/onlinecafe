@@ -7,11 +7,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
+import test.onlinecafe.util.DbUtil;
 
 @Configuration
 @PropertySources({
         @PropertySource("classpath:db/db.properties"),
-        @PropertySource(value = "classpath:db/#{systemProperty['dbconfig.path']}", ignoreResourceNotFound = true)})
+        @PropertySource(value = "classpath:db/${db_config_path}", ignoreResourceNotFound = true)})
 public class DataAccessConfiguration {
 
     @Value("${db.driver}")
@@ -26,15 +27,19 @@ public class DataAccessConfiguration {
     @Value("${db.password}")
     private String databasePassword;
 
-    @Bean
+    @Value("${db.schema_file}")
+    private String databaseSchemaFile;
+
+    @Value("${db.data_file}")
+    private String databaseDataFile;
+
+    @Bean(name = "dataSource")
     public DataSource dataSource() throws ClassNotFoundException {
 
-//        String schema = properties.getProperty("db.schema");
-//        if (schema != null) {
-//            DbUtil.schemaFile = schema;
-//        }
+        DbUtil.setSchemaFile(databaseSchemaFile);
+        DbUtil.setDataFile(databaseDataFile);
 
-            PoolProperties poolProperties = new PoolProperties();
+        PoolProperties poolProperties = new PoolProperties();
         poolProperties.setDriverClassName(databaseDriverClassName);
         poolProperties.setUrl(databaseUrl);
         poolProperties.setUsername(databaseUsername);
@@ -46,10 +51,8 @@ public class DataAccessConfiguration {
         poolProperties.setTestOnReturn(false);
         poolProperties.setRemoveAbandonedTimeout(60);
         poolProperties.setMinIdle(10);
-//        poolProperties.setLogAbandoned(true);
         poolProperties.setRemoveAbandoned(true);
         poolProperties.setRollbackOnReturn(true);
-//        poolProperties.setDefaultTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
         poolProperties.setJdbcInterceptors("org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;" +
                 "org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer");
         DataSource dataSource = new org.apache.tomcat.jdbc.pool.DataSource();

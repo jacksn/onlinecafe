@@ -12,7 +12,7 @@ import java.util.Locale;
 @Import(DataAccessConfiguration.class)
 public class AppConfiguration {
 
-    @Value("${i18n.supported_languages}")
+    @Value("${app.i18n.supported_languages}")
     private String supportedLanguages;
 
     @Bean(name = "messageSource")
