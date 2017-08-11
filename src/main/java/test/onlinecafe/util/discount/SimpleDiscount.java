@@ -2,9 +2,11 @@ package test.onlinecafe.util.discount;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import test.onlinecafe.service.ConfigurationService;
 import test.onlinecafe.util.exception.NotFoundException;
 
+@Component("simpleDiscount")
 public class SimpleDiscount implements Discount {
     public static final String ERROR_GETTING_PARAMETER = "Unable to get configuration parameter {}, using default value {}";
     private static final Logger log = LoggerFactory.getLogger(SimpleDiscount.class);

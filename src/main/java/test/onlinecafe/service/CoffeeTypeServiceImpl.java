@@ -1,5 +1,6 @@
 package test.onlinecafe.service;
 
+import org.springframework.stereotype.Service;
 import test.onlinecafe.model.CoffeeType;
 import test.onlinecafe.repository.CoffeeTypeRepository;
 import test.onlinecafe.util.exception.NotFoundException;
@@ -9,6 +10,7 @@ import java.util.List;
 import static test.onlinecafe.util.CoffeeTypeUtil.filterEnabled;
 import static test.onlinecafe.util.ValidationUtil.*;
 
+@Service
 public class CoffeeTypeServiceImpl implements CoffeeTypeService {
     private final CoffeeTypeRepository repository;
 

@@ -1,15 +1,17 @@
 package test.onlinecafe.repository;
 
+import org.apache.tomcat.jdbc.pool.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 import test.onlinecafe.model.CoffeeType;
 import test.onlinecafe.util.exception.DataAccessException;
 
-import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
     private static final String SELECT_ALL_QUERY = "SELECT * FROM CoffeeType";
     private static final String SELECT_QUERY = "SELECT * FROM CoffeeType WHERE id = ?";

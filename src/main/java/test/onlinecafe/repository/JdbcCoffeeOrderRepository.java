@@ -1,13 +1,15 @@
 package test.onlinecafe.repository;
 
+import org.apache.tomcat.jdbc.pool.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import test.onlinecafe.model.CoffeeOrder;
 import test.onlinecafe.model.CoffeeOrderItem;
 import test.onlinecafe.model.CoffeeType;
 import test.onlinecafe.util.exception.DataAccessException;
 
-import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +18,7 @@ import java.util.Map;
 
 import static test.onlinecafe.repository.CoffeeOrderQueryStrings.*;
 
+@Repository
 public class JdbcCoffeeOrderRepository implements CoffeeOrderRepository {
     private static final Logger log = LoggerFactory.getLogger(JdbcCoffeeOrderRepository.class);
 

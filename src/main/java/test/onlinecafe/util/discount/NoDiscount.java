@@ -2,9 +2,11 @@ package test.onlinecafe.util.discount;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import test.onlinecafe.service.ConfigurationService;
 import test.onlinecafe.util.exception.NotFoundException;
 
+@Component("noDiscount")
 public class NoDiscount implements Discount {
     private static final Logger log = LoggerFactory.getLogger(NoDiscount.class);
     private ConfigurationService service;

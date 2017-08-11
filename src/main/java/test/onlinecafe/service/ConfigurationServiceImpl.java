@@ -1,5 +1,6 @@
 package test.onlinecafe.service;
 
+import org.springframework.stereotype.Service;
 import test.onlinecafe.model.ConfigurationItem;
 import test.onlinecafe.repository.ConfigurationRepository;
 
@@ -9,6 +10,7 @@ import static test.onlinecafe.util.ValidationUtil.requireEntity;
 import static test.onlinecafe.util.ValidationUtil.checkEntityPresence;
 import static test.onlinecafe.util.ValidationUtil.checkPresence;
 
+@Service
 public class ConfigurationServiceImpl implements ConfigurationService {
     private final ConfigurationRepository repository;
 

@@ -1,5 +1,6 @@
 package test.onlinecafe.service;
 
+import org.springframework.stereotype.Service;
 import test.onlinecafe.dto.CoffeeOrderDto;
 import test.onlinecafe.model.CoffeeOrder;
 import test.onlinecafe.repository.CoffeeOrderRepository;
@@ -9,6 +10,7 @@ import java.util.List;
 
 import static test.onlinecafe.util.ValidationUtil.*;
 
+@Service
 public class CoffeeOrderServiceImpl implements CoffeeOrderService {
     private final CoffeeOrderRepository repository;
 

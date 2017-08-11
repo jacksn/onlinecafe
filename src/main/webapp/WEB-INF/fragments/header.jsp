@@ -27,7 +27,8 @@
                 </li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <c:out value="${sessionScope.get(\"language\")}"/>
+                        <%--@elvariable id="locale" type="java.util.Locale"--%>
+                        <c:out value="${locale.language}"/>
                         <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
