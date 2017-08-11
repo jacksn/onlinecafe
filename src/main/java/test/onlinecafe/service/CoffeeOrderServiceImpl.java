@@ -1,7 +1,9 @@
 package test.onlinecafe.service;
 
+import test.onlinecafe.dto.CoffeeOrderDto;
 import test.onlinecafe.model.CoffeeOrder;
 import test.onlinecafe.repository.CoffeeOrderRepository;
+import test.onlinecafe.util.CoffeeOrderUtil;
 
 import java.util.List;
 
@@ -19,6 +21,14 @@ public class CoffeeOrderServiceImpl implements CoffeeOrderService {
         requireEntity(order);
         requireNullId(order);
         return repository.save(order);
+    }
+
+    @Override
+    public CoffeeOrderDto save(CoffeeOrderDto orderDto) {
+        requireEntity(orderDto);
+        CoffeeOrder order = repository.save(CoffeeOrderUtil.getOrderFromDto(orderDto));
+        orderDto.setId(order.getId());
+        return orderDto;
     }
 
     @Override

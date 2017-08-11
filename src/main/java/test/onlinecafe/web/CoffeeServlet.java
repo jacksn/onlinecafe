@@ -5,8 +5,6 @@ import test.onlinecafe.dto.CoffeeOrderDto;
 import test.onlinecafe.dto.CoffeeOrderItemDto;
 import test.onlinecafe.dto.Notification;
 import test.onlinecafe.dto.NotificationType;
-import test.onlinecafe.model.CoffeeOrder;
-import test.onlinecafe.model.CoffeeOrderItem;
 import test.onlinecafe.model.CoffeeType;
 import test.onlinecafe.repository.JdbcCoffeeOrderRepository;
 import test.onlinecafe.repository.JdbcCoffeeTypeRepository;
@@ -29,11 +27,9 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import static test.onlinecafe.util.CoffeeOrderItemUtil.getOrderItemFromDto;
 import static test.onlinecafe.web.CoffeeServlet.*;
 
 @WebServlet({PATH_ROOT, PATH_ORDER, PATH_CANCEL})
@@ -126,15 +122,6 @@ public class CoffeeServlet extends HttpServlet {
         log.debug("Servlet initialization - end");
     }
 
-    private ResourceBundle getResourceBundle(String language) {
-        try {
-            return ResourceBundle.getBundle("messages.app", Locale.forLanguageTag(language));
-        } catch (MissingResourceException e) {
-            log.error("No resource bundle found for language \"{}\"", language);
-        }
-        return null;
-    }
-
     @Override
     public void destroy() {
         log.debug("Servlet deinitialization - start");
@@ -143,49 +130,7 @@ public class CoffeeServlet extends HttpServlet {
         log.debug("Servlet deinitialization - end");
     }
 
-    private String getLocalizedMessage(String language, String key) {
-        if (supportedLanguages.containsKey(language)) {
-            try {
-                return supportedLanguages.get(language).getString(key);
-            } catch (MissingResourceException | ClassCastException e) {
-                log.error(e.getMessage());
-            }
-        }
-        try {
-            return supportedLanguages.get(defaultLanguage).getString(key);
-        } catch (MissingResourceException | ClassCastException e) {
-            log.error(e.getMessage());
-        }
-        log.error("ERROR! Message {} for language {} not found!", key, language);
-        return "No message";
-    }
-
-    private String resolveCurrentLanguage(HttpServletRequest request, HttpSession session) {
-        String language = (String) session.getAttribute(MODEL_ATTR_LANGUAGE);
-        String langParam = request.getParameter("lang");
-
-        if (langParam == null && language == null) {
-            session.setAttribute(MODEL_ATTR_LANGUAGE, defaultLanguage);
-        } else {
-            if (supportedLanguages.containsKey(langParam)) {
-                session.setAttribute(MODEL_ATTR_LANGUAGE, langParam);
-                return langParam;
-            } else if (language == null) {
-                session.setAttribute(MODEL_ATTR_LANGUAGE, defaultLanguage);
-                return defaultLanguage;
-            }
-        }
-        return language;
-    }
-
-    private void removeSessionAttributes(HttpSession session) {
-        session.removeAttribute(MODEL_ATTR_NOTIFICATION);
-        session.removeAttribute(MODEL_ATTR_ORDER);
-        session.removeAttribute(MODEL_ATTR_ORDER_NAME);
-        session.removeAttribute(MODEL_ATTR_ORDER_ADDRESS);
-    }
-
-    @Override
+   @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String action = request.getRequestURI();
@@ -217,8 +162,7 @@ public class CoffeeServlet extends HttpServlet {
             } else {
                 log.debug("Order is empty. Redirect to main page.");
                 session.removeAttribute(MODEL_ATTR_ORDER);
-                session.setAttribute(MODEL_ATTR_NOTIFICATION,
-                        new Notification(NotificationType.ERROR, getLocalizedMessage(language, "error.empty_order")));
+                setNotificationSessionAttribute(session, NotificationType.ERROR, language, "error.empty_order");
             }
         } else if (PATH_CANCEL.equals(action)) {
             removeSessionAttributes(session);
@@ -272,8 +216,7 @@ public class CoffeeServlet extends HttpServlet {
                 response.sendRedirect(PATH_ORDER);
                 return;
             } else {
-                session.setAttribute(MODEL_ATTR_NOTIFICATION,
-                        new Notification(NotificationType.ERROR, getLocalizedMessage(language, "error.empty_order")));
+                setNotificationSessionAttribute(session, NotificationType.ERROR, language, "error.empty_order");
             }
         } else if (PATH_ORDER.equals(action)) {
             String name = request.getParameter(MODEL_ATTR_ORDER_NAME);
@@ -281,28 +224,77 @@ public class CoffeeServlet extends HttpServlet {
             CoffeeOrderDto orderDto = (CoffeeOrderDto) session.getAttribute(MODEL_ATTR_ORDER);
             if (orderDto == null || orderDto.getOrderItems() == null || orderDto.getOrderItems().isEmpty()) {
                 session.removeAttribute(MODEL_ATTR_ORDER);
-                session.setAttribute(MODEL_ATTR_NOTIFICATION,
-                        new Notification(NotificationType.ERROR, getLocalizedMessage(language, "error.empty_order")));
+                setNotificationSessionAttribute(session, NotificationType.ERROR, language, "error.empty_order");
                 response.sendRedirect(PATH_ROOT);
                 return;
             }
             if (name != null && address != null && !address.isEmpty()) {
-                List<CoffeeOrderItem> orderItems = new ArrayList<>();
-                for (CoffeeOrderItemDto orderItemDto : orderDto.getOrderItems()) {
-                    orderItems.add(getOrderItemFromDto(orderItemDto));
-                }
-                CoffeeOrder order = new CoffeeOrder(LocalDateTime.now().withNano(0), name, address, orderItems, orderDto.getCost());
-                coffeeOrderService.save(order);
+                orderDto.setName(name);
+                orderDto.setDeliveryAddress(address);
+                coffeeOrderService.save(orderDto);
                 removeSessionAttributes(session);
-                session.setAttribute(MODEL_ATTR_NOTIFICATION,
-                        new Notification(NotificationType.SUCCESS, getLocalizedMessage(language, "label.order_accepted")));
+                setNotificationSessionAttribute(session, NotificationType.SUCCESS, language, "label.order_accepted");
             } else {
-                session.setAttribute(MODEL_ATTR_NOTIFICATION,
-                        new Notification(NotificationType.ERROR, getLocalizedMessage(language, "error.empty_address")));
+                setNotificationSessionAttribute(session, NotificationType.ERROR, language, "error.empty_address");
                 response.sendRedirect(PATH_ORDER);
                 return;
             }
         }
         response.sendRedirect(PATH_ROOT);
+    }
+
+    private String getLocalizedMessage(String language, String key) {
+        if (supportedLanguages.containsKey(language)) {
+            try {
+                return supportedLanguages.get(language).getString(key);
+            } catch (MissingResourceException | ClassCastException e) {
+                log.error(e.getMessage());
+            }
+        }
+        try {
+            return supportedLanguages.get(defaultLanguage).getString(key);
+        } catch (MissingResourceException | ClassCastException e) {
+            log.error(e.getMessage());
+        }
+        log.error("ERROR! Message {} for language {} not found!", key, language);
+        return "No message";
+    }
+
+    private String resolveCurrentLanguage(HttpServletRequest request, HttpSession session) {
+        String language = (String) session.getAttribute(MODEL_ATTR_LANGUAGE);
+        String langParam = request.getParameter("lang");
+
+        if (langParam == null && language == null) {
+            session.setAttribute(MODEL_ATTR_LANGUAGE, defaultLanguage);
+        } else {
+            if (supportedLanguages.containsKey(langParam)) {
+                session.setAttribute(MODEL_ATTR_LANGUAGE, langParam);
+                return langParam;
+            } else if (language == null) {
+                session.setAttribute(MODEL_ATTR_LANGUAGE, defaultLanguage);
+                return defaultLanguage;
+            }
+        }
+        return language;
+    }
+
+    private ResourceBundle getResourceBundle(String language) {
+        try {
+            return ResourceBundle.getBundle("messages.app", Locale.forLanguageTag(language));
+        } catch (MissingResourceException e) {
+            log.error("No resource bundle found for language \"{}\"", language);
+        }
+        return null;
+    }
+
+    private void removeSessionAttributes(HttpSession session) {
+        session.removeAttribute(MODEL_ATTR_NOTIFICATION);
+        session.removeAttribute(MODEL_ATTR_ORDER);
+        session.removeAttribute(MODEL_ATTR_ORDER_NAME);
+        session.removeAttribute(MODEL_ATTR_ORDER_ADDRESS);
+    }
+
+    private void setNotificationSessionAttribute(HttpSession session, NotificationType type, String language, String messageKey) {
+        session.setAttribute(MODEL_ATTR_NOTIFICATION, new Notification(type, getLocalizedMessage(language, messageKey)));
     }
 }

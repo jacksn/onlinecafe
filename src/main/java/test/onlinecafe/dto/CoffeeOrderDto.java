@@ -43,6 +43,10 @@ public class CoffeeOrderDto {
         this.name = name;
     }
 
+    public void setDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+    }
+
     public String getDeliveryAddress() {
         return deliveryAddress;
     }
