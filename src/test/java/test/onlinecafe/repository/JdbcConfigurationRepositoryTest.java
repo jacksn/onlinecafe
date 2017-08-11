@@ -3,6 +3,7 @@ package test.onlinecafe.repository;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import test.onlinecafe.model.ConfigurationItem;
 import test.onlinecafe.util.exception.DataAccessException;
 
@@ -10,12 +11,8 @@ import static org.junit.Assert.assertEquals;
 import static test.onlinecafe.ConfigurationTestData.*;
 
 public class JdbcConfigurationRepositoryTest extends AbstractJdbcRepositoryTest {
-    private static ConfigurationRepository repository;
-
-    @BeforeClass
-    public static void init() {
-        repository = new JdbcConfigurationRepository(dataSource);
-    }
+    @Autowired
+    private ConfigurationRepository repository;
 
     @Test
     public void testSave() throws Exception {

@@ -1,7 +1,7 @@
 package test.onlinecafe.repository;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import test.onlinecafe.CoffeeTypeTestData;
 import test.onlinecafe.model.CoffeeOrder;
 import test.onlinecafe.model.CoffeeOrderItem;
@@ -15,12 +15,8 @@ import static org.junit.Assert.assertEquals;
 import static test.onlinecafe.CoffeeOrderTestData.*;
 
 public class JdbcCoffeeOrderRepositoryTest extends AbstractJdbcRepositoryTest {
-    private static CoffeeOrderRepository repository;
-
-    @BeforeClass
-    public static void init() {
-        repository = new JdbcCoffeeOrderRepository(dataSource);
-    }
+    @Autowired
+    private CoffeeOrderRepository repository;
 
     @Test
     public void testUpdate() throws Exception {

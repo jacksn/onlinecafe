@@ -3,6 +3,7 @@ package test.onlinecafe.repository;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import test.onlinecafe.model.BaseEntity;
 import test.onlinecafe.model.CoffeeType;
 import test.onlinecafe.util.exception.DataAccessException;
@@ -13,12 +14,8 @@ import java.util.List;
 import static test.onlinecafe.CoffeeTypeTestData.*;
 
 public class JdbcCoffeeTypeRepositoryTest extends AbstractJdbcRepositoryTest {
-    private static CoffeeTypeRepository repository;
-
-    @BeforeClass
-    public static void init() {
-        repository = new JdbcCoffeeTypeRepository(dataSource);
-    }
+    @Autowired
+    private CoffeeTypeRepository repository;
 
     @Test
     public void testUpdate() throws Exception {
