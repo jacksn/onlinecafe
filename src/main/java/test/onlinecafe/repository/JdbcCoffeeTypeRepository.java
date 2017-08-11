@@ -15,7 +15,7 @@ import java.util.List;
 public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
     private static final String SELECT_ALL_QUERY = "SELECT * FROM CoffeeType";
     private static final String SELECT_QUERY = "SELECT * FROM CoffeeType WHERE id = ?";
-    private static final String INSERT_QUERY = "INSERT INTO CoffeeType (id, type_name, price, disabled) VALUES (NULL, ?, ?, ?)";
+    private static final String INSERT_QUERY = "INSERT INTO CoffeeType (type_name, price, disabled) VALUES (?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE CoffeeType SET type_name = ?, price = ?, disabled = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM CoffeeType WHERE id=?";
 
