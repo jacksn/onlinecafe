@@ -1,9 +1,12 @@
 package test.onlinecafe.config;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
+import org.hibernate.cfg.AvailableSettings;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -12,11 +15,15 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
+import java.util.Properties;
 
 @Configuration
 @Profile("repo-jpa")
 @EnableTransactionManagement
 public class JpaConfiguration extends DataAccessConfiguration {
+
+    @Autowired
+    private Environment env;
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
@@ -26,6 +33,7 @@ public class JpaConfiguration extends DataAccessConfiguration {
 
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
+        em.setJpaProperties(hibernateProperties());
 
         return em;
     }
@@ -36,5 +44,13 @@ public class JpaConfiguration extends DataAccessConfiguration {
         transactionManager.setEntityManagerFactory(emf);
 
         return transactionManager;
+    }
+
+    Properties hibernateProperties() {
+        Properties properties = new Properties();
+        properties.setProperty(AvailableSettings.SHOW_SQL, env.getProperty("hibernate.show_sql"));
+        properties.setProperty(AvailableSettings.FORMAT_SQL, env.getProperty("hibernate.format_sql"));
+        properties.setProperty(AvailableSettings.DIALECT, env.getProperty("hibernate.dialect"));
+        return properties;
     }
 }
