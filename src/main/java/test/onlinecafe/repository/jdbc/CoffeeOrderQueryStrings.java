@@ -1,4 +1,4 @@
-package test.onlinecafe.repository;
+package test.onlinecafe.repository.jdbc;
 
 public final class CoffeeOrderQueryStrings {
     static final String SELECT_ALL_QUERY = "SELECT " +

@@ -1,10 +1,11 @@
-package test.onlinecafe.repository;
+package test.onlinecafe.repository.jdbc;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import test.onlinecafe.model.ConfigurationItem;
+import test.onlinecafe.repository.ConfigurationRepository;
 import test.onlinecafe.util.exception.DataAccessException;
 
 import java.sql.Connection;
