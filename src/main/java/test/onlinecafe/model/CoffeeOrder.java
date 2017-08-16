@@ -12,7 +12,6 @@ public class CoffeeOrder extends BaseEntity {
     @Column(name = "order_date")
     private LocalDateTime orderDate = LocalDateTime.now();
 
-    @NotNull
     @Column(name = "name")
     private String name;
 
@@ -22,6 +21,9 @@ public class CoffeeOrder extends BaseEntity {
 
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CoffeeOrderItem> orderItems;
+
+    @NotNull
+    @Column(name = "cost")
     private Double cost;
 
     public CoffeeOrder() {
