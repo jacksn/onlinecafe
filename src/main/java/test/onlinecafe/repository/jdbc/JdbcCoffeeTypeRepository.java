@@ -43,6 +43,7 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
         return type;
     }
 
+    // TODO: add transactions
     @Override
     public CoffeeType save(CoffeeType type) {
         if (type.isNew()) {
@@ -81,6 +82,7 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
         return type;
     }
 
+    // TODO: add transactions
     @SuppressWarnings("Duplicates")
     @Override
     public boolean delete(int id) {

@@ -83,6 +83,7 @@ public class JdbcCoffeeOrderRepository implements CoffeeOrderRepository {
         return new ArrayList<>(ordersMap.values());
     }
 
+    // TODO: add transactions
     @Override
     public CoffeeOrder save(CoffeeOrder order) {
         try (Connection connection = dataSource.getConnection()) {
@@ -149,6 +150,7 @@ public class JdbcCoffeeOrderRepository implements CoffeeOrderRepository {
         return order;
     }
 
+    // TODO: add transactions
     @SuppressWarnings("Duplicates")
     @Override
     public boolean delete(int id) {
