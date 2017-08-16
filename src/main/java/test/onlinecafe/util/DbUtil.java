@@ -35,6 +35,7 @@ public final class DbUtil {
         DbUtil.dataFile = dataFile;
     }
 
+    // TODO: replace with ResourceDatabasePopulator and DatabasePopulatorUtils
     public static void executeSQLScriptFile(String fileName) {
         log.debug("Executing SQL script file: {}", fileName);
         StringBuilder sb = new StringBuilder();
