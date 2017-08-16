@@ -3,6 +3,7 @@ package test.onlinecafe.repository.jdbc;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import test.onlinecafe.model.CoffeeType;
 import test.onlinecafe.repository.CoffeeTypeRepository;
@@ -12,6 +13,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Profile("repo-jdbc")
 @Repository
 public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
     private static final String SELECT_ALL = "SELECT * FROM CoffeeType";

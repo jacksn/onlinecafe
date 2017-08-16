@@ -3,6 +3,7 @@ package test.onlinecafe.repository.jdbc;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import test.onlinecafe.model.CoffeeOrder;
 import test.onlinecafe.model.CoffeeOrderItem;
@@ -18,6 +19,7 @@ import java.util.Map;
 
 import static test.onlinecafe.repository.jdbc.CoffeeOrderQueryStrings.*;
 
+@Profile("repo-jdbc")
 @Repository
 public class JdbcCoffeeOrderRepository implements CoffeeOrderRepository {
     private static final Logger log = LoggerFactory.getLogger(JdbcCoffeeOrderRepository.class);
