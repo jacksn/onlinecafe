@@ -14,11 +14,12 @@ import java.util.List;
 
 @Repository
 public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
-    private static final String SELECT_ALL_QUERY = "SELECT * FROM CoffeeType";
-    private static final String SELECT_QUERY = "SELECT * FROM CoffeeType WHERE id = ?";
-    private static final String INSERT_QUERY = "INSERT INTO CoffeeType (type_name, price, disabled) VALUES (?, ?, ?)";
-    private static final String UPDATE_QUERY = "UPDATE CoffeeType SET type_name = ?, price = ?, disabled = ? WHERE id = ?";
-    private static final String DELETE_QUERY = "DELETE FROM CoffeeType WHERE id=?";
+    private static final String SELECT_ALL = "SELECT * FROM CoffeeType";
+    private static final String SELECT_ENABLED = "SELECT * FROM CoffeeType WHERE enabled = 'Y'";
+    private static final String SELECT_ONE = "SELECT * FROM CoffeeType WHERE id = ?";
+    private static final String INSERT = "INSERT INTO CoffeeType (type_name, price, disabled) VALUES (?, ?, ?)";
+    private static final String UPDATE = "UPDATE CoffeeType SET type_name = ?, price = ?, disabled = ? WHERE id = ?";
+    private static final String DELETE = "DELETE FROM CoffeeType WHERE id=?";
 
     private static final Logger log = LoggerFactory.getLogger(JdbcCoffeeTypeRepository.class);
 
@@ -48,7 +49,7 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
     public CoffeeType save(CoffeeType type) {
         if (type.isNew()) {
             try (Connection connection = dataSource.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(INSERT_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+                 PreparedStatement statement = connection.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)) {
                 fillStatementParameters(type, statement);
                 int affectedRows = statement.executeUpdate();
                 if (affectedRows == 0) {
@@ -67,7 +68,7 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
             }
         } else {
             try (Connection connection = dataSource.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY)) {
+                 PreparedStatement statement = connection.prepareStatement(UPDATE)) {
                 fillStatementParameters(type, statement);
                 statement.setInt(4, type.getId());
                 int affectedRows = statement.executeUpdate();
@@ -87,7 +88,7 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
     @Override
     public boolean delete(int id) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(DELETE_QUERY)) {
+             PreparedStatement statement = connection.prepareStatement(DELETE)) {
             statement.setInt(1, id);
             return statement.executeUpdate() != 0;
         } catch (SQLException e) {
@@ -99,7 +100,7 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
     @Override
     public CoffeeType get(int id) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SELECT_QUERY)) {
+             PreparedStatement statement = connection.prepareStatement(SELECT_ONE)) {
             statement.setInt(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
                 return resultSet.next() ? getCoffeeType(resultSet) : null;
@@ -112,8 +113,17 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
 
     @Override
     public List<CoffeeType> getAll() {
+        return getCoffeeTypes(false);
+    }
+
+    @Override
+    public List<CoffeeType> getEnabled() {
+        return getCoffeeTypes(true);
+    }
+
+    private List<CoffeeType> getCoffeeTypes(boolean onlyEnabled) {
         try (Connection connection = dataSource.getConnection();
-             ResultSet resultSet = connection.createStatement().executeQuery(SELECT_ALL_QUERY)) {
+             ResultSet resultSet = connection.createStatement().executeQuery(onlyEnabled ? SELECT_ENABLED : SELECT_ALL)) {
             ArrayList<CoffeeType> types = new ArrayList<>();
             while (resultSet.next()) {
                 types.add(getCoffeeType(resultSet));
