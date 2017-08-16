@@ -1,8 +1,24 @@
 package test.onlinecafe.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+
+@Entity
+@Table(name = "Configuration")
 public class ConfigurationItem {
+    @Id
+    @NotBlank
     private String id;
+
+    @Column
+    @NotBlank
     private String value;
+
+    public ConfigurationItem() {
+    }
 
     public ConfigurationItem(String id, String value) {
         this.id = id;

@@ -32,24 +32,28 @@ public final class CoffeeOrderUtil {
         return discount.getDiscountedItemCost(quantity, price);
     }
 
-    public static List<CoffeeOrderItem> getOrderItemsFromDtos(List<CoffeeOrderItemDto> orderItemDtos) {
+    public static List<CoffeeOrderItem> getOrderItemsFromDtos(CoffeeOrder order, List<CoffeeOrderItemDto> orderItemDtos) {
         List<CoffeeOrderItem> orderItems = new ArrayList<>();
         for (CoffeeOrderItemDto orderItemDto : orderItemDtos) {
-            orderItems.add(new CoffeeOrderItem(orderItemDto.getId(),
+            CoffeeOrderItem orderItem = new CoffeeOrderItem(orderItemDto.getId(),
                     orderItemDto.getCoffeeType(),
                     orderItemDto.getQuantity()
-            ));
+            );
+            orderItem.setOrder(order);
+            orderItems.add(orderItem);
         }
         return orderItems;
     }
 
     public static CoffeeOrder getOrderFromDto(CoffeeOrderDto orderDto) {
-        return new CoffeeOrder(
+        CoffeeOrder order = new CoffeeOrder(
                 LocalDateTime.now().withNano(0),
                 orderDto.getName(),
                 orderDto.getDeliveryAddress(),
-                getOrderItemsFromDtos(orderDto.getOrderItems()),
+                null,
                 orderDto.getCost()
         );
+        order.setOrderItems(getOrderItemsFromDtos(order, orderDto.getOrderItems()));
+        return order;
     }
 }

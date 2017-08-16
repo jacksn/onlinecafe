@@ -1,14 +1,28 @@
 package test.onlinecafe.model;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Entity
+@Table(name = "CoffeeOrder")
 public class CoffeeOrder extends BaseEntity {
+    @Column(name = "order_date")
     private LocalDateTime orderDate = LocalDateTime.now();
+
+    @NotNull
+    @Column(name = "name")
     private String name;
+
+    @NotBlank
+    @Column(name = "delivery_address")
     private String deliveryAddress;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CoffeeOrderItem> orderItems;
-    private double cost;
+    private Double cost;
 
     public CoffeeOrder() {
     }
@@ -50,11 +64,11 @@ public class CoffeeOrder extends BaseEntity {
         this.deliveryAddress = deliveryAddress;
     }
 
-    public double getCost() {
+    public Double getCost() {
         return cost;
     }
 
-    public void setCost(double cost) {
+    public void setCost(Double cost) {
         this.cost = cost;
     }
 

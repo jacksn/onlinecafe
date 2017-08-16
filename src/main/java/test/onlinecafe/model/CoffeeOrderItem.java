@@ -1,8 +1,23 @@
 package test.onlinecafe.model;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+
+@Entity
+@Table(name = "CoffeeOrderItem")
 public class CoffeeOrderItem extends BaseEntity {
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "type_id", nullable = false)
     private CoffeeType coffeeType;
+
+    @NotNull
+    @Column(name = "quantity")
     private Integer quantity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
+    private CoffeeOrder order;
 
     public CoffeeOrderItem() {
     }
@@ -15,6 +30,14 @@ public class CoffeeOrderItem extends BaseEntity {
         super(id);
         this.coffeeType = type;
         this.quantity = quantity;
+    }
+
+    public CoffeeOrder getOrder() {
+        return order;
+    }
+
+    public void setOrder(CoffeeOrder order) {
+        this.order = order;
     }
 
     public CoffeeType getCoffeeType() {

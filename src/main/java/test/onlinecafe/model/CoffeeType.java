@@ -1,9 +1,30 @@
 package test.onlinecafe.model;
 
+import org.hibernate.annotations.Type;
+import org.hibernate.validator.constraints.SafeHtml;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+@Entity
+@Table(name = "CoffeeType")
 public class CoffeeType extends BaseEntity {
 
+    @Column(name = "type_name")
+    @NotBlank
+    @SafeHtml
     private String typeName;
+
+    @Column(name = "price")
+    @NotNull
     private Double price;
+
+    @Column(name = "disabled")
+    @NotNull
+    @Type(type = "yes_no")
     private Boolean disabled;
 
     public CoffeeType() {
