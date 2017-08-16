@@ -3,15 +3,21 @@ package test.onlinecafe.model;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.SafeHtml;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "CoffeeType")
+@NamedQueries({
+        @NamedQuery(name = CoffeeType.GET_ALL, query = "SELECT ct FROM CoffeeType ct"),
+        @NamedQuery(name = CoffeeType.GET_ENABLED, query = "SELECT ct FROM CoffeeType ct WHERE ct.disabled = false"),
+        @NamedQuery(name = CoffeeType.DELETE, query = "DELETE FROM CoffeeType ct WHERE ct.id = :id"),
+})
 public class CoffeeType extends BaseEntity {
+    public static final String GET_ALL = "CoffeeType.getAll";
+    public static final String GET_ENABLED = "CoffeeType.getEnabled";
+    public static final String DELETE = "CoffeeType.delete";
 
     @Column(name = "type_name")
     @NotBlank

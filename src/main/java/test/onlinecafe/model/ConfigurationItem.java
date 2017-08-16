@@ -1,14 +1,16 @@
 package test.onlinecafe.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "Configuration")
+@NamedQueries({
+        @NamedQuery(name = ConfigurationItem.DELETE, query = "DELETE FROM ConfigurationItem ci WHERE ci.id = :id"),
+})
 public class ConfigurationItem {
+    public static final String DELETE = "ConfigurationItem.delete";
+
     @Id
     @NotBlank
     private String id;

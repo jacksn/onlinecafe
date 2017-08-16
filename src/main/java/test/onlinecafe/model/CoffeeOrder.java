@@ -8,7 +8,14 @@ import java.util.List;
 
 @Entity
 @Table(name = "CoffeeOrder")
+@NamedQueries({
+        @NamedQuery(name = CoffeeOrder.GET_ALL, query = "SELECT co FROM CoffeeOrder co"),
+        @NamedQuery(name = CoffeeOrder.DELETE, query = "DELETE FROM CoffeeOrder co WHERE co.id = :id"),
+})
 public class CoffeeOrder extends BaseEntity {
+    public static final String GET_ALL = "CoffeeOrder.getAll";
+    public static final String DELETE = "CoffeeOrder.delete";
+
     @Column(name = "order_date")
     private LocalDateTime orderDate = LocalDateTime.now();
 
