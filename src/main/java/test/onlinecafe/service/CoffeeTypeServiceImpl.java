@@ -6,7 +6,6 @@ import test.onlinecafe.util.exception.NotFoundException;
 
 import java.util.List;
 
-import static test.onlinecafe.util.CoffeeTypeUtil.filterEnabled;
 import static test.onlinecafe.util.ValidationUtil.*;
 
 public class CoffeeTypeServiceImpl implements CoffeeTypeService {
@@ -47,6 +46,6 @@ public class CoffeeTypeServiceImpl implements CoffeeTypeService {
 
     @Override
     public List<CoffeeType> getEnabled() {
-        return filterEnabled(repository.getAll());
+        return repository.getEnabled();
     }
 }
