@@ -12,7 +12,7 @@ import java.util.List;
 
 public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
     private static final String SELECT_ALL = "SELECT * FROM CoffeeType";
-    private static final String SELECT_ENABLED = "SELECT * FROM CoffeeType WHERE enabled = 'Y'";
+    private static final String SELECT_ENABLED = "SELECT * FROM CoffeeType WHERE disabled = 'N'";
     private static final String SELECT_ONE = "SELECT * FROM CoffeeType WHERE id = ?";
     private static final String INSERT = "INSERT INTO CoffeeType (type_name, price, disabled) VALUES (?, ?, ?)";
     private static final String UPDATE = "UPDATE CoffeeType SET type_name = ?, price = ?, disabled = ? WHERE id = ?";
