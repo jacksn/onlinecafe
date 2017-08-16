@@ -82,6 +82,16 @@ public class CoffeeOrder extends BaseEntity {
         this.orderItems = orderItems;
     }
 
+    public void addOrderItem(CoffeeOrderItem orderItem) {
+        orderItem.setOrder(this);
+        this.orderItems.add(orderItem);
+    }
+
+    public void removeOrderItem(CoffeeOrderItem orderItem) {
+        orderItem.setOrder(null);
+        this.orderItems.remove(orderItem);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

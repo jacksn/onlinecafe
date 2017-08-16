@@ -8,7 +8,6 @@ import test.onlinecafe.util.discount.Discount;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
 public final class CoffeeOrderUtil {
     private static Discount discount;
@@ -32,17 +31,11 @@ public final class CoffeeOrderUtil {
         return discount.getDiscountedItemCost(quantity, price);
     }
 
-    public static List<CoffeeOrderItem> getOrderItemsFromDtos(CoffeeOrder order, List<CoffeeOrderItemDto> orderItemDtos) {
-        List<CoffeeOrderItem> orderItems = new ArrayList<>();
-        for (CoffeeOrderItemDto orderItemDto : orderItemDtos) {
-            CoffeeOrderItem orderItem = new CoffeeOrderItem(orderItemDto.getId(),
-                    orderItemDto.getCoffeeType(),
-                    orderItemDto.getQuantity()
-            );
-            orderItem.setOrder(order);
-            orderItems.add(orderItem);
-        }
-        return orderItems;
+    public static CoffeeOrderItem getOrderItemFromDto(CoffeeOrderItemDto orderItemDto) {
+        return new CoffeeOrderItem(orderItemDto.getId(),
+                orderItemDto.getCoffeeType(),
+                orderItemDto.getQuantity()
+        );
     }
 
     public static CoffeeOrder getOrderFromDto(CoffeeOrderDto orderDto) {
@@ -50,10 +43,12 @@ public final class CoffeeOrderUtil {
                 LocalDateTime.now().withNano(0),
                 orderDto.getName(),
                 orderDto.getDeliveryAddress(),
-                null,
+                new ArrayList<>(),
                 orderDto.getCost()
         );
-        order.setOrderItems(getOrderItemsFromDtos(order, orderDto.getOrderItems()));
+        for (CoffeeOrderItemDto orderItemDto : orderDto.getOrderItems()) {
+            order.addOrderItem(getOrderItemFromDto(orderItemDto));
+        }
         return order;
     }
 }
