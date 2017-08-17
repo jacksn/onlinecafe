@@ -38,7 +38,7 @@ public abstract class AbstractCoffeeTypeRepositoryTest extends AbstractRepositor
         int updatedId = COFFEE_TYPE1.getId();
         CoffeeType updated = repository.get(updatedId);
         updated.setId(Integer.MAX_VALUE);
-        repository.save(updated);
+        Assert.assertNull(repository.save(updated));
     }
 
     @Test

@@ -7,7 +7,7 @@ import test.onlinecafe.repository.AbstractCoffeeTypeRepositoryTest;
 import javax.persistence.PersistenceException;
 
 @ActiveProfiles("repo-jpa")
-public class JpaCoffeeTypeRepositoryTestImpl extends AbstractCoffeeTypeRepositoryTest {
+public class JpaCoffeeTypeRepositoryTest extends AbstractCoffeeTypeRepositoryTest {
     @Override
     public void testUpdateInvalid() throws Exception {
         thrown.expect(DataIntegrityViolationException.class);

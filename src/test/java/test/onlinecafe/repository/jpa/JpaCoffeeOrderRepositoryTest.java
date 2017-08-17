@@ -7,7 +7,7 @@ import test.onlinecafe.repository.AbstractCoffeeOrderRepositoryTest;
 import javax.persistence.PersistenceException;
 
 @ActiveProfiles("repo-jpa")
-public class JpaCoffeeOrderRepositoryTestImpl extends AbstractCoffeeOrderRepositoryTest {
+public class JpaCoffeeOrderRepositoryTest extends AbstractCoffeeOrderRepositoryTest {
     @Test
     @Override
     public void testCreateInvalid() throws Exception {

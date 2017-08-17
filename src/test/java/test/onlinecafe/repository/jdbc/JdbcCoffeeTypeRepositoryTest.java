@@ -5,7 +5,7 @@ import test.onlinecafe.repository.AbstractCoffeeTypeRepositoryTest;
 import test.onlinecafe.util.exception.DataAccessException;
 
 @ActiveProfiles("repo-jdbc")
-public class JdbcCoffeeTypeRepositoryTestImpl extends AbstractCoffeeTypeRepositoryTest {
+public class JdbcCoffeeTypeRepositoryTest extends AbstractCoffeeTypeRepositoryTest {
     @Override
     public void testUpdateInvalid() throws Exception {
         thrown.expect(DataAccessException.class);
