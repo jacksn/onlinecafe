@@ -24,7 +24,8 @@ public class JpaCoffeeOrderRepository implements CoffeeOrderRepository {
             em.persist(order);
             return order;
         } else {
-            return em.merge(order);
+            throwUnsupportedOperationException();
+            return null;
         }
     }
 

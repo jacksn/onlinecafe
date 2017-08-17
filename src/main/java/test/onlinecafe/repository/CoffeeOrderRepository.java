@@ -13,4 +13,7 @@ public interface CoffeeOrderRepository {
 
     List<CoffeeOrder> getAll();
 
+    default void throwUnsupportedOperationException() {
+        throw new UnsupportedOperationException("Update of order is not supported");
+    }
 }

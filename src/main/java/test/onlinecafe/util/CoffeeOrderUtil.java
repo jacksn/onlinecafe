@@ -7,7 +7,6 @@ import test.onlinecafe.model.CoffeeOrderItem;
 import test.onlinecafe.util.discount.Discount;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 public final class CoffeeOrderUtil {
     private static Discount discount;
@@ -43,7 +42,6 @@ public final class CoffeeOrderUtil {
                 LocalDateTime.now().withNano(0),
                 orderDto.getName(),
                 orderDto.getDeliveryAddress(),
-                new ArrayList<>(),
                 orderDto.getCost()
         );
         for (CoffeeOrderItemDto orderItemDto : orderDto.getOrderItems()) {
