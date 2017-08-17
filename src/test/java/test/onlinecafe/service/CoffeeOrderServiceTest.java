@@ -16,6 +16,7 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static test.onlinecafe.CoffeeOrderTestData.*;
+import static test.onlinecafe.util.CoffeeOrderUtil.getOrderFromDto;
 
 public class CoffeeOrderServiceTest {
     private CoffeeOrderService service;
@@ -39,6 +40,16 @@ public class CoffeeOrderServiceTest {
     public void testSaveNullOrder() throws Exception {
         CoffeeOrder order = null;
         service.save(order);
+    }
+
+    @Test
+    public void testSaveOrderDto() throws Exception {
+        CoffeeOrder order = getOrderFromDto(getCoffeeOrder1Dto());
+        CoffeeOrder saved = getCoffeeOrder1();
+        saved.setId(1);
+        when(repository.save(order)).thenReturn(saved);
+        service.save(getCoffeeOrder1Dto());
+        verify(repository).save(order);
     }
 
     @Test(expected = NullPointerException.class)

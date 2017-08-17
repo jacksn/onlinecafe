@@ -85,4 +85,11 @@ public abstract class AbstractCoffeeTypeRepositoryTest extends AbstractRepositor
         types.sort(Comparator.comparingInt(BaseEntity::getId));
         Assert.assertEquals(COFFEE_TYPES_ALL, types);
     }
+
+    @Test
+    public void testGetEnabled() throws Exception {
+        List<CoffeeType> types = repository.getEnabled();
+        types.sort(Comparator.comparingInt(BaseEntity::getId));
+        Assert.assertEquals(COFFEE_TYPES_ENABLED, types);
+    }
 }

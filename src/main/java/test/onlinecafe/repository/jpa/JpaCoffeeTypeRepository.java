@@ -47,10 +47,8 @@ public class JpaCoffeeTypeRepository implements CoffeeTypeRepository {
         return em.createNamedQuery(CoffeeType.GET_ALL, CoffeeType.class).getResultList();
     }
 
-    // TODO: add test
     @Override
     public List<CoffeeType> getEnabled() {
         return em.createNamedQuery(CoffeeType.GET_ENABLED, CoffeeType.class).getResultList();
     }
-
 }
