@@ -49,7 +49,7 @@ public class CoffeeOrderServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testSaveNotNew() throws Exception {
-        service.save(COFFEE_ORDER1);
+        service.save(getCoffeeOrder1());
     }
 
     @Test(expected = DataAccessException.class)
@@ -61,21 +61,24 @@ public class CoffeeOrderServiceTest {
 
     @Test
     public void testUpdate() throws Exception {
-        when(repository.save(COFFEE_ORDER1)).thenReturn(COFFEE_ORDER1);
-        assertEquals(COFFEE_ORDER1, service.update(COFFEE_ORDER1));
-        verify(repository).save(COFFEE_ORDER1);
+        CoffeeOrder order = getCoffeeOrder1();
+        when(repository.save(order)).thenReturn(order);
+        assertEquals(order, service.update(order));
+        verify(repository).save(order);
     }
 
     @Test(expected = DataAccessException.class)
     public void testUpdateInvalid() throws Exception {
-        when(repository.save(COFFEE_ORDER1)).thenThrow(new DataAccessException(new SQLException()));
-        service.update(COFFEE_ORDER1);
+        CoffeeOrder order = getCoffeeOrder1();
+        when(repository.save(order)).thenThrow(new DataAccessException(new SQLException()));
+        service.update(order);
     }
 
     @Test(expected = DataAccessException.class)
     public void testUpdateNew() throws Exception {
-        when(repository.save(COFFEE_ORDER2)).thenThrow(new DataAccessException(new SQLException()));
-        service.update(COFFEE_ORDER2);
+        CoffeeOrder order = getCoffeeOrder2();
+        when(repository.save(order)).thenThrow(new DataAccessException(new SQLException()));
+        service.update(order);
     }
 
     @Test(expected = NullPointerException.class)
@@ -85,7 +88,7 @@ public class CoffeeOrderServiceTest {
 
     @Test
     public void testDelete() throws Exception {
-        int id = COFFEE_ORDER1.getId();
+        int id = getCoffeeOrder1().getId();
         when(repository.delete(id)).thenReturn(true);
         service.delete(id);
         verify(repository).delete(id);
@@ -99,9 +102,10 @@ public class CoffeeOrderServiceTest {
 
     @Test
     public void testGet() throws Exception {
-        int id = COFFEE_ORDER1.getId();
-        when(repository.get(id)).thenReturn(COFFEE_ORDER1);
-        assertEquals(COFFEE_ORDER1, service.get(COFFEE_ORDER1.getId()));
+        CoffeeOrder order = getCoffeeOrder1();
+        int id = order.getId();
+        when(repository.get(id)).thenReturn(order);
+        assertEquals(order, service.get(order.getId()));
         verify(repository).get(id);
     }
 

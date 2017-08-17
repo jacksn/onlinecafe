@@ -1,16 +1,14 @@
 package test.onlinecafe.repository;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import test.onlinecafe.model.ConfigurationItem;
-import test.onlinecafe.util.exception.DataAccessException;
 
 import static org.junit.Assert.assertEquals;
-import static test.onlinecafe.ConfigurationTestData.*;
+import static test.onlinecafe.ConfigurationTestData.CONFIGURATION_ITEM1;
 
-public class JdbcConfigurationRepositoryTest extends AbstractJdbcRepositoryTest {
+public abstract class AbstractConfigurationRepositoryTest extends AbstractRepositoryTest {
     @Autowired
     private ConfigurationRepository repository;
 
@@ -22,7 +20,7 @@ public class JdbcConfigurationRepositoryTest extends AbstractJdbcRepositoryTest 
         assertEquals(configurationItem, repository.get(id));
     }
 
-    @Test(expected = DataAccessException.class)
+    @Test
     public void testSaveInvalid() throws Exception {
         repository.save(new ConfigurationItem(null, "New value"));
     }
@@ -30,7 +28,12 @@ public class JdbcConfigurationRepositoryTest extends AbstractJdbcRepositoryTest 
     @Test
     public void testDelete() throws Exception {
         repository.delete(CONFIGURATION_ITEM1.getId());
-        Assert.assertEquals(null, repository.get(CONFIGURATION_ITEM1.getId()));
+        Assert.assertNull(repository.get(CONFIGURATION_ITEM1.getId()));
+    }
+
+    @Test
+    public void testDeleteAbsent() throws Exception {
+        Assert.assertFalse(repository.delete("Absent key"));
     }
 
     @Test
@@ -38,5 +41,4 @@ public class JdbcConfigurationRepositoryTest extends AbstractJdbcRepositoryTest 
         ConfigurationItem actual = repository.get(CONFIGURATION_ITEM1.getId());
         assertEquals(CONFIGURATION_ITEM1, actual);
     }
-
 }

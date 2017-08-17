@@ -1,19 +1,17 @@
 package test.onlinecafe.repository;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import test.onlinecafe.model.BaseEntity;
 import test.onlinecafe.model.CoffeeType;
-import test.onlinecafe.util.exception.DataAccessException;
 
 import java.util.Comparator;
 import java.util.List;
 
 import static test.onlinecafe.CoffeeTypeTestData.*;
 
-public class JdbcCoffeeTypeRepositoryTest extends AbstractJdbcRepositoryTest {
+public abstract class AbstractCoffeeTypeRepositoryTest extends AbstractRepositoryTest {
     @Autowired
     private CoffeeTypeRepository repository;
 
@@ -27,7 +25,7 @@ public class JdbcCoffeeTypeRepositoryTest extends AbstractJdbcRepositoryTest {
         repository.save(updated);
     }
 
-    @Test(expected = DataAccessException.class)
+    @Test
     public void testUpdateInvalid() throws Exception {
         int updatedId = COFFEE_TYPE1.getId();
         CoffeeType updated = repository.get(updatedId);
@@ -35,7 +33,7 @@ public class JdbcCoffeeTypeRepositoryTest extends AbstractJdbcRepositoryTest {
         repository.save(updated);
     }
 
-    @Test(expected = DataAccessException.class)
+    @Test
     public void testUpdateAbsent() throws Exception {
         int updatedId = COFFEE_TYPE1.getId();
         CoffeeType updated = repository.get(updatedId);
@@ -50,7 +48,7 @@ public class JdbcCoffeeTypeRepositoryTest extends AbstractJdbcRepositoryTest {
         Assert.assertEquals(created, repository.get(created.getId()));
     }
 
-    @Test(expected = DataAccessException.class)
+    @Test
     public void testCreateInvalid() throws Exception {
         CoffeeType created = new CoffeeType(null, null, 0.00, false);
         repository.save(created);
@@ -66,7 +64,7 @@ public class JdbcCoffeeTypeRepositoryTest extends AbstractJdbcRepositoryTest {
 
     @Test
     public void testDeleteAbsent() throws Exception {
-        Assert.assertEquals(false, repository.delete(Integer.MAX_VALUE));
+        Assert.assertFalse(repository.delete(Integer.MAX_VALUE));
     }
 
     @Test
@@ -78,7 +76,7 @@ public class JdbcCoffeeTypeRepositoryTest extends AbstractJdbcRepositoryTest {
     @Test
     public void testGetAbsent() throws Exception {
         CoffeeType type = repository.get(Integer.MAX_VALUE);
-        Assert.assertEquals(null, type);
+        Assert.assertNull(type);
     }
 
     @Test

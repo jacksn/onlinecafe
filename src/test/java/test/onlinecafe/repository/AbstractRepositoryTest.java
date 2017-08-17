@@ -4,6 +4,7 @@ import org.apache.tomcat.jdbc.pool.DataSource;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
@@ -23,12 +24,15 @@ import static org.slf4j.LoggerFactory.getLogger;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = AppConfiguration.class, loader = AnnotationConfigContextLoader.class)
 @TestPropertySource("classpath:db/db_hsqldb.properties")
-public abstract class AbstractJdbcRepositoryTest {
-    private static final Logger log = getLogger(AbstractJdbcRepositoryTest.class);
+public abstract class AbstractRepositoryTest {
+    private static final Logger log = getLogger(AbstractRepositoryTest.class);
     private static StringBuilder results = new StringBuilder();
 
     @Autowired
     DataSource dataSource;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void initDatabase() {
@@ -50,10 +54,10 @@ public abstract class AbstractJdbcRepositoryTest {
     @AfterClass
     public static void printResult() {
         log.info("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" +
-                 "\nTest                                                                                 Duration, ms" +
-                 "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
-                 results +
-                   "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+                "\nTest                                                                                 Duration, ms" +
+                "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+                results +
+                "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
         results.setLength(0);
     }
 
