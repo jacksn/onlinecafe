@@ -20,6 +20,9 @@ public class JpaCoffeeTypeRepository implements CoffeeTypeRepository {
     @Transactional
     @Override
     public CoffeeType save(CoffeeType type) {
+        if (!type.isNew() && get(type.getId()) == null) {
+            return null;
+        }
         if (type.isNew()) {
             em.persist(type);
             return type;
