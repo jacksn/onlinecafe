@@ -118,6 +118,7 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
         return getCoffeeTypes(false);
     }
 
+    // TODO: add test
     @Override
     public List<CoffeeType> getEnabled() {
         return getCoffeeTypes(true);
