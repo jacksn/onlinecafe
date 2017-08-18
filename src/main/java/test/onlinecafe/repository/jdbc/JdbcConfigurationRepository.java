@@ -29,7 +29,6 @@ public class JdbcConfigurationRepository implements ConfigurationRepository {
         this.dataSource = dataSource;
     }
 
-    // TODO: add transactions
     @Override
     public ConfigurationItem save(ConfigurationItem configurationItem) {
         try (Connection connection = dataSource.getConnection();
@@ -51,7 +50,6 @@ public class JdbcConfigurationRepository implements ConfigurationRepository {
         return null;
     }
 
-    // TODO: add transactions
     @Override
     public boolean delete(String id) {
         try (Connection connection = dataSource.getConnection();
