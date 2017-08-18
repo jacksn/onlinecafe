@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -34,7 +33,6 @@ public class CoffeeServlet extends HttpServlet {
     public static final String PATH_ROOT = "/";
     public static final String PATH_ORDER = "/order";
     public static final String PATH_CANCEL = "/cancel";
-    public static final String APP_PROPERTIES_FILE = "application.properties";
     public static final String JSP_ROOT = "WEB-INF/";
     public static final String PAGE_COFFEE_TYPES_LIST = JSP_ROOT + "index.jsp";
     public static final String PAGE_ORDER_DETAILS = JSP_ROOT + "order.jsp";
@@ -62,34 +60,23 @@ public class CoffeeServlet extends HttpServlet {
     @Autowired
     private ResourceBundleMessageSource messageSource;
 
-    @Autowired
-    private Discount discount;
-
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        log.debug("Servlet initialization - start");
+        log.info("Servlet initialization - start");
         SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
                 config.getServletContext());
+        log.info("Servlet initialization - end");
+    }
 
-        List<String> languages = new ArrayList<>();
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(APP_PROPERTIES_FILE)) {
-            Properties appProperties = new Properties();
-            appProperties.load(inputStream);
-            languages.addAll(Arrays.asList(appProperties.getProperty("app.i18n.supported_languages").split(",")));
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new ServletException(e);
-        }
-        initI18n(languages);
-
+    @Autowired
+    private void initDiscount(Discount discount) {
         discount.init();
         discountDescriptionMessageKey = "discount." + discount.getClass().getSimpleName() + ".description";
         CoffeeOrderUtil.setDiscount(discount);
-
-        log.debug("Servlet initialization - end");
     }
 
+    @Autowired
     private void initI18n(List<String> languages) throws ServletException {
         supportedLanguages = new HashSet<>();
         if (!languages.isEmpty()) {
