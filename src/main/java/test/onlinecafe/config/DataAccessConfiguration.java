@@ -9,6 +9,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
+import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 @Configuration
@@ -32,10 +33,10 @@ public class DataAccessConfiguration {
     @Value("${app.initialize_database}")
     private boolean initializeDatabase;
 
-    @Value("${db.schema_script}")
+    @Value("classpath:${db.schema_script}")
     private Resource schemaScript;
 
-    @Value("${db.data_script}")
+    @Value("classpath:${db.data_script}")
     private Resource dataScript;
 
     @Bean(name = "dataSource")
@@ -62,17 +63,18 @@ public class DataAccessConfiguration {
     }
 
     @Bean
-    public DataSourceInitializer dataSourceInitializer(DataSource dataSource) {
+    public DataSourceInitializer dataSourceInitializer(DataSource dataSource, DatabasePopulator populator) {
         DataSourceInitializer initializer = new DataSourceInitializer();
         initializer.setEnabled(initializeDatabase);
         initializer.setDataSource(dataSource);
-        initializer.setDatabasePopulator(databasePopulator());
+        initializer.setDatabasePopulator(populator);
         return initializer;
     }
 
     @Bean
     public ResourceDatabasePopulator databasePopulator() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        populator.setSqlScriptEncoding("UTF-8");
         populator.addScript(schemaScript);
         populator.addScript(dataScript);
         return populator;
