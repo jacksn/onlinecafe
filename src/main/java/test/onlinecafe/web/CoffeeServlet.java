@@ -2,10 +2,9 @@ package test.onlinecafe.web;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.slf4j.Logger;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import test.onlinecafe.config.AppConfiguration;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import test.onlinecafe.dto.CoffeeOrderDto;
 import test.onlinecafe.dto.CoffeeOrderItemDto;
 import test.onlinecafe.dto.Notification;
@@ -34,20 +33,20 @@ import static test.onlinecafe.web.CoffeeServlet.*;
 
 @WebServlet({PATH_ROOT, PATH_ORDER, PATH_CANCEL})
 public class CoffeeServlet extends HttpServlet {
-    static final String PATH_ROOT = "/";
-    static final String PATH_ORDER = "/order";
-    static final String PATH_CANCEL = "/cancel";
-    private static final String APP_PROPERTIES_FILE = "application.properties";
-    private static final String JSP_ROOT = "WEB-INF/";
-    private static final String PAGE_COFFEE_TYPES_LIST = JSP_ROOT + "index.jsp";
-    private static final String PAGE_ORDER_DETAILS = JSP_ROOT + "order.jsp";
-    private static final String MODEL_ATTR_LOCALE = "locale";
-    private static final String MODEL_ATTR_ORDER = "orderDto";
-    private static final String MODEL_ATTR_ORDER_NAME = "name";
-    private static final String MODEL_ATTR_ORDER_ADDRESS = "address";
-    private static final String MODEL_ATTR_COFFEE_TYPES = "coffeeTypes";
-    private static final String MODEL_ATTR_NOTIFICATION = "notification";
-    private static final String MODEL_ATTR_DISCOUNT_DESCRIPTION = "discountDescription";
+    public static final String PATH_ROOT = "/";
+    public static final String PATH_ORDER = "/order";
+    public static final String PATH_CANCEL = "/cancel";
+    public static final String APP_PROPERTIES_FILE = "application.properties";
+    public static final String JSP_ROOT = "WEB-INF/";
+    public static final String PAGE_COFFEE_TYPES_LIST = JSP_ROOT + "index.jsp";
+    public static final String PAGE_ORDER_DETAILS = JSP_ROOT + "order.jsp";
+    public static final String MODEL_ATTR_LOCALE = "locale";
+    public static final String MODEL_ATTR_ORDER = "orderDto";
+    public static final String MODEL_ATTR_ORDER_NAME = "name";
+    public static final String MODEL_ATTR_ORDER_ADDRESS = "address";
+    public static final String MODEL_ATTR_COFFEE_TYPES = "coffeeTypes";
+    public static final String MODEL_ATTR_NOTIFICATION = "notification";
+    public static final String MODEL_ATTR_DISCOUNT_DESCRIPTION = "discountDescription";
 
     private static final Logger log = getLogger(CoffeeServlet.class);
 
@@ -56,29 +55,34 @@ public class CoffeeServlet extends HttpServlet {
 
     private String discountDescriptionMessageKey;
 
-    private ConfigurableApplicationContext springContext;
+    @Autowired
     private CoffeeTypeService coffeeTypeService;
+
+    @Autowired
     private CoffeeOrderService coffeeOrderService;
+
+    @Autowired
     private ResourceBundleMessageSource messageSource;
+
+    @Autowired
+    private DataSource dataSource;
+
+    @Autowired
+    private Discount discount;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         log.debug("Servlet initialization - start");
-
-        springContext = new AnnotationConfigApplicationContext(AppConfiguration.class);
-        coffeeTypeService = springContext.getBean(CoffeeTypeService.class);
-        coffeeOrderService = springContext.getBean(CoffeeOrderService.class);
-        messageSource = springContext.getBean(ResourceBundleMessageSource.class);
+        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
+                config.getServletContext());
 
         List<String> languages = new ArrayList<>();
-        String discountClassName = "noDiscount";
         boolean initDatabase = false;
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(APP_PROPERTIES_FILE)) {
             Properties appProperties = new Properties();
             appProperties.load(inputStream);
 
-            discountClassName = appProperties.getProperty("app.discount_class_name");
             languages.addAll(Arrays.asList(appProperties.getProperty("app.i18n.supported_languages").split(",")));
             initDatabase = Boolean.parseBoolean(appProperties.getProperty("app.initialize_database"));
         } catch (Exception e) {
@@ -86,29 +90,18 @@ public class CoffeeServlet extends HttpServlet {
             throw new ServletException(e);
         }
 
-        DbUtil.setDataSource(springContext.getBean(DataSource.class));
+        DbUtil.setDataSource(dataSource);
         if (initDatabase) {
             DbUtil.initDatabase();
         }
 
         initI18n(languages);
-        initDiscount(discountClassName);
+
+        discount.init();
+        discountDescriptionMessageKey = "discount." + discount.getClass().getSimpleName() + ".description";
+        CoffeeOrderUtil.setDiscount(discount);
 
         log.debug("Servlet initialization - end");
-    }
-
-    private void initDiscount(String discountClassName) {
-        Discount discount = null;
-        try {
-            discount = springContext.getBean(discountClassName, Discount.class);
-        } catch (Exception e) {
-            log.error("Unable to get discount bean", e);
-        }
-        if (discount != null) {
-            discount.init();
-            this.discountDescriptionMessageKey = "discount." + discount.getClass().getSimpleName() + ".description";
-            CoffeeOrderUtil.setDiscount(discount);
-        }
     }
 
     private void initI18n(List<String> languages) throws ServletException {
@@ -135,13 +128,12 @@ public class CoffeeServlet extends HttpServlet {
     @Override
     public void destroy() {
         log.debug("Servlet deinitialization - start");
-        springContext.close();
         super.destroy();
         log.debug("Servlet deinitialization - end");
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String action = request.getRequestURI();
         log.debug("GET request received: {}", action);
@@ -184,7 +176,7 @@ public class CoffeeServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getRequestURI();
         log.debug("POST request received: {}", action);
         HttpSession session = request.getSession(true);
