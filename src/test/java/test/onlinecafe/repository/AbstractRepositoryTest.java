@@ -10,12 +10,12 @@ import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import test.onlinecafe.config.AppConfiguration;
-import test.onlinecafe.util.DbUtil;
 
 import java.util.concurrent.TimeUnit;
 
@@ -29,16 +29,18 @@ public abstract class AbstractRepositoryTest {
     private static StringBuilder results = new StringBuilder();
 
     @Autowired
-    DataSource dataSource;
+    private DataSource dataSource;
+
+    @Autowired
+    private ResourceDatabasePopulator populator;
+
+    @Before
+    public void setup() {
+        populator.execute(dataSource);
+    }
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-
-    @Before
-    public void initDatabase() {
-        DbUtil.setDataSource(dataSource);
-        DbUtil.initDatabase("db/testdata.sql", "db/coffee_hsqldb.sql");
-    }
 
     @Rule
     // http://stackoverflow.com/questions/14892125/what-is-the-best-practice-to-determine-the-execution-time-of-the-bussiness-relev
