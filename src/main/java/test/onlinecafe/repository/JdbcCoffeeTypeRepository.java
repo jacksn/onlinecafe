@@ -120,7 +120,8 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
 
     private List<CoffeeType> getCoffeeTypes(boolean onlyEnabled) {
         try (Connection connection = dataSource.getConnection();
-             ResultSet resultSet = connection.createStatement().executeQuery(onlyEnabled ? SELECT_ENABLED : SELECT_ALL)) {
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(onlyEnabled ? SELECT_ENABLED : SELECT_ALL)) {
             ArrayList<CoffeeType> types = new ArrayList<>();
             while (resultSet.next()) {
                 types.add(getCoffeeType(resultSet));
