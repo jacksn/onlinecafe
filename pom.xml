@@ -87,7 +87,7 @@
         <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
+            <artifactId>spring-web</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache</groupId>
