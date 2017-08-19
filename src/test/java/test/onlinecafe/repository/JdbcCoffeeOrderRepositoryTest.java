@@ -3,6 +3,7 @@ package test.onlinecafe.repository;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import test.onlinecafe.model.CoffeeOrder;
+import test.onlinecafe.util.exception.DataAccessException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +39,7 @@ public class JdbcCoffeeOrderRepositoryTest extends AbstractJdbcRepositoryTest {
 
     @Test
     public void testCreateInvalid() throws Exception {
+        thrown.expect(DataAccessException.class);
         CoffeeOrder created = getNewCoffeeOrder();
         created.setDeliveryAddress(null);
         repository.save(created);
