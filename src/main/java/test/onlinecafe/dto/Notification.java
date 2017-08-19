@@ -1,6 +1,8 @@
 package test.onlinecafe.dto;
 
-public class Notification {
+import java.io.Serializable;
+
+public class Notification implements Serializable {
     private final NotificationType type;
     private final String message;
 
