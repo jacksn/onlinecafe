@@ -1,6 +1,5 @@
 package test.onlinecafe.web;
 
-import org.apache.tomcat.jdbc.pool.DataSource;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -62,9 +61,6 @@ public class CoffeeServlet extends HttpServlet {
 
     @Autowired
     private ResourceBundleMessageSource messageSource;
-
-    @Autowired
-    private DataSource dataSource;
 
     @Autowired
     private Discount discount;
