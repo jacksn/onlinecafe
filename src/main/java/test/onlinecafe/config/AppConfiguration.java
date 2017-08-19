@@ -9,7 +9,9 @@ import java.util.Locale;
 @Configuration
 @ComponentScan({"test.onlinecafe.repository", "test.onlinecafe.service", "test.onlinecafe.util.discount"})
 @PropertySource("classpath:application.properties")
-@Import(DataAccessConfiguration.class)
+@Import({DataAccessConfiguration.class,
+        DiscountConfiguration.class
+})
 public class AppConfiguration {
 
     @Value("${app.i18n.supported_languages}")
