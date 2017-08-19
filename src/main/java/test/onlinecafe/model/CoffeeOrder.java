@@ -1,6 +1,7 @@
 package test.onlinecafe.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CoffeeOrder extends BaseEntity {
@@ -13,16 +14,16 @@ public class CoffeeOrder extends BaseEntity {
     public CoffeeOrder() {
     }
 
-    public CoffeeOrder(LocalDateTime orderDate, String name, String deliveryAddress, List<CoffeeOrderItem> orderItems, Double cost) {
-        this(null, orderDate, name, deliveryAddress, orderItems, cost);
+    public CoffeeOrder(LocalDateTime orderDate, String name, String deliveryAddress, Double cost) {
+        this(null, orderDate, name, deliveryAddress, cost);
     }
 
-    public CoffeeOrder(Integer id, LocalDateTime orderDate, String name, String deliveryAddress, List<CoffeeOrderItem> orderItems, Double cost) {
+    public CoffeeOrder(Integer id, LocalDateTime orderDate, String name, String deliveryAddress, Double cost) {
         super(id);
         this.orderDate = orderDate;
         this.name = name;
         this.deliveryAddress = deliveryAddress;
-        this.orderItems = orderItems;
+        this.orderItems = new ArrayList<>();
         this.cost = cost;
     }
 
@@ -62,8 +63,12 @@ public class CoffeeOrder extends BaseEntity {
         return orderItems;
     }
 
-    public void setOrderItems(List<CoffeeOrderItem> orderItems) {
-        this.orderItems = orderItems;
+    public void addOrderItem(CoffeeOrderItem orderItem) {
+        this.orderItems.add(orderItem);
+    }
+
+    public void removeOrderItem(CoffeeOrderItem orderItem) {
+        this.orderItems.remove(orderItem);
     }
 
     @Override
