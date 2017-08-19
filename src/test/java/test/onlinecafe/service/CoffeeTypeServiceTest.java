@@ -113,8 +113,8 @@ public class CoffeeTypeServiceTest {
 
     @Test
     public void testGetEnabled() throws Exception {
-        when(repository.getAll()).thenReturn(COFFEE_TYPES_ALL);
+        when(repository.getEnabled()).thenReturn(COFFEE_TYPES_ENABLED);
         assertEquals(COFFEE_TYPES_ENABLED, service.getEnabled());
-        verify(repository).getAll();
+        verify(repository).getEnabled();
     }
 }
