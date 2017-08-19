@@ -13,7 +13,6 @@ import test.onlinecafe.model.CoffeeType;
 import test.onlinecafe.service.CoffeeOrderService;
 import test.onlinecafe.service.CoffeeTypeService;
 import test.onlinecafe.util.CoffeeOrderUtil;
-import test.onlinecafe.util.DbUtil;
 import test.onlinecafe.util.discount.Discount;
 import test.onlinecafe.util.exception.NotFoundException;
 
@@ -78,23 +77,14 @@ public class CoffeeServlet extends HttpServlet {
                 config.getServletContext());
 
         List<String> languages = new ArrayList<>();
-        boolean initDatabase = false;
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(APP_PROPERTIES_FILE)) {
             Properties appProperties = new Properties();
             appProperties.load(inputStream);
-
             languages.addAll(Arrays.asList(appProperties.getProperty("app.i18n.supported_languages").split(",")));
-            initDatabase = Boolean.parseBoolean(appProperties.getProperty("app.initialize_database"));
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new ServletException(e);
         }
-
-        DbUtil.setDataSource(dataSource);
-        if (initDatabase) {
-            DbUtil.initDatabase();
-        }
-
         initI18n(languages);
 
         discount.init();

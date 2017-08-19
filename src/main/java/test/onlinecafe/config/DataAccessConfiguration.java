@@ -7,7 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
-import test.onlinecafe.util.DbUtil;
+import org.springframework.core.io.Resource;
+import org.springframework.jdbc.datasource.init.DataSourceInitializer;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 @Configuration
 @PropertySources({
@@ -27,25 +29,24 @@ public class DataAccessConfiguration {
     @Value("${db.password}")
     private String databasePassword;
 
-    @Value("${db.schema_file}")
-    private String databaseSchemaFile;
+    @Value("${app.initialize_database}")
+    private boolean initializeDatabase;
 
-    @Value("${db.data_file}")
-    private String databaseDataFile;
+    @Value("${db.schema_script}")
+    private Resource schemaScript;
+
+    @Value("${db.data_script}")
+    private Resource dataScript;
 
     @Bean(name = "dataSource")
     public DataSource dataSource() throws ClassNotFoundException {
-
-        DbUtil.setSchemaFile(databaseSchemaFile);
-        DbUtil.setDataFile(databaseDataFile);
-
         PoolProperties poolProperties = new PoolProperties();
         poolProperties.setDriverClassName(databaseDriverClassName);
         poolProperties.setUrl(databaseUrl);
         poolProperties.setUsername(databaseUsername);
         poolProperties.setPassword(databasePassword);
         poolProperties.setJmxEnabled(true);
-        poolProperties.setTestWhileIdle(false);
+        poolProperties.setTestWhileIdle(true);
         poolProperties.setTestOnBorrow(true);
         poolProperties.setValidationQuery("SELECT 1");
         poolProperties.setTestOnReturn(false);
@@ -58,5 +59,22 @@ public class DataAccessConfiguration {
         DataSource dataSource = new org.apache.tomcat.jdbc.pool.DataSource();
         dataSource.setPoolProperties(poolProperties);
         return dataSource;
+    }
+
+    @Bean
+    public DataSourceInitializer dataSourceInitializer(DataSource dataSource) {
+        DataSourceInitializer initializer = new DataSourceInitializer();
+        initializer.setEnabled(initializeDatabase);
+        initializer.setDataSource(dataSource);
+        initializer.setDatabasePopulator(databasePopulator());
+        return initializer;
+    }
+
+    @Bean
+    public ResourceDatabasePopulator databasePopulator() {
+        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        populator.addScript(schemaScript);
+        populator.addScript(dataScript);
+        return populator;
     }
 }
