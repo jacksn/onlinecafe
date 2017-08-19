@@ -43,10 +43,6 @@ public final class CoffeeOrderQueryStrings {
     static final String INSERT_ORDER_ITEMS_QUERY = "INSERT INTO CoffeeOrderItem (type_id, order_id, quantity) VALUES (?, ?, ?)";
 
     static final String DELETE_ORDER_QUERY = "DELETE FROM CoffeeOrder WHERE id=?";
-    static final String DELETE_ORDER_ITEMS_QUERY = "DELETE FROM CoffeeOrderItem WHERE order_id=?";
-
-    static final String UPDATE_ORDER_QUERY = "UPDATE CoffeeOrder " +
-            "SET order_date = ?, name = ?, delivery_address = ?, cost = ? WHERE id = ?";
 
     private CoffeeOrderQueryStrings() {
     }
