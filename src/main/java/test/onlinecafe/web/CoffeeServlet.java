@@ -101,8 +101,7 @@ public class CoffeeServlet extends HttpServlet {
         Discount discount = null;
         try {
             discount = springContext.getBean(discountClassName, Discount.class);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             log.error("Unable to get discount bean", e);
         }
         if (discount != null) {
@@ -177,6 +176,9 @@ public class CoffeeServlet extends HttpServlet {
             }
         } else if (PATH_CANCEL.equals(action)) {
             removeSessionAttributes(session);
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
         }
         response.sendRedirect(PATH_ROOT);
     }
@@ -220,6 +222,9 @@ public class CoffeeServlet extends HttpServlet {
                 response.sendRedirect(PATH_ORDER);
                 return;
             }
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
         }
         response.sendRedirect(PATH_ROOT);
     }
