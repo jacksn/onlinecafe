@@ -13,4 +13,6 @@ public interface CoffeeTypeRepository {
 
     List<CoffeeType> getAll();
 
+    List<CoffeeType> getEnabled();
+
 }
