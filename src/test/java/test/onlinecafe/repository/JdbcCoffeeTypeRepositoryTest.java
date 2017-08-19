@@ -1,5 +1,6 @@
 package test.onlinecafe.repository;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import test.onlinecafe.model.BaseEntity;
@@ -88,5 +89,12 @@ public class JdbcCoffeeTypeRepositoryTest extends AbstractJdbcRepositoryTest {
         List<CoffeeType> types = repository.getAll();
         types.sort(Comparator.comparingInt(BaseEntity::getId));
         assertEquals(COFFEE_TYPES_ALL, types);
+    }
+
+    @Test
+    public void testGetEnabled() throws Exception {
+        List<CoffeeType> types = repository.getEnabled();
+        types.sort(Comparator.comparingInt(BaseEntity::getId));
+        Assert.assertEquals(COFFEE_TYPES_ENABLED, types);
     }
 }
