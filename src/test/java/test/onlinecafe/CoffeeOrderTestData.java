@@ -1,9 +1,12 @@
 package test.onlinecafe;
 
+import test.onlinecafe.dto.CoffeeOrderDto;
+import test.onlinecafe.dto.CoffeeOrderItemDto;
 import test.onlinecafe.model.CoffeeOrder;
 import test.onlinecafe.model.CoffeeOrderItem;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -15,11 +18,11 @@ public final class CoffeeOrderTestData {
             Collections.unmodifiableList(Arrays.asList(getCoffeeOrder1(), getCoffeeOrder2(), getCoffeeOrder3()));
 
     public static CoffeeOrderItem getCoffeeOrderItem1() {
-        return new CoffeeOrderItem(null, COFFEE_TYPE2, 2);
+        return new CoffeeOrderItem(COFFEE_TYPE2, 2);
     }
 
     public static CoffeeOrderItem getCoffeeOrderItem2() {
-        return new CoffeeOrderItem(null, COFFEE_TYPE4, 1);
+        return new CoffeeOrderItem(COFFEE_TYPE4, 1);
     }
 
     public static CoffeeOrder getCoffeeOrder1() {
@@ -71,7 +74,22 @@ public final class CoffeeOrderTestData {
         return order;
     }
 
-    private CoffeeOrderTestData() {
+    public static CoffeeOrderDto getCoffeeOrder1Dto() {
+        List<CoffeeOrderItemDto> itemDtoList = new ArrayList<>();
+        itemDtoList.add(new CoffeeOrderItemDto(COFFEE_TYPE1, 2, COFFEE_TYPE1.getPrice() * 2, false));
+        itemDtoList.add(new CoffeeOrderItemDto(COFFEE_TYPE1, 2, COFFEE_TYPE1.getPrice() * 2, false));
+        itemDtoList.add(new CoffeeOrderItemDto(COFFEE_TYPE1, 2, COFFEE_TYPE1.getPrice() * 2, false));
+
+        CoffeeOrder order = getCoffeeOrder1();
+        return new CoffeeOrderDto(
+                order.getName(),
+                order.getDeliveryAddress(),
+                itemDtoList,
+                0,
+                order.getCost()
+        );
     }
 
+    private CoffeeOrderTestData() {
+    }
 }
