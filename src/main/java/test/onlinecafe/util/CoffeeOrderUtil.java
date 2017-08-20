@@ -2,11 +2,16 @@ package test.onlinecafe.util;
 
 import test.onlinecafe.dto.CoffeeOrderDto;
 import test.onlinecafe.dto.CoffeeOrderItemDto;
+import test.onlinecafe.dto.CoffeeTypeDto;
+import test.onlinecafe.dto.CoffeeTypeDtoList;
 import test.onlinecafe.model.CoffeeOrder;
 import test.onlinecafe.model.CoffeeOrderItem;
+import test.onlinecafe.model.CoffeeType;
 import test.onlinecafe.util.discount.Discount;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class CoffeeOrderUtil {
     private static Discount discount;
@@ -48,5 +53,15 @@ public final class CoffeeOrderUtil {
             order.addOrderItem(getOrderItemFromDto(orderItemDto));
         }
         return order;
+    }
+
+    public static CoffeeTypeDtoList getCoffeeTypeDtoList(List<CoffeeType> coffeeTypes) {
+        CoffeeTypeDtoList list = new CoffeeTypeDtoList();
+        List<CoffeeTypeDto> coffeeTypeDtos = new ArrayList<>();
+        for (CoffeeType type : coffeeTypes) {
+            coffeeTypeDtos.add(new CoffeeTypeDto(type));
+        }
+        list.setCoffeeTypeDtos(coffeeTypeDtos);
+        return list;
     }
 }

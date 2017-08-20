@@ -1,5 +1,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <header class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -13,8 +14,8 @@
                 <span class="icon-bar"></span>
             </button>
             <a href="${pageContext.request.contextPath}/" class="navbar-brand">
-                <img src="img/java-coffee-cup-32x32w.png" align="left">
-                <fmt:message key="label.site.name"/>
+                <img src="/img/java-coffee-cup-32x32w.png" align="left">
+                <spring:message code="label.site.name"/>
             </a>
         </div>
         <nav class="collapse navbar-collapse" id="bs-navbar">
@@ -22,13 +23,12 @@
                 <li>
                     <a href="https://github.com/jacksn/onlinecafe">
                         <i class="fa fa-github fa-lg"></i>
-                        <fmt:message key="label.source_code"/>
+                        <spring:message code="label.source_code"/>
                     </a>
                 </li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <%--@elvariable id="locale" type="java.util.Locale"--%>
-                        <c:out value="${locale.language}"/>
+                        <c:out value="${pageContext.response.locale.language}"/>
                         <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">

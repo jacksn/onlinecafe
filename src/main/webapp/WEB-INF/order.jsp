@@ -1,11 +1,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<jsp:include page="fragments/lang.jsp"/>
 <html>
 <head>
-    <title><fmt:message key="label.site.name"/> - <fmt:message key="page.order_details"/></title>
+    <title><spring:message code="label.site.name"/> - <spring:message code="page.order_details"/></title>
     <jsp:include page="fragments/headTag.jsp"/>
 </head>
 <body>
@@ -23,19 +23,19 @@
                       onsubmit="return validate()">
                     <div class="row">
                         <div class="form-group">
-                            <label for="name" class="col-md-3 control-label"><fmt:message key="label.name"/></label>
+                            <label for="name" class="col-md-3 control-label"><spring:message code="label.name"/></label>
                             <div class="col-md-8">
                                 <input class="form-control" id="name" name="name"
-                                       placeholder="<fmt:message key="label.name"/>" type="text">
+                                       placeholder="<spring:message code="label.name"/>" type="text">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="address" class="col-md-3 control-label">
-                                <fmt:message key="label.delivery_address"/>
+                                <spring:message code="label.delivery_address"/>
                             </label>
                             <div class="col-md-8">
                                 <input class="form-control" id="address" name="address"
-                                       placeholder="<fmt:message key="label.delivery_address"/>"
+                                       placeholder="<spring:message code="label.delivery_address"/>"
                                        type="text" oninput="removeErrorHighlight(this)"
                                        oninvalid="addErrorHighlight(this)">
                             </div>
@@ -46,10 +46,10 @@
                         <table class="table">
                             <thead>
                             <tr>
-                                <th><fmt:message key="label.coffee_type"/></th>
-                                <th width="15%" class="text-center"><fmt:message key="label.quantity"/></th>
-                                <th width="15%" class="text-center"><fmt:message key="label.price"/></th>
-                                <th width="15%" class="text-center"><fmt:message key="label.cost"/></th>
+                                <th><spring:message code="label.coffee_type"/></th>
+                                <th width="15%" class="text-center"><spring:message code="label.quantity"/></th>
+                                <th width="15%" class="text-center"><spring:message code="label.price"/></th>
+                                <th width="15%" class="text-center"><spring:message code="label.cost"/></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -69,7 +69,7 @@
                                                           maxFractionDigits="2"
                                                           pattern="0.00 "
                                                           value="${orderItemDto.coffeeType.price}"/>
-                                        <fmt:message key="label.currency_symbol"/>
+                                        <spring:message code="label.currency_symbol"/>
                                     </td>
                                     <td class="text-right <c:if test="${orderItemDto.discounted}">text-danger</c:if>">
                                         <fmt:formatNumber type="currency"
@@ -77,12 +77,13 @@
                                                           maxFractionDigits="2"
                                                           pattern="0.00 "
                                                           value="${orderItemDto.cost}"/>
-                                        <fmt:message key="label.currency_symbol"/>
+                                        <spring:message code="label.currency_symbol"/>
                                     </td>
                                 </tr>
                             </c:forEach>
                             <tr>
-                                <td colspan="3" class="text-right"><strong><fmt:message key="label.subtotal"/>:</strong>
+                                <td colspan="3" class="text-right"><strong><spring:message
+                                        code="label.subtotal"/>:</strong>
                                 </td>
                                 <td class="text-right">
                                     <%--@elvariable id="orderTotalCost" type="double"--%>
@@ -91,12 +92,13 @@
                                                       maxFractionDigits="2"
                                                       pattern="0.00 "
                                                       value="${orderDto.cost - orderDto.deliveryCost}"/>
-                                        <fmt:message key="label.currency_symbol"/>
+                                    <spring:message code="label.currency_symbol"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="3" class="text-right"><strong><fmt:message
-                                        key="label.delivery_cost"/>:</strong></td>
+                                <td colspan="3" class="text-right">
+                                    <strong> <spring:message code="label.delivery_cost"/>:</strong>
+                                </td>
                                 <td class="text-right <c:if test="${orderDto.deliveryCost==0}">text-danger</c:if>">
                                     <%--@elvariable id="orderDeliveryCost" type="double"--%>
                                     <fmt:formatNumber type="currency"
@@ -104,12 +106,13 @@
                                                       maxFractionDigits="2"
                                                       pattern="0.00 "
                                                       value="${orderDto.deliveryCost}"/>
-                                        <fmt:message key="label.currency_symbol"/>
+                                    <spring:message code="label.currency_symbol"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="3" class="text-right"><strong><fmt:message
-                                        key="label.total_cost"/>:</strong></td>
+                                <td colspan="3" class="text-right">
+                                    <strong><spring:message code="label.total_cost"/>:</strong>
+                                </td>
                                 <td class="text-right">
                                     <%--@elvariable id="orderTotalCost" type="double"--%>
                                     <fmt:formatNumber type="currency"
@@ -117,16 +120,16 @@
                                                       maxFractionDigits="2"
                                                       pattern="0.00 "
                                                       value="${orderDto.cost}"/>
-                                        <fmt:message key="label.currency_symbol"/>
+                                    <spring:message code="label.currency_symbol"/>
                                 </td>
                             </tr>
                             </tbody>
                         </table>
                         <div class="row text-right">
                             <button class="btn btn-primary btn-md" type="submit">
-                                <fmt:message key="button.order"/>
+                                <spring:message code="button.order"/>
                             </button>
-                            <a class="btn btn-danger btn-md" href="cancel"><fmt:message key="button.cancel"/></a>
+                            <a class="btn btn-danger btn-md" href="cancel"><spring:message code="button.cancel"/></a>
                         </div>
 
                     </div>
@@ -141,7 +144,7 @@
     function validate() {
         var address = $('[id=address]');
         if (!address.val()) {
-            showNotification('danger', '<fmt:message key="error.empty_address"/>');
+            showNotification('danger', '<spring:message code="error.empty_address"/>');
             addErrorHighlight(address);
             address.focus();
             return false;

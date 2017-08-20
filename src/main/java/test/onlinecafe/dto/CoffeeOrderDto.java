@@ -10,6 +10,9 @@ public class CoffeeOrderDto {
     private double deliveryCost;
     private double cost;
 
+    public CoffeeOrderDto() {
+    }
+
     public CoffeeOrderDto(List<CoffeeOrderItemDto> orderItems, double deliveryCost, double cost) {
         this(null, null, null, orderItems, deliveryCost, cost);
     }

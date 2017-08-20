@@ -1,12 +1,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
-<jsp:include page="fragments/lang.jsp"/>
 
 <html>
 <head>
-    <title><fmt:message key="label.site.name"/></title>
+    <title><spring:message code="label.site.name"/></title>
     <jsp:include page="fragments/headTag.jsp"/>
 </head>
 <body>
@@ -20,37 +20,42 @@
     <div class="container pad">
         <div class="row">
             <div class="row">
-                <h2><fmt:message key="label.welcome"/></h2>
+                <h2><spring:message code="label.welcome"/></h2>
             </div>
             <div class="row">
-                <h4><fmt:message key="label.slogan"/></h4>
+                <h4><spring:message code="label.slogan"/></h4>
             </div>
         </div>
         <br/>
         <div class="row">
             <div class="col-md-offset-2 col-md-8">
                 <div class="row">
-                    <form class="form-horizontal" id="coffeeForm" name="coffeeForm" method="POST" action=""
-                          onsubmit="return validate()">
+                    <%--@elvariable id="coffeeTypes" type="test.onlinecafe.dto.CoffeeTypeDtoList"--%>
+                    <form:form class="form-horizontal" method="POST"
+                               onsubmit="return validate()" modelAttribute="coffeeTypes">
                         <table class="table">
                             <thead>
                             <tr>
                                 <th></th>
-                                <th><fmt:message key="label.coffee_type"/></th>
-                                <th class="text-center"><fmt:message key="label.price"/></th>
-                                <th class="text-center"><fmt:message key="label.quantity"/></th>
+                                <th><spring:message code="label.coffee_type"/></th>
+                                <th class="text-center"><spring:message code="label.price"/></th>
+                                <th class="text-center"><spring:message code="label.quantity"/></th>
                             </tr>
                             </thead>
                             <tbody>
-                            <%--@elvariable id="coffeeTypes" type="java.util.List"--%>
-                            <c:forEach items="${coffeeTypes}" var="coffeeType">
-                                <jsp:useBean id="coffeeType" class="test.onlinecafe.model.CoffeeType"/>
-                                <tr id="coffeerow_${coffeeType.id}">
+                                <%--@elvariable id="coffeeTypes" type="java.util.List"--%>
+                            <c:forEach items="${coffeeTypes.coffeeTypeDtos}" var="coffeeType"
+                                       varStatus="status">
+                                <%--@elvariable id="coffeeType" type="test.onlinecafe.dto.CoffeeTypeDto"--%>
+                                <tr id="coffeerow_${coffeeType.typeId}">
                                     <td>
-                                        <input type="hidden" id="id_${coffeeType.id}" name="id"
-                                               value="${coffeeType.id}" disabled="">
-                                        <input type="checkbox" id="selected_${coffeeType.id}" name="selected"
-                                               onclick="toggleRow(this, ${coffeeType.id})"/>
+                                        <form:input path="coffeeTypeDtos[${status.index}].typeId"
+                                                    type="hidden" id="id_${coffeeType.typeId}"
+                                                    value="${coffeeType.typeId}"/>
+                                        <form:checkbox path="coffeeTypeDtos[${status.index}].selected"
+                                                       id="selected_${coffeeType.typeId}"
+                                                       name="selected"
+                                                       onchange="toggleRow(this,${coffeeType.typeId})"/>
                                     </td>
                                     <td><c:out value="${coffeeType.typeName}"/></td>
                                     <td align="center">
@@ -59,27 +64,30 @@
                                                           maxFractionDigits="2"
                                                           pattern="0.00 "
                                                           value="${coffeeType.price}"/>
-                                        <fmt:message key="label.currency_symbol"/>
+                                        <spring:message code="label.currency_symbol"/>
                                     </td>
                                     <td align="center" width="15%" class="order-count">
-                                        <input id="quantity_${coffeeType.id}" class="form-control input-sm"
-                                               name="quantity"
-                                               type="number" value="0" minlength="1" maxlength="2" min="0" max="99"
-                                               disabled=""
-                                               oninput="removeErrorHighlight(this)" oninvalid="addErrorHighlight(this)">
+                                        <form:input path="coffeeTypeDtos[${status.index}].quantity"
+                                                    id="quantity_${coffeeType.typeId}"
+                                                    class="form-control input-sm"
+                                                    type="number" value="0" minlength="1" maxlength="2" min="0" max="99"
+                                                    disabled="true"
+                                                    oninput="removeErrorHighlight(this)"
+                                                    oninvalid="addErrorHighlight(this)"/>
                                     </td>
                                 </tr>
                             </c:forEach>
                             </tbody>
                         </table>
                         <div class="row text-right">
-                            <button class="btn btn-primary btn-md" type="submit"><fmt:message
-                                    key="button.continue"/></button>
+                            <button class="btn btn-primary btn-md" type="submit">
+                                <spring:message code="button.continue"/>
+                            </button>
                             <button class="btn btn-danger btn-md" type="reset" onclick="resetForm()">
-                                <fmt:message key="button.reset"/>
+                                <spring:message code="button.reset"/>
                             </button>
                         </div>
-                    </form>
+                    </form:form>
                 </div>
             </div>
         </div>
@@ -87,7 +95,7 @@
         <c:if test="${not empty discountDescription}">
             <div class="row text-danger text-center">
                 <h4>
-                    <strong><fmt:message key="label.discount"/>:</strong> <c:out value="${discountDescription}"/>
+                    <strong><spring:message code="label.discount"/>:</strong> <c:out value="${discountDescription}"/>
                 </h4>
             </div>
         </c:if>
@@ -119,14 +127,14 @@
                 if (isNaN(quantity) || quantity === 0) {
                     addErrorHighlight(quantityField);
                     quantityField.focus();
-                    showNotification('danger', '<fmt:message key="error.invalid_quantity"/>');
+                    showNotification('danger', '<spring:message code="error.invalid_quantity"/>');
                     return false;
                 }
                 totalOrderQuantity += quantity;
             }
         }
         if (totalOrderQuantity === 0) {
-            showNotification('danger', '<fmt:message key="error.empty_order"/>');
+            showNotification('danger', '<spring:message code="error.empty_order"/>');
             return false;
         }
     }
