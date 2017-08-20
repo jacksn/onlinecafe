@@ -1,5 +1,7 @@
 package test.onlinecafe.util.discount;
 
+import java.util.Locale;
+
 public interface Discount {
     void init();
 
@@ -7,5 +9,5 @@ public interface Discount {
 
     double getDeliveryCost(double orderTotal);
 
-    String getDescription(String template, String currencySymbol);
+    String getDescription(Locale locale);
 }
