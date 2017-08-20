@@ -74,7 +74,7 @@
                         </table>
                         <div class="row text-right">
                             <button class="btn btn-primary btn-md" type="submit"><fmt:message
-                                    key="button.order"/></button>
+                                    key="button.continue"/></button>
                             <button class="btn btn-danger btn-md" type="reset" onclick="resetForm()">
                                 <fmt:message key="button.reset"/>
                             </button>
