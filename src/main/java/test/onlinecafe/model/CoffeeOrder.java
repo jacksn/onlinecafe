@@ -1,6 +1,5 @@
 package test.onlinecafe.model;
 
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -8,8 +7,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDateTimeConverter;
+
 @Entity
-@Table(name = "CoffeeOrder")
+@Table(name = "coffeeorder")
 @NamedQueries({
         @NamedQuery(name = CoffeeOrder.GET_ALL, query = "SELECT co FROM CoffeeOrder co"),
         @NamedQuery(name = CoffeeOrder.DELETE, query = "DELETE FROM CoffeeOrder co WHERE co.id = :id"),
@@ -20,8 +21,10 @@ public class CoffeeOrder extends BaseEntity {
 
     @Column(name = "order_date")
     @NotNull
+    @Convert(converter = LocalDateTimeConverter.class)
     private LocalDateTime orderDate = LocalDateTime.now();
 
+    @NotNull
     @Column(name = "name")
     @Size(max = 100)
     private String name;

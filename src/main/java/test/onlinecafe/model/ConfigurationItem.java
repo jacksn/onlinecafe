@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "Configuration")
+@Table(name = "configuration")
 @NamedQueries({
         @NamedQuery(name = ConfigurationItem.DELETE, query = "DELETE FROM ConfigurationItem ci WHERE ci.id = :id"),
 })
@@ -17,7 +17,7 @@ public class ConfigurationItem {
     @Size(min = 1, max = 20)
     private String id;
 
-    @Column
+    @Column(name = "value")
     @NotNull
     @Size(max = 30)
     private String value;

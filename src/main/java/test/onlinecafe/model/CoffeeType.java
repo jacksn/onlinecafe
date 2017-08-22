@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "CoffeeType")
+@Table(name = "coffeetype")
 @NamedQueries({
         @NamedQuery(name = CoffeeType.GET_ALL, query = "SELECT ct FROM CoffeeType ct"),
         @NamedQuery(name = CoffeeType.GET_ENABLED, query = "SELECT ct FROM CoffeeType ct WHERE ct.disabled = false"),
@@ -31,6 +31,7 @@ public class CoffeeType extends BaseEntity {
 
     @Column(name = "disabled")
     @Type(type = "yes_no")
+    @NotNull
     private Boolean disabled;
 
     public CoffeeType() {

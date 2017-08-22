@@ -4,7 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "CoffeeOrderItem")
+@Table(name = "coffeeorderitem")
 public class CoffeeOrderItem extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
