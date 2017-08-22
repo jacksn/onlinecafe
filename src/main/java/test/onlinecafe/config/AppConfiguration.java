@@ -8,7 +8,7 @@ import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import java.util.Locale;
 
 @Configuration
-@ComponentScan({"test.onlinecafe.service", "test.onlinecafe.util.discount"})
+@ComponentScan({"test.onlinecafe.service"})
 @PropertySource("classpath:application.properties")
 @Import({JdbcRepositoryConfiguration.class,
         JpaConfiguration.class,

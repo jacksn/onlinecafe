@@ -3,13 +3,15 @@ package test.onlinecafe.util.discount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import test.onlinecafe.service.ConfigurationService;
 import test.onlinecafe.util.exception.NotFoundException;
 
 import java.util.Locale;
 
-@Component("NoDiscount")
+@Profile("discount-none")
+@Component
 public class NoDiscount implements Discount {
     private static final Logger log = LoggerFactory.getLogger(NoDiscount.class);
 

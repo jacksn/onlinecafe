@@ -3,16 +3,20 @@ package test.onlinecafe.util.discount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import test.onlinecafe.service.ConfigurationService;
 import test.onlinecafe.util.exception.NotFoundException;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Locale;
 
-@Component("SimpleDiscount")
+@Profile("discount-simple")
+@Component
 public class SimpleDiscount implements Discount {
     private static final String DESCRIPTION_TEMPLATE_NAME = "discount.SimpleDiscount.description";
-    private static final String ERROR_GETTING_PARAMETER = "Unable to get configuration parameter {}, using default value {}";
+    private static final String ERROR_GETTING_PARAMETER = "Unable to get configuration parameter {}";
     private static final Logger log = LoggerFactory.getLogger(SimpleDiscount.class);
 
     private MessageSource messageSource;
@@ -31,20 +35,22 @@ public class SimpleDiscount implements Discount {
     }
 
     public void init() {
+        Number n = getParameterFromDatabase("n");
+        this.n = n != null ? n.intValue() : this.n;
+
+        n = getParameterFromDatabase("x");
+        this.x = n != null ? n.doubleValue() : this.x;
+
+        n = getParameterFromDatabase("m");
+        this.m = n != null ? n.doubleValue() : this.m;
+    }
+
+    private Number getParameterFromDatabase(String key) {
         try {
-            this.n = Integer.parseInt(service.get("n").getValue());
-        } catch (NumberFormatException e) {
-            log.error(ERROR_GETTING_PARAMETER, "n", n);
-        }
-        try {
-            this.x = Double.parseDouble(service.get("x").getValue());
-        } catch (NumberFormatException e) {
-            log.error(ERROR_GETTING_PARAMETER, "x", x);
-        }
-        try {
-            this.m = Double.parseDouble(service.get("m").getValue());
-        } catch (NotFoundException | NumberFormatException e) {
-            log.error(ERROR_GETTING_PARAMETER, "m", m);
+            return NumberFormat.getInstance().parse(service.get("k").getValue());
+        } catch (NotFoundException | ParseException e) {
+            log.error(ERROR_GETTING_PARAMETER, key);
+            return null;
         }
     }
 
