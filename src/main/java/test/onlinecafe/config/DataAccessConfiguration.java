@@ -30,7 +30,7 @@ public class DataAccessConfiguration {
     @Value("${db.password}")
     private String databasePassword;
 
-    @Value("${app.initialize_database}")
+    @Value("${db.initialize_database}")
     private boolean initializeDatabase;
 
     @Value("classpath:${db.schema_script}")
