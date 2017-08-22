@@ -10,9 +10,6 @@ import java.util.Locale;
 @Configuration
 @ComponentScan({"test.onlinecafe.service"})
 @PropertySource("classpath:application.properties")
-@Import({JdbcRepositoryConfiguration.class,
-        JpaConfiguration.class,
-        JpaRepositoryConfiguration.class})
 public class AppConfiguration {
 
     @Bean
