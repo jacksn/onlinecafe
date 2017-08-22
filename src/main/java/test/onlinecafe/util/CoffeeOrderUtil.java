@@ -19,11 +19,6 @@ import java.util.List;
 public final class CoffeeOrderUtil {
     private static Discount discount;
 
-    @Autowired
-    public void initDiscount(Discount discount) {
-        CoffeeOrderUtil.discount = discount;
-    }
-
     private CoffeeOrderUtil() {
     }
 
@@ -31,7 +26,8 @@ public final class CoffeeOrderUtil {
         return discount;
     }
 
-    public static void setDiscount(Discount discount) {
+    @Autowired
+    private void setDiscount(Discount discount) {
         CoffeeOrderUtil.discount = discount;
     }
 
