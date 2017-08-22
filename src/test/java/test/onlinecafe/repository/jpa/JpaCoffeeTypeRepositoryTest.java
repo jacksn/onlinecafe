@@ -1,22 +1,25 @@
 package test.onlinecafe.repository.jpa;
 
-import org.springframework.dao.DataIntegrityViolationException;
+import org.junit.Test;
 import org.springframework.test.context.ActiveProfiles;
+import test.onlinecafe.model.CoffeeType;
 import test.onlinecafe.repository.AbstractCoffeeTypeRepositoryTest;
 
-import javax.persistence.PersistenceException;
+import javax.validation.ConstraintViolationException;
 
 @ActiveProfiles("repo-jpa")
 public class JpaCoffeeTypeRepositoryTest extends AbstractCoffeeTypeRepositoryTest {
-    @Override
-    public void testUpdateInvalid() throws Exception {
-        thrown.expect(DataIntegrityViolationException.class);
-        super.testUpdateInvalid();
+
+    @Test
+    public void testValidation() throws Exception {
+        validateRootCause(() -> repository.save(new CoffeeType(null, 1.0, false)), ConstraintViolationException.class);
+        validateRootCause(() -> repository.save(new CoffeeType("New type", null, false)), ConstraintViolationException.class);
+        validateRootCause(() -> repository.save(new CoffeeType("New type", 1.0, null)), ConstraintViolationException.class);
     }
 
     @Override
     public void testCreateInvalid() throws Exception {
-        thrown.expect(PersistenceException.class);
+        thrown.expect(ConstraintViolationException.class);
         super.testCreateInvalid();
     }
 }

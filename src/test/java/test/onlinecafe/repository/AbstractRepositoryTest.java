@@ -1,7 +1,7 @@
 package test.onlinecafe.repository;
 
-import org.apache.tomcat.jdbc.pool.DataSource;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
@@ -10,34 +10,30 @@ import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
-import test.onlinecafe.config.AppConfiguration;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit4.SpringRunner;
+import test.onlinecafe.util.ValidationUtil;
 
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.slf4j.LoggerFactory.getLogger;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = AppConfiguration.class, loader = AnnotationConfigContextLoader.class)
+@SpringBootTest
+@RunWith(SpringRunner.class)
+@ActiveProfiles("discount-none")
 @TestPropertySource("classpath:db/db_hsqldb.properties")
+@Sql({"classpath:db/coffee_hsqldb.sql", "classpath:db/testdata.sql"})
 public abstract class AbstractRepositoryTest {
     private static final Logger log = getLogger(AbstractRepositoryTest.class);
     private static StringBuilder results = new StringBuilder();
 
     @Autowired
-    private DataSource dataSource;
-
-    @Autowired
-    private ResourceDatabasePopulator populator;
-
-    @Before
-    public void setup() {
-        populator.execute(dataSource);
-    }
+    public Environment env;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -61,6 +57,19 @@ public abstract class AbstractRepositoryTest {
                 results +
                 "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
         results.setLength(0);
+    }
+
+    public boolean isJpaBased(){
+        return env.acceptsProfiles("repo-jpa");
+    }
+
+    public static <T extends Throwable> void validateRootCause(Runnable runnable, Class<T> exceptionClass) {
+        try {
+            runnable.run();
+            Assert.fail("Expected " + exceptionClass.getName());
+        } catch (Exception e) {
+            Assert.assertThat(ValidationUtil.getRootCause(e), instanceOf(exceptionClass));
+        }
     }
 
 }

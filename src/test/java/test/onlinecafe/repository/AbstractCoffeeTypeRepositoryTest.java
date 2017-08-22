@@ -9,11 +9,12 @@ import test.onlinecafe.model.CoffeeType;
 import java.util.Comparator;
 import java.util.List;
 
+import static org.junit.Assume.assumeFalse;
 import static test.onlinecafe.CoffeeTypeTestData.*;
 
 public abstract class AbstractCoffeeTypeRepositoryTest extends AbstractRepositoryTest {
     @Autowired
-    private CoffeeTypeRepository repository;
+    protected CoffeeTypeRepository repository;
 
     @Test
     public void testUpdate() throws Exception {
@@ -27,6 +28,7 @@ public abstract class AbstractCoffeeTypeRepositoryTest extends AbstractRepositor
 
     @Test
     public void testUpdateInvalid() throws Exception {
+        assumeFalse(isJpaBased());
         int updatedId = COFFEE_TYPE1.getId();
         CoffeeType updated = repository.get(updatedId);
         updated.setTypeName(null);

@@ -4,14 +4,14 @@ import org.junit.Test;
 import org.springframework.test.context.ActiveProfiles;
 import test.onlinecafe.repository.AbstractCoffeeOrderRepositoryTest;
 
-import javax.persistence.PersistenceException;
+import javax.validation.ConstraintViolationException;
 
 @ActiveProfiles("repo-jpa")
 public class JpaCoffeeOrderRepositoryTest extends AbstractCoffeeOrderRepositoryTest {
     @Test
     @Override
     public void testCreateInvalid() throws Exception {
-        thrown.expect(PersistenceException.class);
+        thrown.expect(ConstraintViolationException.class);
         super.testCreateInvalid();
     }
 }

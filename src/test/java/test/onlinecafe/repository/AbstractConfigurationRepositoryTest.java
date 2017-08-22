@@ -6,11 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import test.onlinecafe.model.ConfigurationItem;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeThat;
+import static org.junit.Assume.assumeTrue;
 import static test.onlinecafe.ConfigurationTestData.CONFIGURATION_ITEM1;
 
 public abstract class AbstractConfigurationRepositoryTest extends AbstractRepositoryTest {
     @Autowired
-    private ConfigurationRepository repository;
+    protected ConfigurationRepository repository;
 
     @Test
     public void testSave() throws Exception {
@@ -22,6 +25,7 @@ public abstract class AbstractConfigurationRepositoryTest extends AbstractReposi
 
     @Test
     public void testSaveInvalid() throws Exception {
+        assumeFalse(isJpaBased());
         repository.save(new ConfigurationItem(null, "New value"));
     }
 
