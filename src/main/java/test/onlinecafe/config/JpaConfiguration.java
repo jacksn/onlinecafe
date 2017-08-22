@@ -48,7 +48,7 @@ public class JpaConfiguration {
         return transactionManager;
     }
 
-    Properties hibernateProperties() {
+    private Properties hibernateProperties() {
         Properties properties = new Properties();
         properties.setProperty(AvailableSettings.SHOW_SQL, env.getProperty("hibernate.show_sql"));
         properties.setProperty(AvailableSettings.FORMAT_SQL, env.getProperty("hibernate.format_sql"));
