@@ -12,13 +12,13 @@ import javax.servlet.ServletRegistration;
 public class WebAppInitializer implements WebApplicationInitializer {
     public void onStartup(ServletContext servletContext) throws ServletException {
         AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
-        ctx.register(AppConfiguration.class);
-        ctx.register(DiscountConfiguration.class);
-        ctx.register(DataAccessConfiguration.class);
-        ctx.register(JdbcRepositoryConfiguration.class);
-        ctx.register(JpaConfiguration.class);
-        ctx.register(JpaRepositoryConfiguration.class);
-        ctx.register(WebMvcConfiguration.class);
+        ctx.register(AppConfiguration.class,
+                DiscountConfiguration.class,
+                DataAccessConfiguration.class,
+                JdbcRepositoryConfiguration.class,
+                JpaConfiguration.class,
+                JpaRepositoryConfiguration.class,
+                WebMvcConfiguration.class);
         ctx.setServletContext(servletContext);
         servletContext.addListener(new ContextLoaderListener(ctx));
         DispatcherServlet servlet = new DispatcherServlet(ctx);
