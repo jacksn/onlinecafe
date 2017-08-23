@@ -1,6 +1,7 @@
 DELETE FROM coffeeorderitem;
 DELETE FROM coffeeorder;
 DELETE FROM coffeetype;
+DELETE FROM configuration;
 
 INSERT INTO CoffeeType (type_name, price, disabled) VALUES
   ('Caffè Americano', 1.00, 'N'),
