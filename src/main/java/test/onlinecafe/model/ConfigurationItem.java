@@ -1,10 +1,11 @@
 package test.onlinecafe.model;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "Configuration")
+@Table(name = "configuration")
 @NamedQueries({
         @NamedQuery(name = ConfigurationItem.DELETE, query = "DELETE FROM ConfigurationItem ci WHERE ci.id = :id"),
 })
@@ -12,11 +13,13 @@ public class ConfigurationItem {
     public static final String DELETE = "ConfigurationItem.delete";
 
     @Id
-    @NotBlank
+    @NotNull
+    @Size(min = 1, max = 20)
     private String id;
 
-    @Column
-    @NotBlank
+    @Column(name = "value")
+    @NotNull
+    @Size(max = 30)
     private String value;
 
     public ConfigurationItem() {
