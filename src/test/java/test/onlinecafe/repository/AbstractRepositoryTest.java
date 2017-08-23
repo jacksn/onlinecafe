@@ -30,7 +30,7 @@ import static org.slf4j.LoggerFactory.getLogger;
         JpaConfiguration.class,
         JpaRepositoryConfiguration.class
 }, loader = AnnotationConfigContextLoader.class)
-@TestPropertySource("classpath:db/db_hsqldb.properties")
+@TestPropertySource({"classpath:application.properties","classpath:db/db_hsqldb.properties"})
 public abstract class AbstractRepositoryTest {
     private static final Logger log = getLogger(AbstractRepositoryTest.class);
     private static StringBuilder results = new StringBuilder();
