@@ -4,15 +4,6 @@
     <!-- To enable JMX Management -->
     <jmxConfigurator/>
 
-    <appender name="file" class="ch.qos.logback.core.FileAppender">
-        <file>log/onlinecafe.log</file>
-
-        <encoder>
-            <charset>UTF-8</charset>
-            <pattern>%date %-5level %logger{0} [%file:%line] %msg%n</pattern>
-        </encoder>
-    </appender>
-
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <charset>UTF-8</charset>
@@ -23,7 +14,7 @@
     <logger name="test.onlinecafe" level="debug"/>
 
     <root level="info">
-        <appender-ref ref="file"/>
         <appender-ref ref="console"/>
     </root>
+
 </configuration>
