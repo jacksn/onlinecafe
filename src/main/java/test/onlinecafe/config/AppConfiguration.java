@@ -1,6 +1,9 @@
 package test.onlinecafe.config;
 
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
@@ -10,9 +13,6 @@ import java.util.Locale;
 @Configuration
 @ComponentScan({"test.onlinecafe.service"})
 @PropertySource("classpath:application.properties")
-@Import({JdbcRepositoryConfiguration.class,
-        JpaConfiguration.class,
-        JpaRepositoryConfiguration.class})
 public class AppConfiguration {
 
     @Bean

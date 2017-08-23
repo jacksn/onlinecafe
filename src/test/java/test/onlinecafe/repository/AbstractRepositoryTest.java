@@ -15,14 +15,21 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
-import test.onlinecafe.config.AppConfiguration;
+import test.onlinecafe.config.*;
 
 import java.util.concurrent.TimeUnit;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = AppConfiguration.class, loader = AnnotationConfigContextLoader.class)
+@ContextConfiguration(classes = {
+        AppConfiguration.class,
+        DataAccessConfiguration.class,
+        DiscountConfiguration.class,
+        JdbcRepositoryConfiguration.class,
+        JpaConfiguration.class,
+        JpaRepositoryConfiguration.class
+}, loader = AnnotationConfigContextLoader.class)
 @TestPropertySource("classpath:db/db_hsqldb.properties")
 public abstract class AbstractRepositoryTest {
     private static final Logger log = getLogger(AbstractRepositoryTest.class);

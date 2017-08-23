@@ -50,6 +50,7 @@ public class DataAccessConfiguration {
         poolProperties.setTestWhileIdle(true);
         poolProperties.setTestOnBorrow(true);
         poolProperties.setValidationQuery("SELECT 1");
+        poolProperties.setValidationInterval(10000);
         poolProperties.setTestOnReturn(false);
         poolProperties.setRemoveAbandonedTimeout(60);
         poolProperties.setMinIdle(10);
