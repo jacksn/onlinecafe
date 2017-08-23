@@ -1,14 +1,14 @@
 package test.onlinecafe.model;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "CoffeeOrder")
+@Table(name = "coffeeorder")
 @NamedQueries({
         @NamedQuery(name = CoffeeOrder.GET_ALL, query = "SELECT co FROM CoffeeOrder co"),
         @NamedQuery(name = CoffeeOrder.DELETE, query = "DELETE FROM CoffeeOrder co WHERE co.id = :id"),
@@ -18,19 +18,23 @@ public class CoffeeOrder extends BaseEntity {
     public static final String DELETE = "CoffeeOrder.delete";
 
     @Column(name = "order_date")
+    @NotNull
     private LocalDateTime orderDate = LocalDateTime.now();
 
+    @NotNull
     @Column(name = "name")
+    @Size(max = 100)
     private String name;
 
-    @NotBlank
+    @NotNull
+    @Size(min = 1, max = 200)
     @Column(name = "delivery_address")
     private String deliveryAddress;
 
+    @NotNull
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CoffeeOrderItem> orderItems;
 
-    @NotNull
     @Column(name = "cost")
     private Double cost;
 
