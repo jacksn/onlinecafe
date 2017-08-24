@@ -1,18 +1,11 @@
 package test.onlinecafe.config;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import test.onlinecafe.util.discount.Discount;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
+@Profile({"discount-none", "discount-simple"})
+@ComponentScan("test.onlinecafe.util")
 public class DiscountConfiguration {
-    @Value("${app.discount_class_qualifier}")
-    private String discountClassQualifier;
-
-    @Bean
-    public Discount discount(ConfigurableApplicationContext context) {
-        return context.getBean(discountClassQualifier, Discount.class);
-    }
 }
