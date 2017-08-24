@@ -70,13 +70,6 @@ public class CoffeeServlet extends HttpServlet {
     }
 
     @Autowired
-    private void initDiscount(Discount discount) {
-        discount.init();
-        discountDescriptionMessageKey = "discount." + discount.getClass().getSimpleName() + ".description";
-        CoffeeOrderUtil.setDiscount(discount);
-    }
-
-    @Autowired
     private void initI18n(List<String> languages) throws ServletException {
         supportedLanguages = new HashSet<>();
         if (!languages.isEmpty()) {
@@ -99,13 +92,6 @@ public class CoffeeServlet extends HttpServlet {
     }
 
     @Override
-    public void destroy() {
-        log.debug("Servlet deinitialization - start");
-        super.destroy();
-        log.debug("Servlet deinitialization - end");
-    }
-
-    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String action = request.getRequestURI();
@@ -121,9 +107,7 @@ public class CoffeeServlet extends HttpServlet {
 
         if (PATH_ROOT.equals(action)) {
             log.debug("Show main page");
-            String discountDescription = CoffeeOrderUtil.getDiscount().getDescription(
-                    messageSource.getMessage(discountDescriptionMessageKey, null, locale),
-                    messageSource.getMessage("label.currency_symbol", null, locale));
+            String discountDescription = CoffeeOrderUtil.getDiscount().getDescription(locale);
             request.setAttribute(MODEL_ATTR_DISCOUNT_DESCRIPTION, discountDescription);
             request.setAttribute(MODEL_ATTR_COFFEE_TYPES, coffeeTypeService.getEnabled());
             request.getRequestDispatcher(PAGE_COFFEE_TYPES_LIST).forward(request, response);
