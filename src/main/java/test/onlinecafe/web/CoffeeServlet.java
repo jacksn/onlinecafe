@@ -49,8 +49,6 @@ public class CoffeeServlet extends HttpServlet {
     private static String defaultLanguage = "en";
     private static Set<String> supportedLanguages;
 
-    private String discountDescriptionMessageKey;
-
     @Autowired
     private CoffeeTypeService coffeeTypeService;
 
