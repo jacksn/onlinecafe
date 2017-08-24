@@ -29,6 +29,7 @@ public final class CoffeeOrderUtil {
     @Autowired
     private void setDiscount(Discount discount) {
         CoffeeOrderUtil.discount = discount;
+        discount.init();
     }
 
     public static Double getDeliveryCost(Double orderTotalCost) {
