@@ -12,7 +12,6 @@ import test.onlinecafe.model.CoffeeType;
 import test.onlinecafe.service.CoffeeOrderService;
 import test.onlinecafe.service.CoffeeTypeService;
 import test.onlinecafe.util.CoffeeOrderUtil;
-import test.onlinecafe.util.discount.Discount;
 import test.onlinecafe.util.exception.NotFoundException;
 
 import javax.servlet.ServletConfig;
@@ -49,8 +48,6 @@ public class CoffeeServlet extends HttpServlet {
     private static String defaultLanguage = "en";
     private static Set<String> supportedLanguages;
 
-    private String discountDescriptionMessageKey;
-
     @Autowired
     private CoffeeTypeService coffeeTypeService;
 
@@ -64,8 +61,7 @@ public class CoffeeServlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         log.info("Servlet initialization - start");
-        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
-                config.getServletContext());
+        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, config.getServletContext());
         log.info("Servlet initialization - end");
     }
 
