@@ -28,6 +28,7 @@ public final class CoffeeOrderUtil {
 
     @Autowired
     private void setDiscount(Discount discount) {
+        discount.init();
         CoffeeOrderUtil.discount = discount;
     }
 
