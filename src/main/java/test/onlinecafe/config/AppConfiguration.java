@@ -14,9 +14,8 @@ import java.util.Locale;
 @ComponentScan({"test.onlinecafe.service"})
 @PropertySource("classpath:application.properties")
 @Import({DiscountConfiguration.class,
-        JdbcRepositoryConfiguration.class,
-        JpaConfiguration.class,
-        JpaRepositoryConfiguration.class})
+        DataAccessConfiguration.class
+})
 public class AppConfiguration {
 
     @Autowired

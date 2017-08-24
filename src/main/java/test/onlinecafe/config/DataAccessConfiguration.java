@@ -3,10 +3,7 @@ package test.onlinecafe.config;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
+import org.springframework.context.annotation.*;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
@@ -16,6 +13,9 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 @PropertySources({
         @PropertySource("classpath:db/db.properties"),
         @PropertySource(value = "classpath:db/${db_config_path}", ignoreResourceNotFound = true)})
+@Import({JdbcRepositoryConfiguration.class,
+        JpaConfiguration.class,
+        JpaRepositoryConfiguration.class})
 public class DataAccessConfiguration {
 
     @Value("${db.driver}")
