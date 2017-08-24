@@ -1,5 +1,7 @@
 package test.onlinecafe.util;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import test.onlinecafe.dto.CoffeeOrderDto;
 import test.onlinecafe.dto.CoffeeOrderItemDto;
 import test.onlinecafe.model.CoffeeOrder;
@@ -8,6 +10,7 @@ import test.onlinecafe.util.discount.Discount;
 
 import java.time.LocalDateTime;
 
+@Component
 public final class CoffeeOrderUtil {
     private static Discount discount;
 
@@ -18,7 +21,9 @@ public final class CoffeeOrderUtil {
         return discount;
     }
 
-    public static void setDiscount(Discount discount) {
+    @Autowired
+    private void setDiscount(Discount discount) {
+        discount.init();
         CoffeeOrderUtil.discount = discount;
     }
 

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Configuration
-@ComponentScan({"test.onlinecafe.repository", "test.onlinecafe.service", "test.onlinecafe.util.discount"})
+@ComponentScan({"test.onlinecafe.repository", "test.onlinecafe.service"})
 @PropertySource("classpath:application.properties")
 @Import({DataAccessConfiguration.class,
         DiscountConfiguration.class
