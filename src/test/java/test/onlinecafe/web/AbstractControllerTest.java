@@ -15,7 +15,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import javax.annotation.PostConstruct;
 
 @SpringBootTest
-@ActiveProfiles("repo-jpa, discount-none")
+@ActiveProfiles("repo-jpa, discount-mock")
 @RunWith(SpringRunner.class)
 @WebAppConfiguration
 @TestPropertySource("classpath:db/db_hsqldb.properties")
@@ -28,7 +28,6 @@ public abstract class AbstractControllerTest {
     }
 
     protected MockMvc mockMvc;
-
 
     @Autowired
     private WebApplicationContext webApplicationContext;

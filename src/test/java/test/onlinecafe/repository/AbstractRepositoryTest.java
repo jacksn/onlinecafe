@@ -25,7 +25,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@ActiveProfiles("discount-none")
+@ActiveProfiles("discount-mock")
 @TestPropertySource("classpath:db/db_hsqldb.properties")
 @Sql({"classpath:db/coffee_hsqldb.sql", "classpath:db/testdata.sql"})
 public abstract class AbstractRepositoryTest {
