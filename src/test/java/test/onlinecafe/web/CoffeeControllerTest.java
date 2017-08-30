@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import test.onlinecafe.CoffeeTypeTestData;
-import test.onlinecafe.dto.CoffeeTypeDtoList;
+import test.onlinecafe.dto.CoffeeTypeDtoListWrapper;
 import test.onlinecafe.dto.Notification;
 import test.onlinecafe.dto.NotificationType;
 import test.onlinecafe.service.CoffeeOrderService;
@@ -47,7 +47,7 @@ public class CoffeeControllerTest extends AbstractControllerTest {
         mockMvc.perform(get("/").sessionAttr(MODEL_ATTR_NOTIFICATION, notification))
                 .andExpect(status().isOk())
                 .andExpect(view().name("index"))
-                .andExpect(model().attribute(MODEL_ATTR_COFFEE_TYPES, isA(CoffeeTypeDtoList.class)))
+                .andExpect(model().attribute(MODEL_ATTR_COFFEE_TYPES, isA(CoffeeTypeDtoListWrapper.class)))
                 .andExpect(model().attribute(MODEL_ATTR_DISCOUNT_DESCRIPTION, MockDiscount.DISCOUNT_DESCRIPTION))
                 .andExpect(model().attribute(MODEL_ATTR_NOTIFICATION, notification));
         verify(typeService).getEnabled();
@@ -56,7 +56,7 @@ public class CoffeeControllerTest extends AbstractControllerTest {
 
     @Test
     public void postRootTest() throws Exception {
-        CoffeeTypeDtoList typeDtoList = CoffeeOrderUtil.getCoffeeTypeDtoList(CoffeeTypeTestData.COFFEE_TYPES_ENABLED);
+        CoffeeTypeDtoListWrapper typeDtoList = CoffeeOrderUtil.getCoffeeTypeDtoList(CoffeeTypeTestData.COFFEE_TYPES_ENABLED);
 
     }
 }

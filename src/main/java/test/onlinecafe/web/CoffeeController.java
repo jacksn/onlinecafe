@@ -49,7 +49,7 @@ public class CoffeeController {
     }
 
     @PostMapping
-    public ModelAndView prepareOrder(@ModelAttribute("coffeeTypes") CoffeeTypeDtoList coffeeTypes, HttpSession session) {
+    public ModelAndView prepareOrder(@ModelAttribute("coffeeTypes") CoffeeTypeDtoListWrapper coffeeTypes, HttpSession session) {
         List<CoffeeOrderItemDto> orderItemDtos = new ArrayList<>();
         double orderTotalCost = 0;
         for (CoffeeTypeDto typeDto : coffeeTypes.getCoffeeTypeDtos()) {

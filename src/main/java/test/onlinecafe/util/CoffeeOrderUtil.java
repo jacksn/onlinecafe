@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import test.onlinecafe.dto.CoffeeOrderDto;
 import test.onlinecafe.dto.CoffeeOrderItemDto;
 import test.onlinecafe.dto.CoffeeTypeDto;
-import test.onlinecafe.dto.CoffeeTypeDtoList;
+import test.onlinecafe.dto.CoffeeTypeDtoListWrapper;
 import test.onlinecafe.model.CoffeeOrder;
 import test.onlinecafe.model.CoffeeOrderItem;
 import test.onlinecafe.model.CoffeeType;
@@ -60,8 +60,8 @@ public final class CoffeeOrderUtil {
         return order;
     }
 
-    public static CoffeeTypeDtoList getCoffeeTypeDtoList(List<CoffeeType> coffeeTypes) {
-        CoffeeTypeDtoList list = new CoffeeTypeDtoList();
+    public static CoffeeTypeDtoListWrapper getCoffeeTypeDtoList(List<CoffeeType> coffeeTypes) {
+        CoffeeTypeDtoListWrapper list = new CoffeeTypeDtoListWrapper();
         List<CoffeeTypeDto> coffeeTypeDtos = new ArrayList<>();
         for (CoffeeType type : coffeeTypes) {
             coffeeTypeDtos.add(new CoffeeTypeDto(type));

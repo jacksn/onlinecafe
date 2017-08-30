@@ -30,7 +30,7 @@
         <div class="row">
             <div class="col-md-offset-2 col-md-8">
                 <div class="row">
-                    <%--@elvariable id="coffeeTypes" type="test.onlinecafe.dto.CoffeeTypeDtoList"--%>
+                    <%--@elvariable id="coffeeTypes" type="test.onlinecafe.dto.CoffeeTypeDtoListWrapper"--%>
                     <form:form class="form-horizontal" method="POST"
                                onsubmit="return validate()" modelAttribute="coffeeTypes">
                         <table class="table">
