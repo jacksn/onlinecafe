@@ -47,7 +47,7 @@ public class SimpleDiscount implements Discount {
 
     private Number getParameterFromDatabase(String key) {
         try {
-            return NumberFormat.getInstance().parse(service.get("k").getValue());
+            return NumberFormat.getInstance().parse(service.get(key).getValue());
         } catch (NotFoundException | ParseException e) {
             log.error(ERROR_GETTING_PARAMETER, key);
             return null;
