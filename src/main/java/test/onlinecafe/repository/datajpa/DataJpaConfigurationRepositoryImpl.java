@@ -20,7 +20,6 @@ public class DataJpaConfigurationRepositoryImpl implements ConfigurationReposito
         return repository.save(configurationItem);
     }
 
-
     @Transactional
     @Override
     public boolean delete(String id) {
