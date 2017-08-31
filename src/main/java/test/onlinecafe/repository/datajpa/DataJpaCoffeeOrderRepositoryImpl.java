@@ -1,5 +1,6 @@
 package test.onlinecafe.repository.datajpa;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import test.onlinecafe.model.CoffeeOrder;
 import test.onlinecafe.repository.CoffeeOrderRepository;
@@ -7,6 +8,7 @@ import test.onlinecafe.repository.CoffeeOrderRepository;
 import javax.transaction.Transactional;
 import java.util.List;
 
+@Profile("repo-datajpa")
 @Repository
 public class DataJpaCoffeeOrderRepositoryImpl implements CoffeeOrderRepository {
     private JpaCoffeeOrderRepository repository;

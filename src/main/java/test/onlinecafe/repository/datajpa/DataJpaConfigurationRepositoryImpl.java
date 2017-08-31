@@ -1,11 +1,13 @@
 package test.onlinecafe.repository.datajpa;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import test.onlinecafe.model.ConfigurationItem;
 import test.onlinecafe.repository.ConfigurationRepository;
 
 import javax.transaction.Transactional;
 
+@Profile("repo-datajpa")
 @Repository
 public class DataJpaConfigurationRepositoryImpl implements ConfigurationRepository {
     private JpaConfigurationRepository repository;

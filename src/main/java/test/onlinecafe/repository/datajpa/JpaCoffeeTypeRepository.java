@@ -1,5 +1,6 @@
 package test.onlinecafe.repository.datajpa;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -9,6 +10,7 @@ import test.onlinecafe.model.CoffeeType;
 
 import java.util.List;
 
+@Profile("repo-datajpa")
 @Transactional(readOnly = true)
 public interface JpaCoffeeTypeRepository extends JpaRepository<CoffeeType, Integer> {
     @Modifying
