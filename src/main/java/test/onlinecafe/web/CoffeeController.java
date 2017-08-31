@@ -16,7 +16,7 @@ import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
-import static test.onlinecafe.util.CoffeeOrderUtil.getCoffeeTypeDtoList;
+import static test.onlinecafe.util.CoffeeOrderUtil.getCoffeeTypeDtoListWrapper;
 
 @Controller
 @RequestMapping("/")
@@ -43,7 +43,7 @@ public class CoffeeController {
             session.removeAttribute(MODEL_ATTR_NOTIFICATION);
             model.addAttribute(MODEL_ATTR_NOTIFICATION, notification);
         }
-        model.addAttribute(MODEL_ATTR_COFFEE_TYPES, getCoffeeTypeDtoList(coffeeTypeService.getEnabled()));
+        model.addAttribute(MODEL_ATTR_COFFEE_TYPES, getCoffeeTypeDtoListWrapper(coffeeTypeService.getEnabled()));
         model.addAttribute(MODEL_ATTR_DISCOUNT_DESCRIPTION, CoffeeOrderUtil.getDiscount().getDescription(LocaleContextHolder.getLocale()));
         return "index";
     }

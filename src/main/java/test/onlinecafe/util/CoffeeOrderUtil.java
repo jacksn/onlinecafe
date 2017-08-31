@@ -60,7 +60,7 @@ public final class CoffeeOrderUtil {
         return order;
     }
 
-    public static CoffeeTypeDtoListWrapper getCoffeeTypeDtoList(List<CoffeeType> coffeeTypes) {
+    public static CoffeeTypeDtoListWrapper getCoffeeTypeDtoListWrapper(List<CoffeeType> coffeeTypes) {
         CoffeeTypeDtoListWrapper list = new CoffeeTypeDtoListWrapper();
         List<CoffeeTypeDto> coffeeTypeDtos = new ArrayList<>();
         for (CoffeeType type : coffeeTypes) {
