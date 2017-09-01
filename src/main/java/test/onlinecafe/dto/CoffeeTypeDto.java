@@ -2,8 +2,6 @@ package test.onlinecafe.dto;
 
 import test.onlinecafe.model.CoffeeType;
 
-import javax.validation.constraints.NotNull;
-
 public class CoffeeTypeDto {
     private int typeId;
     private String typeName;
