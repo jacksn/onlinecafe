@@ -2,7 +2,6 @@ package test.onlinecafe.repository;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.Stopwatch;
@@ -60,7 +59,7 @@ public abstract class AbstractRepositoryTest {
     }
 
     public boolean isJpaBased(){
-        return env.acceptsProfiles("repo-jpa");
+        return env.acceptsProfiles("repo-jpa", "repo-datajpa");
     }
 
     public static <T extends Throwable> void validateRootCause(Runnable runnable, Class<T> exceptionClass) {
