@@ -1,21 +1,17 @@
 # https://docs.travis-ci.com/user/languages/java/
 language: java
 jdk: oraclejdk8
+# https://github.com/codecov/example-java-maven/blob/master/.travis.yml#L2
+sudo: false
 
 # https://dzone.com/articles/travis-ci-tutorial-java-projects
 cache:
   directories:
   - $HOME/.m2
 
-# https://docs.travis-ci.com/user/database-setup/#PostgreSQL
-before_script:
-  - psql -c 'create database coffee' -U postgres
-  - psql -c 'create user "user"; grant all privileges on database topjava to "user"' -U postgres
-
 # https://docs.travis-ci.com/user/notifications#Configuring-email-notifications
 notifications:
   email: false
 
-script:
-  - ./mvnw clean install
+after_success:
   - bash <(curl -s https://codecov.io/bash)
