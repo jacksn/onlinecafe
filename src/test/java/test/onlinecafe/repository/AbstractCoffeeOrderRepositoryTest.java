@@ -27,6 +27,7 @@ public abstract class AbstractCoffeeOrderRepositoryTest extends AbstractReposito
     public void testForbidUpdate() throws Exception {
         thrown.expect(UnsupportedOperationException.class);
         repository.save(getCoffeeOrder1());
+        fail();
     }
 
     @Test
@@ -41,6 +42,7 @@ public abstract class AbstractCoffeeOrderRepositoryTest extends AbstractReposito
         CoffeeOrder created = getNewCoffeeOrder();
         created.setDeliveryAddress(null);
         repository.save(created);
+        fail();
     }
 
     @Test

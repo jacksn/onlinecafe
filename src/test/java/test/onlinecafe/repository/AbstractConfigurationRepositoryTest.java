@@ -1,14 +1,11 @@
 package test.onlinecafe.repository;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import test.onlinecafe.model.ConfigurationItem;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.junit.Assume.assumeFalse;
-import static org.junit.Assume.assumeThat;
-import static org.junit.Assume.assumeTrue;
 import static test.onlinecafe.ConfigurationTestData.CONFIGURATION_ITEM1;
 
 public abstract class AbstractConfigurationRepositoryTest extends AbstractRepositoryTest {
@@ -27,17 +24,18 @@ public abstract class AbstractConfigurationRepositoryTest extends AbstractReposi
     public void testSaveInvalid() throws Exception {
         assumeFalse(isJpaBased());
         repository.save(new ConfigurationItem(null, "New value"));
+        fail();
     }
 
     @Test
     public void testDelete() throws Exception {
         repository.delete(CONFIGURATION_ITEM1.getId());
-        Assert.assertNull(repository.get(CONFIGURATION_ITEM1.getId()));
+        assertNull(repository.get(CONFIGURATION_ITEM1.getId()));
     }
 
     @Test
     public void testDeleteAbsent() throws Exception {
-        Assert.assertFalse(repository.delete("Absent key"));
+        assertFalse(repository.delete("Absent key"));
     }
 
     @Test

@@ -6,6 +6,8 @@ import test.onlinecafe.repository.AbstractCoffeeOrderRepositoryTest;
 
 import javax.validation.ConstraintViolationException;
 
+import static org.junit.Assert.fail;
+
 @ActiveProfiles("repo-datajpa")
 public class DataJpaCoffeeOrderRepositoryTest extends AbstractCoffeeOrderRepositoryTest {
     @Test
@@ -13,5 +15,6 @@ public class DataJpaCoffeeOrderRepositoryTest extends AbstractCoffeeOrderReposit
     public void testCreateInvalid() throws Exception {
         thrown.expect(ConstraintViolationException.class);
         super.testCreateInvalid();
+        fail();
     }
 }
