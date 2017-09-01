@@ -1,7 +1,7 @@
 package test.onlinecafe.repository.jdbc;
 
 public final class CoffeeOrderQueryStrings {
-    static final String SELECT_ALL_QUERY = "SELECT " +
+    public static final String SELECT_ALL_QUERY = "SELECT " +
             "  coffeeorder.id AS order_id," +
             "  order_date," +
             "  name," +
@@ -19,7 +19,7 @@ public final class CoffeeOrderQueryStrings {
             "  JOIN coffeetype ON coffeeorderitem.type_id = coffeetype.id " +
             "ORDER BY coffeeorder.id, coffeeorderitem.id";
 
-    static final String SELECT_QUERY = "SELECT " +
+    public static final String SELECT_QUERY = "SELECT " +
             "  coffeeorder.id AS order_id, " +
             "  order_date, " +
             "  name, " +
@@ -38,11 +38,11 @@ public final class CoffeeOrderQueryStrings {
             "WHERE order_id = ? " +
             "ORDER BY coffeeorderitem.id";
 
-    static final String INSERT_ORDER_QUERY = "INSERT INTO CoffeeOrder (order_date, name, delivery_address, cost) " +
+    public static final String INSERT_ORDER_QUERY = "INSERT INTO CoffeeOrder (order_date, name, delivery_address, cost) " +
             "VALUES (?, ?, ?, ?)";
-    static final String INSERT_ORDER_ITEMS_QUERY = "INSERT INTO CoffeeOrderItem (type_id, order_id, quantity) VALUES (?, ?, ?)";
+    public static final String INSERT_ORDER_ITEMS_QUERY = "INSERT INTO CoffeeOrderItem (type_id, order_id, quantity) VALUES (?, ?, ?)";
 
-    static final String DELETE_ORDER_QUERY = "DELETE FROM CoffeeOrder WHERE id=?";
+    public static final String DELETE_ORDER_QUERY = "DELETE FROM CoffeeOrder WHERE id=?";
 
     private CoffeeOrderQueryStrings() {
     }

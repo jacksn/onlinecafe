@@ -18,7 +18,7 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
-    ModelAndView notFoundErrorHandler(HttpServletRequest req, Exception e) throws Exception {
+    public ModelAndView notFoundErrorHandler(HttpServletRequest req, Exception e) throws Exception {
         ModelAndView mav = new ModelAndView("error");
         mav.addObject("errorMessage", messageSource.getMessage("label.error.page_not_found", null, LocaleContextHolder.getLocale()));
         return mav;
