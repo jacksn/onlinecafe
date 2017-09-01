@@ -2,12 +2,8 @@ package test.onlinecafe;
 
 import test.onlinecafe.dto.CoffeeOrderDto;
 import test.onlinecafe.dto.CoffeeOrderItemDto;
-import test.onlinecafe.dto.CoffeeTypeDto;
-import test.onlinecafe.dto.CoffeeTypeDtoListWrapper;
 import test.onlinecafe.model.CoffeeOrder;
 import test.onlinecafe.model.CoffeeOrderItem;
-import test.onlinecafe.model.CoffeeType;
-import test.onlinecafe.util.CoffeeOrderUtil;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -92,24 +88,6 @@ public final class CoffeeOrderTestData {
                 0,
                 order.getCost()
         );
-    }
-
-    public static CoffeeTypeDtoListWrapper getCoffeeTypeDtoListWrapper2() {
-        CoffeeOrder order = getCoffeeOrder2();
-        List<CoffeeType> types = new ArrayList<>();
-        for (CoffeeOrderItem orderItem : order.getOrderItems()) {
-            types.add(orderItem.getCoffeeType());
-        }
-        CoffeeTypeDtoListWrapper typeDtoList = CoffeeOrderUtil.getCoffeeTypeDtoListWrapper(types);
-
-        List<CoffeeTypeDto> dtoList = typeDtoList.getCoffeeTypeDtos();
-        CoffeeTypeDto typeDto = dtoList.get(0);
-        typeDto.setSelected(true);
-        typeDto.setQuantity(2);
-        typeDto = dtoList.get(1);
-        typeDto.setSelected(true);
-        typeDto.setQuantity(1);
-        return typeDtoList;
     }
 
     private CoffeeOrderTestData() {
