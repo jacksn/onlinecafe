@@ -20,7 +20,11 @@ public class DataJpaCoffeeTypeRepositoryImpl implements CoffeeTypeRepository {
     @Transactional
     @Override
     public CoffeeType save(CoffeeType type) {
-        return repository.save(type);
+        if (!type.isNew() && get(type.getId()) == null) {
+            return null;
+        } else {
+            return repository.save(type);
+        }
     }
 
     @Transactional

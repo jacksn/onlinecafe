@@ -20,7 +20,12 @@ public class DataJpaCoffeeOrderRepositoryImpl implements CoffeeOrderRepository {
     @Transactional
     @Override
     public CoffeeOrder save(CoffeeOrder order) {
-        return repository.save(order);
+        if (order.isNew()) {
+            return repository.save(order);
+        } else {
+            throwUnsupportedOperationException();
+            return null;
+        }
     }
 
     @Transactional
