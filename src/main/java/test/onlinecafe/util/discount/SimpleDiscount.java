@@ -23,11 +23,11 @@ public class SimpleDiscount implements Discount {
     private ConfigurationService service;
 
     // n'th cup of one type if free
-    private Integer n = 5;
+    private int n = 5;
     // if order total > x then delivery is free
-    private Double x = 10.0;
+    private double x = 10.0;
     // delivery cost
-    private Double m = 2.0;
+    private double m = 2.0;
 
     public SimpleDiscount(MessageSource messageSource, ConfigurationService configurationService) {
         this.messageSource = messageSource;

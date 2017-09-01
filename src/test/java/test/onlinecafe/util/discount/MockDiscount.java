@@ -8,8 +8,8 @@ import java.util.Locale;
 @Component
 @Profile("discount-mock")
 public class MockDiscount implements Discount {
-    public static double DELIVERY_COST = 5;
-    public static String DISCOUNT_DESCRIPTION = "Mock discount";
+    public static final double DELIVERY_COST = 5;
+    public static final String DISCOUNT_DESCRIPTION = "Mock discount";
 
     @Override
     public void init() {
