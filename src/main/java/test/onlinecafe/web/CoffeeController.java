@@ -13,6 +13,7 @@ import test.onlinecafe.service.CoffeeTypeService;
 import test.onlinecafe.util.CoffeeOrderUtil;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,9 @@ public class CoffeeController {
     public static final String MODEL_ATTR_COFFEE_TYPES = "coffeeTypes";
     public static final String MODEL_ATTR_NOTIFICATION = "notification";
     public static final String MODEL_ATTR_DISCOUNT_DESCRIPTION = "discountDescription";
+    public static final String MESSAGE_ERROR_EMPTY_ORDER = "error.empty_order";
+    public static final String MESSAGE_ORDER_ACCEPTED = "label.order_accepted";
+    public static final String MESSAGE_ERROR_EMPTY_ADDRESS = "error.empty_address";
 
     private MessageSource messageSource;
     private CoffeeTypeService coffeeTypeService;
@@ -49,18 +53,20 @@ public class CoffeeController {
     }
 
     @PostMapping
-    public ModelAndView prepareOrder(@ModelAttribute("coffeeTypes") CoffeeTypeDtoListWrapper coffeeTypes, HttpSession session) {
+    public ModelAndView prepareOrder(@ModelAttribute("coffeeTypes") @Valid CoffeeTypeDtoListWrapper coffeeTypes, HttpSession session) {
         List<CoffeeOrderItemDto> orderItemDtos = new ArrayList<>();
         double orderTotalCost = 0;
-        for (CoffeeTypeDto typeDto : coffeeTypes.getCoffeeTypeDtos()) {
-            if (typeDto.isSelected()) {
-                CoffeeType type = coffeeTypeService.get(typeDto.getTypeId());
-                int quantity = typeDto.getQuantity();
-                double itemCost = quantity * type.getPrice();
-                double discountedItemCost = CoffeeOrderUtil.getDiscountedItemCost(quantity, type.getPrice());
-                boolean discounted = discountedItemCost < itemCost;
-                orderTotalCost += discountedItemCost;
-                orderItemDtos.add(new CoffeeOrderItemDto(type, quantity, discountedItemCost, discounted));
+        if (coffeeTypes.getCoffeeTypeDtos() != null) {
+            for (CoffeeTypeDto typeDto : coffeeTypes.getCoffeeTypeDtos()) {
+                if (typeDto.isSelected() && typeDto.getQuantity() > 0) {
+                    CoffeeType type = coffeeTypeService.get(typeDto.getTypeId());
+                    int quantity = typeDto.getQuantity();
+                    double itemCost = quantity * type.getPrice();
+                    double discountedItemCost = CoffeeOrderUtil.getDiscountedItemCost(quantity, type.getPrice());
+                    boolean discounted = discountedItemCost < itemCost;
+                    orderTotalCost += discountedItemCost;
+                    orderItemDtos.add(new CoffeeOrderItemDto(type, quantity, discountedItemCost, discounted));
+                }
             }
         }
 
@@ -73,10 +79,10 @@ public class CoffeeController {
             mav.setViewName("redirect:order");
             session.setAttribute(MODEL_ATTR_ORDER, orderDto);
         } else {
-            mav.setViewName("redirect:/");
+            mav.setViewName("index");
             session.removeAttribute(MODEL_ATTR_ORDER);
             mav.addObject(MODEL_ATTR_NOTIFICATION,
-                    getLocalizedNotification(NotificationType.ERROR, "error.empty_order"));
+                    getLocalizedNotification(NotificationType.ERROR, MESSAGE_ERROR_EMPTY_ORDER));
         }
         return mav;
     }
@@ -87,7 +93,7 @@ public class CoffeeController {
         if (orderDto != null && orderDto.getOrderItems() != null && !orderDto.getOrderItems().isEmpty()) {
             return "order";
         } else {
-            session.setAttribute(MODEL_ATTR_NOTIFICATION, getLocalizedNotification(NotificationType.ERROR, "error.empty_order"));
+            session.setAttribute(MODEL_ATTR_NOTIFICATION, getLocalizedNotification(NotificationType.ERROR, MESSAGE_ERROR_EMPTY_ORDER));
             return "redirect:/";
         }
     }
@@ -97,7 +103,7 @@ public class CoffeeController {
         CoffeeOrderDto orderDto = (CoffeeOrderDto) session.getAttribute(MODEL_ATTR_ORDER);
         if (orderDto == null || orderDto.getOrderItems() == null || orderDto.getOrderItems().isEmpty()) {
             session.removeAttribute(MODEL_ATTR_ORDER);
-            session.setAttribute(MODEL_ATTR_NOTIFICATION, getLocalizedNotification(NotificationType.ERROR, "error.empty_order"));
+            session.setAttribute(MODEL_ATTR_NOTIFICATION, getLocalizedNotification(NotificationType.ERROR, MESSAGE_ERROR_EMPTY_ORDER));
             return new ModelAndView("redirect:/");
         }
         if (name != null && address != null && !address.isEmpty()) {
@@ -105,13 +111,13 @@ public class CoffeeController {
             orderDto.setDeliveryAddress(address);
             coffeeOrderService.save(orderDto);
             removeSessionParameters(session);
-            session.setAttribute(MODEL_ATTR_NOTIFICATION, getLocalizedNotification(NotificationType.SUCCESS, "label.order_accepted"));
+            session.setAttribute(MODEL_ATTR_NOTIFICATION, getLocalizedNotification(NotificationType.SUCCESS, MESSAGE_ORDER_ACCEPTED));
             return new ModelAndView("redirect:/");
         } else {
             ModelAndView mav = new ModelAndView("order");
             mav.addObject("name", name);
             mav.addObject("address", address);
-            mav.addObject(MODEL_ATTR_NOTIFICATION, getLocalizedNotification(NotificationType.ERROR, "error.empty_address"));
+            mav.addObject(MODEL_ATTR_NOTIFICATION, getLocalizedNotification(NotificationType.ERROR, MESSAGE_ERROR_EMPTY_ADDRESS));
             return mav;
         }
     }
