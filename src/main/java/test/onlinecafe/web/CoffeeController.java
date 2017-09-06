@@ -4,8 +4,12 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import test.onlinecafe.dto.*;
 import test.onlinecafe.model.CoffeeType;
 import test.onlinecafe.service.CoffeeOrderService;
@@ -14,6 +18,8 @@ import test.onlinecafe.util.CoffeeOrderUtil;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,99 +47,85 @@ public class CoffeeController {
     }
 
     @GetMapping
-    public String root(HttpSession session, Model model) {
-        Notification notification = (Notification) session.getAttribute(MODEL_ATTR_NOTIFICATION);
-        if (notification != null) {
-            session.removeAttribute(MODEL_ATTR_NOTIFICATION);
-            model.addAttribute(MODEL_ATTR_NOTIFICATION, notification);
-        }
+    public String root(Model model) {
         model.addAttribute(MODEL_ATTR_COFFEE_TYPES, getCoffeeTypeDtoListWrapper(coffeeTypeService.getEnabled()));
         model.addAttribute(MODEL_ATTR_DISCOUNT_DESCRIPTION, CoffeeOrderUtil.getDiscount().getDescription(LocaleContextHolder.getLocale()));
         return "index";
     }
 
     @PostMapping
-    public ModelAndView prepareOrder(@ModelAttribute("coffeeTypes") @Valid CoffeeTypeDtoListWrapper coffeeTypes, HttpSession session) {
-        List<CoffeeOrderItemDto> orderItemDtos = new ArrayList<>();
-        double orderTotalCost = 0;
-        if (coffeeTypes.getCoffeeTypeDtos() != null) {
-            for (CoffeeTypeDto typeDto : coffeeTypes.getCoffeeTypeDtos()) {
-                if (typeDto.isSelected() && typeDto.getQuantity() > 0) {
-                    CoffeeType type = coffeeTypeService.get(typeDto.getTypeId());
-                    int quantity = typeDto.getQuantity();
-                    double itemCost = quantity * type.getPrice();
-                    double discountedItemCost = CoffeeOrderUtil.getDiscountedItemCost(quantity, type.getPrice());
-                    boolean discounted = discountedItemCost < itemCost;
-                    orderTotalCost += discountedItemCost;
-                    orderItemDtos.add(new CoffeeOrderItemDto(type, quantity, discountedItemCost, discounted));
+    public String prepareOrder(@Valid CoffeeTypeDtoListWrapper coffeeTypes, BindingResult bindingResult,
+                               HttpSession session, RedirectAttributes redirectAttributes) {
+        if (!bindingResult.hasErrors()) {
+            List<CoffeeOrderItemDto> orderItemDtos = new ArrayList<>();
+            double orderTotalCost = 0;
+            if (coffeeTypes.getCoffeeTypeDtos() != null) {
+                for (CoffeeTypeDto typeDto : coffeeTypes.getCoffeeTypeDtos()) {
+                    if (typeDto.isSelected() && typeDto.getQuantity() > 0) {
+                        CoffeeType type = coffeeTypeService.get(typeDto.getTypeId());
+                        int quantity = typeDto.getQuantity();
+                        double itemCost = quantity * type.getPrice();
+                        double discountedItemCost = CoffeeOrderUtil.getDiscountedItemCost(quantity, type.getPrice());
+                        boolean discounted = discountedItemCost < itemCost;
+                        orderTotalCost += discountedItemCost;
+                        orderItemDtos.add(new CoffeeOrderItemDto(type, quantity, discountedItemCost, discounted));
+                    }
                 }
             }
+            if (!orderItemDtos.isEmpty()) {
+                double deliveryCost = CoffeeOrderUtil.getDeliveryCost(orderTotalCost);
+                orderTotalCost += deliveryCost;
+                CoffeeOrderDto orderDto = new CoffeeOrderDto(orderItemDtos, deliveryCost, orderTotalCost);
+                session.setAttribute(MODEL_ATTR_ORDER, orderDto);
+                return "redirect:order";
+            }
         }
-
-        ModelAndView mav = new ModelAndView();
-
-        if (!orderItemDtos.isEmpty()) {
-            double deliveryCost = CoffeeOrderUtil.getDeliveryCost(orderTotalCost);
-            orderTotalCost += deliveryCost;
-            CoffeeOrderDto orderDto = new CoffeeOrderDto(orderItemDtos, deliveryCost, orderTotalCost);
-            mav.setViewName("redirect:order");
-            session.setAttribute(MODEL_ATTR_ORDER, orderDto);
-        } else {
-            mav.setViewName("index");
-            session.removeAttribute(MODEL_ATTR_ORDER);
-            mav.addObject(MODEL_ATTR_NOTIFICATION,
-                    getLocalizedNotification(NotificationType.ERROR, MESSAGE_ERROR_EMPTY_ORDER));
-        }
-        return mav;
+        redirectAttributes.addFlashAttribute(MODEL_ATTR_NOTIFICATION, getLocalizedNotification(NotificationType.ERROR, MESSAGE_ERROR_EMPTY_ORDER));
+        return "redirect:/";
     }
 
     @GetMapping("/order")
-    public String orderDetails(HttpSession session) {
+    public String orderDetails(HttpSession session, RedirectAttributes redirectAttributes) {
         CoffeeOrderDto orderDto = (CoffeeOrderDto) session.getAttribute(MODEL_ATTR_ORDER);
         if (orderDto != null && orderDto.getOrderItems() != null && !orderDto.getOrderItems().isEmpty()) {
             return "order";
         } else {
-            session.setAttribute(MODEL_ATTR_NOTIFICATION, getLocalizedNotification(NotificationType.ERROR, MESSAGE_ERROR_EMPTY_ORDER));
+            redirectAttributes.addFlashAttribute(MODEL_ATTR_NOTIFICATION, getLocalizedNotification(NotificationType.ERROR, MESSAGE_ERROR_EMPTY_ORDER));
             return "redirect:/";
         }
     }
 
     @PostMapping("/order")
-    public ModelAndView confirmOrder(@RequestParam String name, @RequestParam String address, HttpSession session) {
+    public String confirmOrder(@RequestParam String name, @RequestParam @NotNull @Size(min = 1) String address,
+                               RedirectAttributes redirectAttributes, HttpSession session, Model model) {
         CoffeeOrderDto orderDto = (CoffeeOrderDto) session.getAttribute(MODEL_ATTR_ORDER);
         if (orderDto == null || orderDto.getOrderItems() == null || orderDto.getOrderItems().isEmpty()) {
             session.removeAttribute(MODEL_ATTR_ORDER);
-            session.setAttribute(MODEL_ATTR_NOTIFICATION, getLocalizedNotification(NotificationType.ERROR, MESSAGE_ERROR_EMPTY_ORDER));
-            return new ModelAndView("redirect:/");
+            redirectAttributes.addFlashAttribute(MODEL_ATTR_NOTIFICATION, getLocalizedNotification(NotificationType.ERROR, MESSAGE_ERROR_EMPTY_ORDER));
+            return "redirect:/";
         }
         if (name != null && address != null && !address.isEmpty()) {
             orderDto.setName(name);
             orderDto.setDeliveryAddress(address);
             coffeeOrderService.save(orderDto);
-            removeSessionParameters(session);
-            session.setAttribute(MODEL_ATTR_NOTIFICATION, getLocalizedNotification(NotificationType.SUCCESS, MESSAGE_ORDER_ACCEPTED));
-            return new ModelAndView("redirect:/");
+            session.removeAttribute(MODEL_ATTR_ORDER);
+            redirectAttributes.addFlashAttribute(MODEL_ATTR_NOTIFICATION, getLocalizedNotification(NotificationType.SUCCESS, MESSAGE_ORDER_ACCEPTED));
+            return "redirect:/";
         } else {
-            ModelAndView mav = new ModelAndView("order");
-            mav.addObject("name", name);
-            mav.addObject("address", address);
-            mav.addObject(MODEL_ATTR_NOTIFICATION, getLocalizedNotification(NotificationType.ERROR, MESSAGE_ERROR_EMPTY_ADDRESS));
-            return mav;
+            model.addAttribute("name", name);
+            model.addAttribute("address", address);
+            model.addAttribute(MODEL_ATTR_NOTIFICATION, getLocalizedNotification(NotificationType.ERROR, MESSAGE_ERROR_EMPTY_ADDRESS));
+            return "order";
         }
     }
 
     @GetMapping("/cancel")
     public String cancelOrder(HttpSession session) {
-        removeSessionParameters(session);
+        session.removeAttribute(MODEL_ATTR_ORDER);
         return "redirect:/";
     }
 
     private Notification getLocalizedNotification(NotificationType type, String messageKey) {
         return new Notification(type, messageSource.getMessage(messageKey, null, LocaleContextHolder.getLocale()));
-    }
-
-    private void removeSessionParameters(HttpSession session) {
-        session.removeAttribute(MODEL_ATTR_NOTIFICATION);
-        session.removeAttribute(MODEL_ATTR_ORDER);
     }
 }
