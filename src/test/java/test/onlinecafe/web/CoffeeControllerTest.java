@@ -50,13 +50,11 @@ public class CoffeeControllerTest extends AbstractControllerTest {
     @Test
     public void getRootTest() throws Exception {
         when(typeService.getEnabled()).thenReturn(COFFEE_TYPES_ENABLED);
-        Notification notification = new Notification(NotificationType.SUCCESS, "Success message");
-        mockMvc.perform(get("/").sessionAttr(MODEL_ATTR_NOTIFICATION, notification))
+        mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("index"))
                 .andExpect(model().attribute(MODEL_ATTR_COFFEE_TYPES, isA(CoffeeTypeDtoListWrapper.class)))
-                .andExpect(model().attribute(MODEL_ATTR_DISCOUNT_DESCRIPTION, MockDiscount.DISCOUNT_DESCRIPTION))
-                .andExpect(model().attribute(MODEL_ATTR_NOTIFICATION, notification));
+                .andExpect(model().attribute(MODEL_ATTR_DISCOUNT_DESCRIPTION, MockDiscount.DISCOUNT_DESCRIPTION));
         verify(typeService).getEnabled();
         verifyNoMoreInteractions(typeService);
     }
@@ -100,9 +98,9 @@ public class CoffeeControllerTest extends AbstractControllerTest {
                         .param("coffeeTypeDtos[0].quantity", "0")
         )
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(view().name("index"))
-                .andExpect(model().attribute(MODEL_ATTR_NOTIFICATION, new Notification(NotificationType.ERROR, emptyOrder)));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"))
+                .andExpect(flash().attribute(MODEL_ATTR_NOTIFICATION, new Notification(NotificationType.ERROR, emptyOrder)));
     }
 
 }
