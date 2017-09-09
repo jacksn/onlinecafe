@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import test.onlinecafe.model.BaseEntity;
 import test.onlinecafe.model.CoffeeType;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public abstract class AbstractCoffeeTypeRepositoryTest extends AbstractRepositor
         int updatedId = COFFEE_TYPE1.getId();
         CoffeeType updated = repository.get(updatedId);
         updated.setTypeName("Updated name");
-        updated.setPrice(updated.getPrice() + 1.0);
+        updated.setPrice(updated.getPrice().add(new BigDecimal("1.00")));
         updated.setDisabled(!updated.getDisabled());
         repository.save(updated);
         assertEquals(updated, repository.get(updatedId));
@@ -47,14 +48,14 @@ public abstract class AbstractCoffeeTypeRepositoryTest extends AbstractRepositor
 
     @Test
     public void testCreate() throws Exception {
-        CoffeeType created = new CoffeeType(null, "New type", 7.00, false);
+        CoffeeType created = new CoffeeType(null, "New type", new BigDecimal("7.00"), false);
         created = repository.save(created);
         assertEquals(created, repository.get(created.getId()));
     }
 
     @Test
     public void testCreateInvalid() throws Exception {
-        CoffeeType created = new CoffeeType(null, null, 0.00, false);
+        CoffeeType created = new CoffeeType(null, null, new BigDecimal("0.00"), false);
         repository.save(created);
         fail();
     }

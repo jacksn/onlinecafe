@@ -2,18 +2,21 @@ package test.onlinecafe.dto;
 
 import test.onlinecafe.model.CoffeeType;
 
+import java.math.BigDecimal;
+import java.util.Objects;
+
 public class CoffeeOrderItemDto {
     private Integer id;
     private CoffeeType coffeeType;
     private Integer quantity;
-    private double cost;
+    private BigDecimal cost;
     private boolean discounted;
 
-    public CoffeeOrderItemDto(CoffeeType type, Integer quantity, double cost, boolean discounted) {
+    public CoffeeOrderItemDto(CoffeeType type, Integer quantity, BigDecimal cost, boolean discounted) {
         this(null, type, quantity, cost, discounted);
     }
 
-    public CoffeeOrderItemDto(Integer id, CoffeeType coffeeType, Integer quantity, double cost, boolean discounted) {
+    public CoffeeOrderItemDto(Integer id, CoffeeType coffeeType, Integer quantity, BigDecimal cost, boolean discounted) {
         this.id = id;
         this.coffeeType = coffeeType;
         this.quantity = quantity;
@@ -45,11 +48,11 @@ public class CoffeeOrderItemDto {
         this.quantity = quantity;
     }
 
-    public double getCost() {
+    public BigDecimal getCost() {
         return cost;
     }
 
-    public void setCost(double cost) {
+    public void setCost(BigDecimal cost) {
         this.cost = cost;
     }
 
@@ -65,27 +68,17 @@ public class CoffeeOrderItemDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         CoffeeOrderItemDto that = (CoffeeOrderItemDto) o;
-
-        if (Double.compare(that.cost, cost) != 0) return false;
-        if (discounted != that.discounted) return false;
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (coffeeType != null ? !coffeeType.equals(that.coffeeType) : that.coffeeType != null) return false;
-        return quantity != null ? quantity.equals(that.quantity) : that.quantity == null;
+        return discounted == that.discounted &&
+                Objects.equals(id, that.id) &&
+                Objects.equals(coffeeType, that.coffeeType) &&
+                Objects.equals(quantity, that.quantity) &&
+                Objects.equals(cost, that.cost);
     }
 
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (coffeeType != null ? coffeeType.hashCode() : 0);
-        result = 31 * result + (quantity != null ? quantity.hashCode() : 0);
-        temp = Double.doubleToLongBits(cost);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (discounted ? 1 : 0);
-        return result;
+        return Objects.hash(id, coffeeType, quantity, cost, discounted);
     }
 
     @Override

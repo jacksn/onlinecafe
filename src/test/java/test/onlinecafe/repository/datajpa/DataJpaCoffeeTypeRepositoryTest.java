@@ -7,6 +7,8 @@ import test.onlinecafe.repository.AbstractCoffeeTypeRepositoryTest;
 
 import javax.validation.ConstraintViolationException;
 
+import java.math.BigDecimal;
+
 import static org.junit.Assert.fail;
 
 @ActiveProfiles("repo-datajpa")
@@ -14,9 +16,9 @@ public class DataJpaCoffeeTypeRepositoryTest extends AbstractCoffeeTypeRepositor
 
     @Test
     public void testValidation() throws Exception {
-        validateRootCause(() -> repository.save(new CoffeeType(null, 1.0, false)), ConstraintViolationException.class);
+        validateRootCause(() -> repository.save(new CoffeeType(null, new BigDecimal("1.0"), false)), ConstraintViolationException.class);
         validateRootCause(() -> repository.save(new CoffeeType("New type", null, false)), ConstraintViolationException.class);
-        validateRootCause(() -> repository.save(new CoffeeType("New type", 1.0, null)), ConstraintViolationException.class);
+        validateRootCause(() -> repository.save(new CoffeeType("New type", new BigDecimal("1.0"), null)), ConstraintViolationException.class);
     }
 
     @Override

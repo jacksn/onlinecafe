@@ -33,7 +33,7 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
 
     private static void fillStatementParameters(CoffeeType type, PreparedStatement statement) throws SQLException {
         statement.setString(1, type.getTypeName());
-        statement.setDouble(2, type.getPrice());
+        statement.setBigDecimal(2, type.getPrice());
         statement.setString(3, type.getDisabled() ? "Y" : "N");
     }
 
@@ -41,7 +41,7 @@ public class JdbcCoffeeTypeRepository implements CoffeeTypeRepository {
         CoffeeType type = new CoffeeType();
         type.setId(resultSet.getInt("id"));
         type.setTypeName(resultSet.getString("type_name"));
-        type.setPrice(resultSet.getDouble("price"));
+        type.setPrice(resultSet.getBigDecimal("price"));
         type.setDisabled("Y".equals(resultSet.getString("disabled")));
         return type;
     }

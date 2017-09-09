@@ -1,13 +1,14 @@
 package test.onlinecafe.util.discount;
 
+import java.math.BigDecimal;
 import java.util.Locale;
 
 public interface Discount {
     void init();
 
-    double getDiscountedItemCost(int quantity, double price);
+    BigDecimal getDiscountedItemCost(int quantity, BigDecimal price);
 
-    double getDeliveryCost(double orderTotal);
+    BigDecimal getDeliveryCost(BigDecimal orderTotal);
 
     String getDescription(Locale locale);
 }

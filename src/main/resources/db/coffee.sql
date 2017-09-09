@@ -4,9 +4,9 @@ DROP TABLE IF EXISTS CoffeeType;
 DROP TABLE IF EXISTS Configuration;
 
 CREATE TABLE CoffeeType (
-  id        INT          NOT NULL AUTO_INCREMENT,
-  type_name VARCHAR(200) NOT NULL,
-  price     DOUBLE       NOT NULL,
+  id        INT           NOT NULL AUTO_INCREMENT,
+  type_name VARCHAR(200)  NOT NULL,
+  price     DECIMAL(10,2) NOT NULL,
   disabled  CHAR(1),
   PRIMARY KEY (id)
 )
@@ -22,7 +22,7 @@ CREATE TABLE CoffeeOrder (
   order_date       DATETIME     NOT NULL,
   name             VARCHAR(100),
   delivery_address VARCHAR(200) NOT NULL,
-  cost             DOUBLE,
+  cost             DECIMAL(10,2),
   PRIMARY KEY (id)
 )
   ENGINE = InnoDB;

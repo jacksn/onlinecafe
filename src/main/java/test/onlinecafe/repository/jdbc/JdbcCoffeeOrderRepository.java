@@ -34,7 +34,7 @@ public class JdbcCoffeeOrderRepository implements CoffeeOrderRepository {
         statement.setTimestamp(1, Timestamp.valueOf(order.getOrderDate()));
         statement.setString(2, order.getName());
         statement.setString(3, order.getDeliveryAddress());
-        statement.setDouble(4, order.getCost());
+        statement.setBigDecimal(4, order.getCost());
     }
 
     private static void saveCoffeeOrderItems(int orderId, List<CoffeeOrderItem> orderItems, PreparedStatement orderItemsStatement) throws SQLException {
@@ -69,14 +69,14 @@ public class JdbcCoffeeOrderRepository implements CoffeeOrderRepository {
                         resultSet.getTimestamp("order_date").toLocalDateTime(),
                         resultSet.getString("name"),
                         resultSet.getString("delivery_address"),
-                        resultSet.getDouble("cost"));
+                        resultSet.getBigDecimal("cost"));
                 ordersMap.put(coffeeOrderId, order);
             }
             CoffeeOrderItem orderItem = new CoffeeOrderItem();
             orderItem.setId(resultSet.getInt("order_item_id"));
             orderItem.setCoffeeType(new CoffeeType(resultSet.getInt("type_id"),
                     resultSet.getString("type_name"),
-                    resultSet.getDouble("price"),
+                    resultSet.getBigDecimal("price"),
                     "Y".equals(resultSet.getString("disabled"))));
             orderItem.setQuantity(resultSet.getInt("quantity"));
             order.getOrderItems().add(orderItem);

@@ -1,11 +1,14 @@
 package test.onlinecafe.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDateTimeConverter;
 
@@ -39,16 +42,18 @@ public class CoffeeOrder extends BaseEntity {
     private List<CoffeeOrderItem> orderItems;
 
     @Column(name = "cost")
-    private Double cost;
+    @Digits(integer = 10, fraction = 2)
+    @NotNull
+    private BigDecimal cost;
 
     public CoffeeOrder() {
     }
 
-    public CoffeeOrder(LocalDateTime orderDate, String name, String deliveryAddress, Double cost) {
+    public CoffeeOrder(LocalDateTime orderDate, String name, String deliveryAddress, BigDecimal cost) {
         this(null, orderDate, name, deliveryAddress, cost);
     }
 
-    public CoffeeOrder(Integer id, LocalDateTime orderDate, String name, String deliveryAddress, Double cost) {
+    public CoffeeOrder(Integer id, LocalDateTime orderDate, String name, String deliveryAddress, BigDecimal cost) {
         super(id);
         this.orderDate = orderDate;
         this.name = name;
@@ -81,11 +86,11 @@ public class CoffeeOrder extends BaseEntity {
         this.deliveryAddress = deliveryAddress;
     }
 
-    public Double getCost() {
+    public BigDecimal getCost() {
         return cost;
     }
 
-    public void setCost(Double cost) {
+    public void setCost(BigDecimal cost) {
         this.cost = cost;
     }
 
@@ -108,28 +113,17 @@ public class CoffeeOrder extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-
         CoffeeOrder that = (CoffeeOrder) o;
-
-        if (Double.compare(that.cost, cost) != 0) return false;
-        if (orderDate != null ? !orderDate.equals(that.orderDate) : that.orderDate != null) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (deliveryAddress != null ? !deliveryAddress.equals(that.deliveryAddress) : that.deliveryAddress != null)
-            return false;
-        return orderItems != null ? orderItems.equals(that.orderItems) : that.orderItems == null;
+        return Objects.equals(orderDate, that.orderDate) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(deliveryAddress, that.deliveryAddress) &&
+                Objects.equals(orderItems, that.orderItems) &&
+                Objects.equals(cost, that.cost);
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        long temp;
-        result = 31 * result + (orderDate != null ? orderDate.hashCode() : 0);
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (deliveryAddress != null ? deliveryAddress.hashCode() : 0);
-        result = 31 * result + (orderItems != null ? orderItems.hashCode() : 0);
-        temp = Double.doubleToLongBits(cost);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        return result;
+        return Objects.hash(super.hashCode(), orderDate, name, deliveryAddress, orderItems, cost);
     }
 
     @Override

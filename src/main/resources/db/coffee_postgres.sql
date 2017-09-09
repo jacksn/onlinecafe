@@ -11,7 +11,7 @@ CREATE SEQUENCE ct_seq START 1;
 CREATE TABLE CoffeeType (
   id        INTEGER PRIMARY KEY DEFAULT nextval('ct_seq'),
   type_name VARCHAR(200)     NOT NULL,
-  price     DOUBLE PRECISION NOT NULL,
+  price     DECIMAL(10,2) NOT NULL,
   disabled  CHAR(1)
 );
 
@@ -22,7 +22,7 @@ CREATE TABLE CoffeeOrder (
   order_date       TIMESTAMP    NOT NULL DEFAULT now(),
   name             VARCHAR(100),
   delivery_address VARCHAR(200) NOT NULL,
-  cost             DOUBLE PRECISION
+  cost             DECIMAL(10,2) NOT NULL
 );
 
 CREATE SEQUENCE coi_seq START 1;

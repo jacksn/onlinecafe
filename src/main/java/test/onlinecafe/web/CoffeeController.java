@@ -20,6 +20,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,23 +59,23 @@ public class CoffeeController {
                                HttpSession session, RedirectAttributes redirectAttributes) {
         if (!bindingResult.hasErrors()) {
             List<CoffeeOrderItemDto> orderItemDtos = new ArrayList<>();
-            double orderTotalCost = 0;
+            BigDecimal orderTotalCost = BigDecimal.ZERO;
             if (coffeeTypes.getCoffeeTypeDtos() != null) {
                 for (CoffeeTypeDto typeDto : coffeeTypes.getCoffeeTypeDtos()) {
                     if (typeDto.isSelected() && typeDto.getQuantity() > 0) {
                         CoffeeType type = coffeeTypeService.get(typeDto.getTypeId());
                         int quantity = typeDto.getQuantity();
-                        double itemCost = quantity * type.getPrice();
-                        double discountedItemCost = CoffeeOrderUtil.getDiscountedItemCost(quantity, type.getPrice());
-                        boolean discounted = discountedItemCost < itemCost;
-                        orderTotalCost += discountedItemCost;
+                        BigDecimal itemCost = type.getPrice().multiply(new BigDecimal(quantity));
+                        BigDecimal discountedItemCost = CoffeeOrderUtil.getDiscountedItemCost(quantity, type.getPrice());
+                        boolean discounted = discountedItemCost.compareTo(itemCost) < 0;
+                        orderTotalCost = orderTotalCost.add(discountedItemCost);
                         orderItemDtos.add(new CoffeeOrderItemDto(type, quantity, discountedItemCost, discounted));
                     }
                 }
             }
             if (!orderItemDtos.isEmpty()) {
-                double deliveryCost = CoffeeOrderUtil.getDeliveryCost(orderTotalCost);
-                orderTotalCost += deliveryCost;
+                BigDecimal deliveryCost = CoffeeOrderUtil.getDeliveryCost(orderTotalCost);
+                orderTotalCost = orderTotalCost.add(deliveryCost);
                 CoffeeOrderDto orderDto = new CoffeeOrderDto(orderItemDtos, deliveryCost, orderTotalCost);
                 session.setAttribute(MODEL_ATTR_ORDER, orderDto);
                 return "redirect:order";

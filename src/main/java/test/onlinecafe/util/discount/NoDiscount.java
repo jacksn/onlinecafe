@@ -8,18 +8,20 @@ import org.springframework.stereotype.Component;
 import test.onlinecafe.service.ConfigurationService;
 import test.onlinecafe.util.exception.NotFoundException;
 
+import java.math.BigDecimal;
 import java.util.Locale;
 
 @Profile("discount-none")
 @Component
 public class NoDiscount implements Discount {
     private static final Logger log = LoggerFactory.getLogger(NoDiscount.class);
+    private static final BigDecimal DEFAULT_DELIVERY_COST = new BigDecimal(2);
 
     private MessageSource messageSource;
     private ConfigurationService service;
 
     // delivery cost
-    private double m = 2;
+    private BigDecimal m;
 
     public NoDiscount(MessageSource messageSource, ConfigurationService configurationService) {
         this.messageSource = messageSource;
@@ -29,19 +31,20 @@ public class NoDiscount implements Discount {
     @Override
     public void init() {
         try {
-            this.m = Double.parseDouble(service.get("m").getValue());
+            this.m = new BigDecimal(service.get("m").getValue());
         } catch (NotFoundException | NumberFormatException e) {
-            log.error("Unable to get configuration parameter",  e);
+            log.error("Unable to get configuration parameter", e);
+            this.m = DEFAULT_DELIVERY_COST;
         }
     }
 
     @Override
-    public double getDiscountedItemCost(int quantity, double price) {
-        return quantity * price;
+    public BigDecimal getDiscountedItemCost(int quantity, BigDecimal price) {
+        return price.multiply(new BigDecimal(quantity));
     }
 
     @Override
-    public double getDeliveryCost(double orderTotal) {
+    public BigDecimal getDeliveryCost(BigDecimal orderTotal) {
         return m;
     }
 

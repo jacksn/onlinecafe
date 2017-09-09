@@ -11,6 +11,7 @@ import test.onlinecafe.model.CoffeeOrderItem;
 import test.onlinecafe.model.CoffeeType;
 import test.onlinecafe.util.discount.Discount;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +33,11 @@ public final class CoffeeOrderUtil {
         discount.init();
     }
 
-    public static Double getDeliveryCost(Double orderTotalCost) {
+    public static BigDecimal getDeliveryCost(BigDecimal orderTotalCost) {
         return discount.getDeliveryCost(orderTotalCost);
     }
 
-    public static double getDiscountedItemCost(int quantity, double price) {
+    public static BigDecimal getDiscountedItemCost(int quantity, BigDecimal price) {
         return discount.getDiscountedItemCost(quantity, price);
     }
 

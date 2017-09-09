@@ -3,12 +3,13 @@ package test.onlinecafe.util.discount;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.Locale;
 
 @Component
 @Profile("discount-mock")
 public class MockDiscount implements Discount {
-    public static final double DELIVERY_COST = 5;
+    public static final BigDecimal DELIVERY_COST = new BigDecimal(5);
     public static final String DISCOUNT_DESCRIPTION = "Mock discount";
 
     @Override
@@ -17,12 +18,12 @@ public class MockDiscount implements Discount {
     }
 
     @Override
-    public double getDiscountedItemCost(int quantity, double price) {
-        return quantity * price;
+    public BigDecimal getDiscountedItemCost(int quantity, BigDecimal price) {
+        return price.multiply(new BigDecimal(quantity));
     }
 
     @Override
-    public double getDeliveryCost(double orderTotal) {
+    public BigDecimal getDeliveryCost(BigDecimal orderTotal) {
         return DELIVERY_COST;
     }
 

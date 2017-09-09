@@ -4,8 +4,11 @@ import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.SafeHtml;
 
 import javax.persistence.*;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.math.BigDecimal;
+import java.util.Objects;
 
 @Entity
 @Table(name = "coffeetype")
@@ -27,7 +30,8 @@ public class CoffeeType extends BaseEntity {
 
     @Column(name = "price")
     @NotNull
-    private Double price;
+    @Digits(integer = 10, fraction = 2)
+    private BigDecimal price;
 
     @Column(name = "disabled")
     @Type(type = "yes_no")
@@ -37,11 +41,11 @@ public class CoffeeType extends BaseEntity {
     public CoffeeType() {
     }
 
-    public CoffeeType(String typeName, Double price, Boolean disabled) {
+    public CoffeeType(String typeName, BigDecimal price, Boolean disabled) {
         this(null, typeName, price, disabled);
     }
 
-    public CoffeeType(Integer id, String typeName, Double price, Boolean disabled) {
+    public CoffeeType(Integer id, String typeName, BigDecimal price, Boolean disabled) {
         super(id);
         this.typeName = typeName;
         this.price = price;
@@ -56,11 +60,11 @@ public class CoffeeType extends BaseEntity {
         this.typeName = typeName;
     }
 
-    public Double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
@@ -77,21 +81,15 @@ public class CoffeeType extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-
         CoffeeType that = (CoffeeType) o;
-
-        if (typeName != null ? !typeName.equals(that.typeName) : that.typeName != null) return false;
-        if (price != null ? !price.equals(that.price) : that.price != null) return false;
-        return disabled != null ? disabled.equals(that.disabled) : that.disabled == null;
+        return Objects.equals(typeName, that.typeName) &&
+                Objects.equals(price, that.price) &&
+                Objects.equals(disabled, that.disabled);
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (typeName != null ? typeName.hashCode() : 0);
-        result = 31 * result + (price != null ? price.hashCode() : 0);
-        result = 31 * result + (disabled != null ? disabled.hashCode() : 0);
-        return result;
+        return Objects.hash(super.hashCode(), typeName, price, disabled);
     }
 
     @Override

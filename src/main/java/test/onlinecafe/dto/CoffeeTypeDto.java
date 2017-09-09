@@ -2,10 +2,12 @@ package test.onlinecafe.dto;
 
 import test.onlinecafe.model.CoffeeType;
 
+import java.math.BigDecimal;
+
 public class CoffeeTypeDto {
     private int typeId;
     private String typeName;
-    private double price;
+    private BigDecimal price;
 
     private int quantity;
     private boolean selected;
@@ -35,11 +37,11 @@ public class CoffeeTypeDto {
         this.typeName = typeName;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 

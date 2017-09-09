@@ -1,27 +1,29 @@
 package test.onlinecafe.dto;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 public class CoffeeOrderDto {
     private Integer id;
     private String name;
     private String deliveryAddress;
     private List<CoffeeOrderItemDto> orderItems;
-    private double deliveryCost;
-    private double cost;
+    private BigDecimal deliveryCost;
+    private BigDecimal cost;
 
     public CoffeeOrderDto() {
     }
 
-    public CoffeeOrderDto(List<CoffeeOrderItemDto> orderItems, double deliveryCost, double cost) {
+    public CoffeeOrderDto(List<CoffeeOrderItemDto> orderItems, BigDecimal deliveryCost, BigDecimal cost) {
         this(null, null, null, orderItems, deliveryCost, cost);
     }
 
-    public CoffeeOrderDto(String name, String deliveryAddress, List<CoffeeOrderItemDto> orderItems, double deliveryCost, double cost) {
+    public CoffeeOrderDto(String name, String deliveryAddress, List<CoffeeOrderItemDto> orderItems, BigDecimal deliveryCost, BigDecimal cost) {
         this(null, name, deliveryAddress, orderItems, deliveryCost, cost);
     }
 
-    public CoffeeOrderDto(Integer id, String name, String deliveryAddress, List<CoffeeOrderItemDto> orderItems, double deliveryCost, double cost) {
+    public CoffeeOrderDto(Integer id, String name, String deliveryAddress, List<CoffeeOrderItemDto> orderItems, BigDecimal deliveryCost, BigDecimal cost) {
         this.id = id;
         this.name = name;
         this.deliveryAddress = deliveryAddress;
@@ -62,19 +64,19 @@ public class CoffeeOrderDto {
         this.orderItems = orderItems;
     }
 
-    public double getDeliveryCost() {
+    public BigDecimal getDeliveryCost() {
         return deliveryCost;
     }
 
-    public void setDeliveryCost(double deliveryCost) {
+    public void setDeliveryCost(BigDecimal deliveryCost) {
         this.deliveryCost = deliveryCost;
     }
 
-    public double getCost() {
+    public BigDecimal getCost() {
         return cost;
     }
 
-    public void setCost(double cost) {
+    public void setCost(BigDecimal cost) {
         this.cost = cost;
     }
 
@@ -82,31 +84,18 @@ public class CoffeeOrderDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         CoffeeOrderDto that = (CoffeeOrderDto) o;
-
-        if (Double.compare(that.deliveryCost, deliveryCost) != 0) return false;
-        if (Double.compare(that.cost, cost) != 0) return false;
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (deliveryAddress != null ? !deliveryAddress.equals(that.deliveryAddress) : that.deliveryAddress != null)
-            return false;
-        return orderItems != null ? orderItems.equals(that.orderItems) : that.orderItems == null;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(deliveryAddress, that.deliveryAddress) &&
+                Objects.equals(orderItems, that.orderItems) &&
+                Objects.equals(deliveryCost, that.deliveryCost) &&
+                Objects.equals(cost, that.cost);
     }
 
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (deliveryAddress != null ? deliveryAddress.hashCode() : 0);
-        result = 31 * result + (orderItems != null ? orderItems.hashCode() : 0);
-        temp = Double.doubleToLongBits(deliveryCost);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(cost);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        return result;
+        return Objects.hash(id, name, deliveryAddress, orderItems, deliveryCost, cost);
     }
 
     @Override
