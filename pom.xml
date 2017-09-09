@@ -19,7 +19,6 @@
     </properties>
 
     <build>
-        <finalName>onlinecafe</finalName>
         <defaultGoal>package</defaultGoal>
         <plugins>
             <plugin>
