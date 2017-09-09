@@ -21,13 +21,20 @@
                 <div class="panel-body">
                     <div class="col-md-2"></div>
                     <div class="col-md-8">
-                        <%--@elvariable id="errorMessage" type="java.lang.String"--%>
-                        <p><b><spring:message code="label.error"/>:</b> ${errorMessage}</p>
+                        <%--@elvariable id="status" type="java.lang.String"--%>
+                        <%--@elvariable id="error" type="java.lang.String"--%>
+                        <%--@elvariable id="path" type="java.lang.String"--%>
                         <p>
-                            <b>URL:</b>
-                            ${pageContext.request.scheme}://${header.host}${pageContext.errorData.requestURI}
+                            <b><spring:message code="label.error"/>:</b> ${status} - ${error}
                         </p>
-                        <p><a href="${pageContext.request.contextPath}/"><spring:message code="label.back_to_main"/></a></p>
+                        <p>
+                            <b>URL:</b> ${pageContext.request.scheme}://${header.host}${path}
+                        </p>
+                        <p>
+                            <a href="${pageContext.request.contextPath}/">
+                                <spring:message code="label.back_to_main"/>
+                            </a>
+                        </p>
                     </div>
                 </div>
             </div>
