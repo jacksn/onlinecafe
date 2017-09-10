@@ -34,9 +34,9 @@ import static test.onlinecafe.web.CoffeeServlet.*;
 
 @WebServlet({PATH_ROOT, PATH_ORDER, PATH_CANCEL})
 public class CoffeeServlet extends HttpServlet {
-    static final String PATH_ROOT = "/";
-    static final String PATH_ORDER = "/order";
-    static final String PATH_CANCEL = "/cancel";
+    public static final String PATH_ROOT = "/";
+    public static final String PATH_ORDER = "/order";
+    public static final String PATH_CANCEL = "/cancel";
     private static final String APP_PROPERTIES_FILE = "application.properties";
     private static final String JSP_ROOT = "WEB-INF/";
     private static final String PAGE_COFFEE_TYPES_LIST = JSP_ROOT + "index.jsp";
@@ -144,7 +144,7 @@ public class CoffeeServlet extends HttpServlet {
             request.setAttribute(MODEL_ATTR_NOTIFICATION, notification);
         }
 
-        if (PATH_ROOT.equals(action)) {
+        if ((request.getContextPath() + PATH_ROOT).equals(action)) {
             log.debug("Show main page");
             String discountDescription = CoffeeOrderUtil.getDiscount().getDescription(
                     getLocalizedMessage(language, discountDescriptionMessageKey),
@@ -153,7 +153,7 @@ public class CoffeeServlet extends HttpServlet {
             request.setAttribute(MODEL_ATTR_COFFEE_TYPES, coffeeTypeService.getEnabled());
             request.getRequestDispatcher(PAGE_COFFEE_TYPES_LIST).forward(request, response);
             return;
-        } else if (PATH_ORDER.equals(action)) {
+        } else if ((request.getContextPath() + PATH_ORDER).equals(action)) {
             CoffeeOrderDto orderDto = (CoffeeOrderDto) session.getAttribute(MODEL_ATTR_ORDER);
             if (orderDto != null && orderDto.getOrderItems() != null && !orderDto.getOrderItems().isEmpty()) {
                 request.getRequestDispatcher(PAGE_ORDER_DETAILS).forward(request, response);
@@ -164,10 +164,10 @@ public class CoffeeServlet extends HttpServlet {
                 session.removeAttribute(MODEL_ATTR_ORDER);
                 setNotificationSessionAttribute(session, NotificationType.ERROR, language, "error.empty_order");
             }
-        } else if (PATH_CANCEL.equals(action)) {
+        } else if ((request.getContextPath() + PATH_CANCEL).equals(action)) {
             removeSessionAttributes(session);
         }
-        response.sendRedirect(PATH_ROOT);
+        response.sendRedirect(request.getContextPath() + PATH_ROOT);
     }
 
     private CoffeeOrderDto createCoffeeOrder(String[] typeIds, String[] typeQuantities) {
@@ -207,25 +207,25 @@ public class CoffeeServlet extends HttpServlet {
         HttpSession session = request.getSession(true);
         String language = resolveCurrentLanguage(request, session);
 
-        if (PATH_ROOT.equals(action)) {
+        if ((request.getContextPath() + PATH_ROOT).equals(action)) {
             String[] typeIds = request.getParameterValues("id");
             String[] typeQuantities = request.getParameterValues("quantity");
             CoffeeOrderDto orderDto = createCoffeeOrder(typeIds, typeQuantities);
             if (orderDto != null) {
                 session.setAttribute(MODEL_ATTR_ORDER, orderDto);
-                response.sendRedirect(PATH_ORDER);
+                response.sendRedirect(request.getContextPath() + PATH_ORDER);
                 return;
             } else {
                 setNotificationSessionAttribute(session, NotificationType.ERROR, language, "error.empty_order");
             }
-        } else if (PATH_ORDER.equals(action)) {
+        } else if ((request.getContextPath() + PATH_ORDER).equals(action)) {
             String name = request.getParameter(MODEL_ATTR_ORDER_NAME);
             String address = request.getParameter(MODEL_ATTR_ORDER_ADDRESS);
             CoffeeOrderDto orderDto = (CoffeeOrderDto) session.getAttribute(MODEL_ATTR_ORDER);
             if (orderDto == null || orderDto.getOrderItems() == null || orderDto.getOrderItems().isEmpty()) {
                 session.removeAttribute(MODEL_ATTR_ORDER);
                 setNotificationSessionAttribute(session, NotificationType.ERROR, language, "error.empty_order");
-                response.sendRedirect(PATH_ROOT);
+                response.sendRedirect(request.getContextPath() + PATH_ROOT);
                 return;
             }
             if (name != null && address != null && !address.isEmpty()) {
@@ -236,11 +236,11 @@ public class CoffeeServlet extends HttpServlet {
                 setNotificationSessionAttribute(session, NotificationType.SUCCESS, language, "label.order_accepted");
             } else {
                 setNotificationSessionAttribute(session, NotificationType.ERROR, language, "error.empty_address");
-                response.sendRedirect(PATH_ORDER);
+                response.sendRedirect(request.getContextPath() + PATH_ORDER);
                 return;
             }
         }
-        response.sendRedirect(PATH_ROOT);
+        response.sendRedirect(request.getContextPath() + PATH_ROOT);
     }
 
     private String getLocalizedMessage(String language, String key) {
