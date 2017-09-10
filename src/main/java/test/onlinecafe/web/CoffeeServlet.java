@@ -126,7 +126,6 @@ public class CoffeeServlet extends HttpServlet {
     public void destroy() {
         log.debug("Servlet deinitialization - start");
         super.destroy();
-        DbUtil.closeConnection();
         log.debug("Servlet deinitialization - end");
     }
 

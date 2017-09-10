@@ -22,7 +22,6 @@ public final class DbUtil {
     public static final String DB_CONFIG_SYSTEM_PROPERTY_NAME = "dbconfig.path";
     private static final String DB_DEFAULT_CONFIG_LOCATION = "db/db.properties";
     private static String schemaFile = "db/coffee.sql";
-    private static Connection connection;
     private static DataSource dataSource;
 
     private DbUtil() {
@@ -89,24 +88,13 @@ public final class DbUtil {
     }
 
 
-    public static void closeConnection() {
-        if (connection != null) {
-            try {
-                log.debug("Closing DB connection");
-                connection.close();
-            } catch (SQLException e) {
-                log.error("Error closing DB connection");
-                e.printStackTrace();
-            }
-        }
-    }
-
     public static void executeSQLScriptFile(String fileName) {
         log.debug("Executing SQL script file: {}", fileName);
         StringBuilder sb = new StringBuilder();
         try (BufferedReader br = new BufferedReader(
                 new InputStreamReader(DbUtil.class.getClassLoader().getResourceAsStream(fileName), Charset.forName("UTF-8")));
-             Statement sqlStatement = dataSource.getConnection().createStatement()) {
+             Connection connection = dataSource.getConnection();
+             Statement sqlStatement = connection.createStatement()) {
             String s;
             while ((s = br.readLine()) != null) {
                 sb.append(s);
