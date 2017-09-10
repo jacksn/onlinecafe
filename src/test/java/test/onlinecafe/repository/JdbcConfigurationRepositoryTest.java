@@ -1,13 +1,13 @@
 package test.onlinecafe.repository;
 
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import test.onlinecafe.model.ConfigurationItem;
 import test.onlinecafe.util.exception.DataAccessException;
 
 import static org.junit.Assert.assertEquals;
-import static test.onlinecafe.ConfigurationTestData.*;
+import static org.junit.Assert.assertNull;
+import static test.onlinecafe.ConfigurationTestData.CONFIGURATION_ITEM1;
 
 public class JdbcConfigurationRepositoryTest extends AbstractJdbcRepositoryTest {
     private static ConfigurationRepository repository;
@@ -33,7 +33,7 @@ public class JdbcConfigurationRepositoryTest extends AbstractJdbcRepositoryTest 
     @Test
     public void testDelete() throws Exception {
         repository.delete(CONFIGURATION_ITEM1.getId());
-        Assert.assertEquals(null, repository.get(CONFIGURATION_ITEM1.getId()));
+        assertNull(repository.get(CONFIGURATION_ITEM1.getId()));
     }
 
     @Test
