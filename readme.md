@@ -5,6 +5,7 @@
 # Online cafe
 
 This is a test task Java web application that uses multitier architecture.
+Application Demo: https://onlinecafe.herokuapp.com/ (Takes some time to boot up). 
 
 All versions use:
 * Plain JDBC for database connectivity.
