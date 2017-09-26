@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -24,7 +23,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@ActiveProfiles("discount-mock")
 @TestPropertySource("classpath:db/db_hsqldb.properties")
 @Sql({"classpath:db/coffee_hsqldb.sql", "classpath:db/testdata.sql"})
 public abstract class AbstractRepositoryTest {

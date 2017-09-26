@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.springframework.context.MessageSource;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import test.onlinecafe.CoffeeOrderTestData;
+import test.onlinecafe.MockDiscountTestData;
 import test.onlinecafe.dto.CoffeeTypeDtoListWrapper;
 import test.onlinecafe.dto.Notification;
 import test.onlinecafe.dto.NotificationType;
@@ -16,10 +17,11 @@ import test.onlinecafe.model.CoffeeType;
 import test.onlinecafe.service.CoffeeOrderService;
 import test.onlinecafe.service.CoffeeTypeService;
 import test.onlinecafe.service.ConfigurationService;
-import test.onlinecafe.service.discount.MockDiscount;
+import test.onlinecafe.service.DiscountService;
+
+import java.math.BigDecimal;
 
 import static org.hamcrest.CoreMatchers.isA;
-import static org.junit.Assume.assumeTrue;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -40,6 +42,8 @@ public class CoffeeControllerTest extends AbstractControllerTest {
     private CoffeeTypeService typeService;
     @Mock
     private ConfigurationService configurationService;
+    @Mock
+    private DiscountService discountService;
 
     @Before
     public void postConstruct() {
@@ -50,23 +54,22 @@ public class CoffeeControllerTest extends AbstractControllerTest {
 
     @Test
     public void getRootTest() throws Exception {
-        // Temporary disabled
-        assumeTrue(false);
         when(typeService.getEnabled()).thenReturn(COFFEE_TYPES_ENABLED);
+        when(discountService.getActiveDiscountDescription(any())).thenReturn(MockDiscountTestData.DESCRIPTION);
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("index"))
                 .andExpect(model().attribute(MODEL_ATTR_COFFEE_TYPES, isA(CoffeeTypeDtoListWrapper.class)))
-                .andExpect(model().attribute(MODEL_ATTR_DISCOUNT_DESCRIPTION, MockDiscount.DISCOUNT_DESCRIPTION));
+                .andExpect(model().attribute(MODEL_ATTR_DISCOUNT_DESCRIPTION, MockDiscountTestData.DESCRIPTION));
         verify(typeService).getEnabled();
         verifyNoMoreInteractions(typeService);
     }
 
     @Test
     public void postValidDataToRootTest() throws Exception {
-        // Temporary disabled
-        assumeTrue(false);
         CoffeeOrder order = CoffeeOrderTestData.getCoffeeOrder2();
+        when(discountService.getDiscountedItemCost(anyInt(),any())).thenReturn(new BigDecimal(5));
+        when(discountService.getDeliveryCost(any())).thenReturn(new BigDecimal(2));
         for (CoffeeOrderItem orderItem : order.getOrderItems()) {
             CoffeeType type = orderItem.getCoffeeType();
             when(typeService.get(type.getId())).thenReturn(type);

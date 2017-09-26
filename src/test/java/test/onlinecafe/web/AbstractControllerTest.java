@@ -15,7 +15,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import javax.annotation.PostConstruct;
 
 @SpringBootTest
-@ActiveProfiles("repo-jpa, discount-mock")
+@ActiveProfiles("repo-jpa")
 @RunWith(SpringRunner.class)
 @WebAppConfiguration
 @TestPropertySource("classpath:db/db_hsqldb.properties")
