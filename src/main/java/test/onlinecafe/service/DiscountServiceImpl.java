@@ -6,6 +6,7 @@ import test.onlinecafe.util.exception.NotFoundException;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
+import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -69,5 +70,10 @@ public class DiscountServiceImpl implements DiscountService {
     @Override
     public BigDecimal getDiscountedItemCost(int quantity, BigDecimal price) {
         return this.activeDiscount.getDiscountedItemCost(quantity, price);
+    }
+
+    @Override
+    public String getActiveDiscountDescription(Locale locale) {
+        return this.activeDiscount.getDescription(locale);
     }
 }

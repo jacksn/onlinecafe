@@ -50,7 +50,7 @@ public class CoffeeController extends BaseController{
     @GetMapping
     public String root(Model model) {
         model.addAttribute(MODEL_ATTR_COFFEE_TYPES, getCoffeeTypeDtoListWrapper(coffeeTypeService.getEnabled()));
-        model.addAttribute(MODEL_ATTR_DISCOUNT_DESCRIPTION, discountService.getActiveDiscount().getDescription(LocaleContextHolder.getLocale()));
+        model.addAttribute(MODEL_ATTR_DISCOUNT_DESCRIPTION, discountService.getActiveDiscountDescription(LocaleContextHolder.getLocale()));
         return "index";
     }
 
