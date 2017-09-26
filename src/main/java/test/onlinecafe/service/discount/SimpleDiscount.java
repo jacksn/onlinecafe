@@ -1,19 +1,16 @@
-package test.onlinecafe.util.discount;
+package test.onlinecafe.service.discount;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import test.onlinecafe.service.ConfigurationService;
 import test.onlinecafe.util.exception.NotFoundException;
 
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.Locale;
 
-@Profile("discount-simple")
 @Component
 public class SimpleDiscount implements Discount {
     private static final Logger log = LoggerFactory.getLogger(SimpleDiscount.class);
@@ -24,6 +21,7 @@ public class SimpleDiscount implements Discount {
     private static final BigDecimal DEFAULT_FREE_DELIVERY_THRESHOLD = new BigDecimal("10.00");
     private static final BigDecimal DEFAULT_DELIVERY_COST = new BigDecimal("2.00");
     private static final int DEFAULT_QUANTITY_THRESHOLD = 5;
+    public static final String DISPLAY_NAME = "Simple discount";
 
     private MessageSource messageSource;
     private ConfigurationService service;
@@ -40,6 +38,7 @@ public class SimpleDiscount implements Discount {
         this.service = configurationService;
     }
 
+    @PostConstruct
     public void init() {
         BigDecimal bigDecimalValue = null;
 
@@ -90,5 +89,10 @@ public class SimpleDiscount implements Discount {
     public String getDescription(Locale locale) {
         String currencySymbol = messageSource.getMessage("label.currency_symbol", null, locale);
         return messageSource.getMessage(DESCRIPTION_TEMPLATE_NAME, new Object[]{n, x, currencySymbol}, locale);
+    }
+
+    @Override
+    public String getDisplayName() {
+        return DISPLAY_NAME;
     }
 }

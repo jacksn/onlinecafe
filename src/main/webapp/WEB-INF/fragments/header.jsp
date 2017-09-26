@@ -21,6 +21,12 @@
         <nav class="collapse navbar-collapse" id="bs-navbar">
             <ul class="nav navbar-nav navbar-right">
                 <li>
+                    <a href="settings">
+                        <i class="fa fa-gears fa-lg"></i>
+                        <spring:message code="label.settings"/>
+                    </a>
+                </li>
+                <li>
                     <a href="https://github.com/jacksn/onlinecafe">
                         <i class="fa fa-github fa-lg"></i>
                         <spring:message code="label.source_code"/>

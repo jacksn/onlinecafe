@@ -27,4 +27,5 @@ INSERT INTO CoffeeOrderItem (type_id, order_id, quantity) VALUES
 INSERT INTO Configuration (id, value) VALUES
   ('n', '5'),
   ('x', '10'),
-  ('m', '2');
+  ('m', '2'),
+  ('activeDiscount', 'simpleDiscount');

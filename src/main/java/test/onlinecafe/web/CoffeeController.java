@@ -14,7 +14,7 @@ import test.onlinecafe.dto.*;
 import test.onlinecafe.model.CoffeeType;
 import test.onlinecafe.service.CoffeeOrderService;
 import test.onlinecafe.service.CoffeeTypeService;
-import test.onlinecafe.util.CoffeeOrderUtil;
+import test.onlinecafe.service.DiscountService;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -28,29 +28,29 @@ import static test.onlinecafe.util.CoffeeOrderUtil.getCoffeeTypeDtoListWrapper;
 
 @Controller
 @RequestMapping("/")
-public class CoffeeController {
+public class CoffeeController extends BaseController{
     public static final String MODEL_ATTR_ORDER = "orderDto";
     public static final String MODEL_ATTR_COFFEE_TYPES = "coffeeTypes";
-    public static final String MODEL_ATTR_NOTIFICATION = "notification";
     public static final String MODEL_ATTR_DISCOUNT_DESCRIPTION = "discountDescription";
     public static final String MESSAGE_ERROR_EMPTY_ORDER = "error.empty_order";
     public static final String MESSAGE_ORDER_ACCEPTED = "label.order_accepted";
     public static final String MESSAGE_ERROR_EMPTY_ADDRESS = "error.empty_address";
 
-    private MessageSource messageSource;
     private CoffeeTypeService coffeeTypeService;
     private CoffeeOrderService coffeeOrderService;
+    private DiscountService discountService;
 
-    public CoffeeController(MessageSource messageSource, CoffeeTypeService coffeeTypeService, CoffeeOrderService coffeeOrderService) {
-        this.messageSource = messageSource;
+    public CoffeeController(MessageSource messageSource, CoffeeTypeService coffeeTypeService, CoffeeOrderService coffeeOrderService, DiscountService discountService) {
+        super(messageSource);
         this.coffeeTypeService = coffeeTypeService;
         this.coffeeOrderService = coffeeOrderService;
+        this.discountService = discountService;
     }
 
     @GetMapping
     public String root(Model model) {
         model.addAttribute(MODEL_ATTR_COFFEE_TYPES, getCoffeeTypeDtoListWrapper(coffeeTypeService.getEnabled()));
-        model.addAttribute(MODEL_ATTR_DISCOUNT_DESCRIPTION, CoffeeOrderUtil.getDiscount().getDescription(LocaleContextHolder.getLocale()));
+        model.addAttribute(MODEL_ATTR_DISCOUNT_DESCRIPTION, discountService.getActiveDiscount().getDescription(LocaleContextHolder.getLocale()));
         return "index";
     }
 
@@ -66,7 +66,7 @@ public class CoffeeController {
                         CoffeeType type = coffeeTypeService.get(typeDto.getTypeId());
                         int quantity = typeDto.getQuantity();
                         BigDecimal itemCost = type.getPrice().multiply(new BigDecimal(quantity));
-                        BigDecimal discountedItemCost = CoffeeOrderUtil.getDiscountedItemCost(quantity, type.getPrice());
+                        BigDecimal discountedItemCost = discountService.getDiscountedItemCost(quantity, type.getPrice());
                         boolean discounted = discountedItemCost.compareTo(itemCost) < 0;
                         orderTotalCost = orderTotalCost.add(discountedItemCost);
                         orderItemDtos.add(new CoffeeOrderItemDto(type, quantity, discountedItemCost, discounted));
@@ -74,7 +74,7 @@ public class CoffeeController {
                 }
             }
             if (!orderItemDtos.isEmpty()) {
-                BigDecimal deliveryCost = CoffeeOrderUtil.getDeliveryCost(orderTotalCost);
+                BigDecimal deliveryCost = discountService.getDeliveryCost(orderTotalCost);
                 orderTotalCost = orderTotalCost.add(deliveryCost);
                 CoffeeOrderDto orderDto = new CoffeeOrderDto(orderItemDtos, deliveryCost, orderTotalCost);
                 session.setAttribute(MODEL_ATTR_ORDER, orderDto);
@@ -124,9 +124,5 @@ public class CoffeeController {
     public String cancelOrder(HttpSession session) {
         session.removeAttribute(MODEL_ATTR_ORDER);
         return "redirect:/";
-    }
-
-    private Notification getLocalizedNotification(NotificationType type, String messageKey) {
-        return new Notification(type, messageSource.getMessage(messageKey, null, LocaleContextHolder.getLocale()));
     }
 }

@@ -1,4 +1,4 @@
-package test.onlinecafe.util.discount;
+package test.onlinecafe.service.discount;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -11,11 +11,7 @@ import java.util.Locale;
 public class MockDiscount implements Discount {
     public static final BigDecimal DELIVERY_COST = new BigDecimal(5);
     public static final String DISCOUNT_DESCRIPTION = "Mock discount";
-
-    @Override
-    public void init() {
-
-    }
+    public static final String DISPLAY_NAME = "Mock discount";
 
     @Override
     public BigDecimal getDiscountedItemCost(int quantity, BigDecimal price) {
@@ -30,5 +26,10 @@ public class MockDiscount implements Discount {
     @Override
     public String getDescription(Locale locale) {
         return DISCOUNT_DESCRIPTION;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return DISPLAY_NAME;
     }
 }

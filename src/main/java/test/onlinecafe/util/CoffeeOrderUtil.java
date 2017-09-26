@@ -1,7 +1,5 @@
 package test.onlinecafe.util;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import test.onlinecafe.dto.CoffeeOrderDto;
 import test.onlinecafe.dto.CoffeeOrderItemDto;
 import test.onlinecafe.dto.CoffeeTypeDto;
@@ -9,36 +7,13 @@ import test.onlinecafe.dto.CoffeeTypeDtoListWrapper;
 import test.onlinecafe.model.CoffeeOrder;
 import test.onlinecafe.model.CoffeeOrderItem;
 import test.onlinecafe.model.CoffeeType;
-import test.onlinecafe.util.discount.Discount;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
 public final class CoffeeOrderUtil {
-    private static Discount discount;
-
     private CoffeeOrderUtil() {
-    }
-
-    public static Discount getDiscount() {
-        return discount;
-    }
-
-    @Autowired
-    private void setDiscount(Discount discount) {
-        CoffeeOrderUtil.discount = discount;
-        discount.init();
-    }
-
-    public static BigDecimal getDeliveryCost(BigDecimal orderTotalCost) {
-        return discount.getDeliveryCost(orderTotalCost);
-    }
-
-    public static BigDecimal getDiscountedItemCost(int quantity, BigDecimal price) {
-        return discount.getDiscountedItemCost(quantity, price);
     }
 
     public static CoffeeOrderItem getOrderItemFromDto(CoffeeOrderItemDto orderItemDto) {

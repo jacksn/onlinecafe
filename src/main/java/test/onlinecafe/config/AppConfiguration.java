@@ -1,5 +1,6 @@
 package test.onlinecafe.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,9 @@ import java.util.Locale;
 @ComponentScan({"test.onlinecafe.service"})
 @PropertySource("classpath:application.properties")
 public class AppConfiguration {
+
+    @Value("${discount.default}")
+    public String defaultDiscountName;
 
     @Bean
     public ResourceBundleMessageSource messageSource() {
@@ -31,5 +35,10 @@ public class AppConfiguration {
         resolver.setCookieName("locale");
         resolver.setDefaultLocale(Locale.forLanguageTag("en"));
         return resolver;
+    }
+
+    @Bean
+    public String defaultDiscountName() {
+        return defaultDiscountName;
     }
 }
