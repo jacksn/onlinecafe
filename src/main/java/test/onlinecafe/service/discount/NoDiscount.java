@@ -29,7 +29,7 @@ public class NoDiscount implements Discount {
     @PostConstruct
     public void init() {
         try {
-            this.m = new BigDecimal(service.get("m").getValue());
+            this.m = new BigDecimal(service.get("m"));
         } catch (NotFoundException | NumberFormatException e) {
             log.error("Unable to get configuration parameter", e);
             this.m = DEFAULT_DELIVERY_COST;

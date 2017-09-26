@@ -1,7 +1,6 @@
 package test.onlinecafe.service;
 
 import org.springframework.stereotype.Service;
-import test.onlinecafe.model.ConfigurationItem;
 import test.onlinecafe.service.discount.Discount;
 import test.onlinecafe.util.exception.NotFoundException;
 
@@ -27,7 +26,7 @@ public class DiscountServiceImpl implements DiscountService {
     @PostConstruct
     public void init() {
         try {
-            this.activeDiscountName = configurationService.get(ACTIVE_DISCOUNT_CONFIG_KEY).getValue();
+            this.activeDiscountName = configurationService.get(ACTIVE_DISCOUNT_CONFIG_KEY);
         } catch (NotFoundException e) {
             this.activeDiscountName = defaultDiscountName;
         }
@@ -45,7 +44,7 @@ public class DiscountServiceImpl implements DiscountService {
         if (discount != null) {
             this.activeDiscount = discount;
             this.activeDiscountName = discountName;
-            configurationService.save(new ConfigurationItem(ACTIVE_DISCOUNT_CONFIG_KEY, discountName));
+            configurationService.save(ACTIVE_DISCOUNT_CONFIG_KEY, discountName);
             return true;
         } else {
             return false;

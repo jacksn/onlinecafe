@@ -1,12 +1,10 @@
 package test.onlinecafe.service;
 
-import test.onlinecafe.model.ConfigurationItem;
-
 public interface ConfigurationService {
-    ConfigurationItem save(ConfigurationItem configurationItem);
+    String save(String id, String value);
 
     void delete(String id);
 
-    ConfigurationItem get(String id);
+    String get(String id);
 
 }

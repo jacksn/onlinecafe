@@ -25,19 +25,20 @@ public class ConfigurationServiceTest {
     @Test
     public void testSave() throws Exception {
         when(repository.save(CONFIGURATION_ITEM1)).thenReturn(CONFIGURATION_ITEM1);
-        assertEquals(CONFIGURATION_ITEM1, service.save(CONFIGURATION_ITEM1));
+        assertEquals(CONFIGURATION_ITEM1.getValue(),
+                service.save(CONFIGURATION_ITEM1.getId(), CONFIGURATION_ITEM1.getValue()));
         verify(repository).save(CONFIGURATION_ITEM1);
     }
 
     @Test(expected = DataAccessException.class)
     public void testSaveInvalid() throws Exception {
         when(repository.save(CONFIGURATION_ITEM1)).thenThrow(new DataAccessException(new SQLException()));
-        service.save(CONFIGURATION_ITEM1);
+        service.save(CONFIGURATION_ITEM1.getId(), CONFIGURATION_ITEM1.getValue());
     }
 
     @Test(expected = NullPointerException.class)
     public void testSaveNull() throws Exception {
-        service.save(null);
+        service.save(null, "Null id");
     }
 
     @Test
@@ -64,7 +65,7 @@ public class ConfigurationServiceTest {
     public void testGet() throws Exception {
         String id = CONFIGURATION_ITEM1.getId();
         when(repository.get(id)).thenReturn(CONFIGURATION_ITEM1);
-        assertEquals(CONFIGURATION_ITEM1, service.get(CONFIGURATION_ITEM1.getId()));
+        assertEquals(CONFIGURATION_ITEM1.getValue(), service.get(CONFIGURATION_ITEM1.getId()));
         verify(repository).get(id);
     }
 

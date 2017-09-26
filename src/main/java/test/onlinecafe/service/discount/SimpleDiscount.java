@@ -68,7 +68,7 @@ public class SimpleDiscount implements Discount {
 
     private String getParameterFromDatabase(String key) {
         try {
-            return service.get(key).getValue();
+            return service.get(key);
         } catch (NotFoundException e) {
             log.error(ERROR_GETTING_PARAMETER, key);
             return null;
