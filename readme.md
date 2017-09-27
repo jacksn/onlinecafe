@@ -37,11 +37,11 @@ You can choose which repositories implementations to use by activating one from 
 * ```repo-jpa``` for [Hibernate implementation](https://github.com/jacksn/onlinecafe/tree/master/src/main/java/test/onlinecafe/repository/jpa)
 * ```repo-datajpa``` for [Spring Data JPA implementation](https://github.com/jacksn/onlinecafe/tree/master/src/main/java/test/onlinecafe/repository/datajpa)
 
-You can choose which discount implementation to use by activating one from following Spring profiles:
-* ```discount-none``` for [no-discount implementation](https://github.com/jacksn/onlinecafe/tree/master/src/main/java/test/onlinecafe/util/discount/NoDiscount.java)
-* ```discount-simple``` for [simple discount implementation](https://github.com/jacksn/onlinecafe/tree/master/src/main/java/test/onlinecafe/util/discount/SimpleDiscount.java)
+You can choose which discount implementation to use on settings page:
+* [No discount](https://github.com/jacksn/onlinecafe/tree/master/src/main/java/test/onlinecafe/util/discount/NoDiscount.java)
+* [Simple discount](https://github.com/jacksn/onlinecafe/tree/master/src/main/java/test/onlinecafe/util/discount/SimpleDiscount.java)
 
-By default application will use ```repo-datajpa``` and ```discount-none``` Spring profiles.
+By default application will use ```repo-datajpa``` Spring profile.
 
 ## How to Run 
 
@@ -52,5 +52,5 @@ This application is packaged as a war which has Tomcat 8 embedded. No Tomcat ins
 * You can build the project and run the tests by running ```mvn clean package```
 * Once successfully built, you can run application with following command:
 ```
-    mvn spring-boot:run -Drun.arguments="--spring.profiles.active=repo-jpa,--spring.profiles.active=discount-simple,--db_config_path=db_postgres.properties"
+    mvn spring-boot:run -Drun.arguments="--spring.profiles.active=repo-datajpa,--db_config_path=db_mysql.properties"
 ```
