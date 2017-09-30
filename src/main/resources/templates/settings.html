@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments::headTag(#{label.site.name} + ' - ' + #{label.settings})">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,500,700">
+    <link rel="stylesheet" href="../static/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/animate.css">
+    <link rel="stylesheet" href="../static/css/style.css">
+
+    <script type="text/javascript" src="../static/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-notify.min.js"></script>
+    <script type="text/javascript" src="../static/js/util.js"></script>
+
+    <link rel="icon" type="image/png" sizes="192x192" href="../static/img/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../static/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="../static/img/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../static/img/favicon-16x16.png">
+</head>
+
+<body>
+<!--/*@thymesVar id="notification" type="test.onlinecafe.dto.Notification"*/-->
+<th:block th:include="fragments::notification" th:if="${notification}!=null"/>
+
+<th:block th:include="fragments::header"/>
+
+<div class="jumbotron">
+    <div class="container pad">
+        <div class="row">
+            <div class="row text-center">
+                <h2><span th:text="#{label.site.name}">Online cafe</span> : <span
+                        th:text="#{label.settings}">Settings</span></h2>
+            </div>
+        </div>
+        <br/>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                <h3><span th:text="#{label.discount_settings}">Discount settings</span></h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                <div class="row">
+                    <form class="form-horizontal" method="POST">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th><span th:text="#{label.discount}">Discount</span></th>
+                                <th class="text-center"><span th:text="#{label.description}">Discount description</span>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <!--/*@thymesVar id="discountMap" type="java.util.Map<java.lang.String,test.onlinecafe.service.discount.Discount>"*/-->
+                                <!--/*@thymesVar id="activeDiscount" type="java.lang.String>"*/-->
+                                <tr th:each="discountEntry : ${discountMap}">
+                                    <td>
+                                        <input type="hidden" value="${discountEntry.key}"/>
+                                        <label>
+                                            <input type="radio" name="discount"
+                                                   th:id="${discountEntry.key}"
+                                                   th:value="${discountEntry.key}"
+                                                   th:checked="${discountEntry.key == activeDiscount}">
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <span th:text="${discountEntry.value.displayName}">Discount name</span>
+                                    </td>
+                                    <td>
+                                        <label th:for="${discountEntry.key}">
+                                            <span th:text="${discountEntry.value.getDescription(#response.locale)}">
+                                                Discount description
+                                            </span>
+                                        </label>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="row text-right">
+                            <button class="btn btn-primary btn-md" type="submit">
+                                <span th:text="#{button.save}">Save</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:include="fragments::footer"/>
+</body>
+</html>

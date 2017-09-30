@@ -28,7 +28,7 @@ import static test.onlinecafe.util.CoffeeOrderUtil.getCoffeeTypeDtoListWrapper;
 
 @Controller
 @RequestMapping("/")
-public class CoffeeController extends BaseController{
+public class CoffeeController extends BaseController {
     public static final String MODEL_ATTR_ORDER = "orderDto";
     public static final String MODEL_ATTR_COFFEE_TYPES = "coffeeTypes";
     public static final String MODEL_ATTR_DISCOUNT_DESCRIPTION = "discountDescription";
@@ -55,8 +55,10 @@ public class CoffeeController extends BaseController{
     }
 
     @PostMapping
-    public String prepareOrder(@Valid CoffeeTypeDtoListWrapper coffeeTypes, BindingResult bindingResult,
-                               HttpSession session, RedirectAttributes redirectAttributes) {
+    public String prepareOrder(@Valid CoffeeTypeDtoListWrapper coffeeTypes,
+                               BindingResult bindingResult,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) {
         if (!bindingResult.hasErrors()) {
             List<CoffeeOrderItemDto> orderItemDtos = new ArrayList<>();
             BigDecimal orderTotalCost = BigDecimal.ZERO;
@@ -97,8 +99,11 @@ public class CoffeeController extends BaseController{
     }
 
     @PostMapping("/order")
-    public String confirmOrder(@RequestParam String name, @RequestParam @NotNull @Size(min = 1) String address,
-                               RedirectAttributes redirectAttributes, HttpSession session, Model model) {
+    public String confirmOrder(@RequestParam String name,
+                               @RequestParam @NotNull @Size(min = 1) String address,
+                               RedirectAttributes redirectAttributes,
+                               HttpSession session,
+                               Model model) {
         CoffeeOrderDto orderDto = (CoffeeOrderDto) session.getAttribute(MODEL_ATTR_ORDER);
         if (orderDto == null || orderDto.getOrderItems() == null || orderDto.getOrderItems().isEmpty()) {
             session.removeAttribute(MODEL_ATTR_ORDER);
