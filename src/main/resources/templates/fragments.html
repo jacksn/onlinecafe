@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments::headTag('Fragments')">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,500,700">
+    <link rel="stylesheet" href="../static/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/animate.css">
+    <link rel="stylesheet" href="../static/css/style.css">
+
+    <script type="text/javascript" src="../static/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-notify.min.js"></script>
+    <script type="text/javascript" src="../static/js/util.js"></script>
+
+    <link rel="icon" type="image/png" sizes="192x192" href="../static/img/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../static/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="../static/img/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../static/img/favicon-16x16.png">
+</head>
+
+<th:block th:fragment="headTag(title)">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,500,700">
+    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/animate.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <script type="text/javascript" src="/static/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap-notify.min.js"></script>
+    <script type="text/javascript" src="/static/js/util.js"></script>
+
+    <link rel="icon" type="image/png" sizes="192x192" href="/static/img/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/static/img/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon-16x16.png">
+    <title th:text="${title}"></title>
+</th:block>
+
+<body>
+<th:block th:fragment="header">
+    <header class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button aria-controls="bs-navbar" aria-expanded="false" class="collapsed navbar-toggle"
+                        data-target="#bs-navbar" data-toggle="collapse" type="button">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="/" th:href="@{~/}" class="navbar-brand">
+                    <img src="/static/img/java-coffee-cup-32x32w.png" align="left">
+                    <span th:text="#{label.site.name}"></span>
+                </a>
+            </div>
+            <nav class="collapse navbar-collapse" id="bs-navbar">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="settings" th:href="@{~/settings}">
+                            <i class="fa fa-gears fa-lg"></i>
+                            <span th:text="#{label.settings}"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/jacksn/onlinecafe">
+                            <i class="fa fa-github fa-lg"></i>
+                            <span th:text="#{label.source_code}"></span>
+                        </a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <span th:text="${#locale.language}"></span>
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a onclick="setLanguage('en')">English</a></li>
+                            <li><a onclick="setLanguage('ru')">Русский</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+</th:block>
+
+<th:block th:fragment="notification">
+    <script type="text/javascript" th:inline="javascript">
+        $(document).ready(function () {
+            showNotification(/*[[${notification.type.toString()}]]*/type, /*[[${notification.message}]]*/message);
+        });
+    </script>
+
+</th:block>
+
+
+<th:block th:fragment="footer">
+    <footer><div class="container">© 2017</div></footer>
+</th:block>
+
+</body>
+</html>

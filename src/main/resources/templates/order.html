@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments::headTag(#{label.site.name} + ' - ' + #{page.order_details})">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,500,700">
+    <link rel="stylesheet" href="../static/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/animate.css">
+    <link rel="stylesheet" href="../static/css/style.css">
+
+    <script type="text/javascript" src="../static/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-notify.min.js"></script>
+    <script type="text/javascript" src="../static/js/util.js"></script>
+
+    <link rel="icon" type="image/png" sizes="192x192" href="../static/img/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../static/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="../static/img/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../static/img/favicon-16x16.png">
+</head>
+
+<body>
+<!--/*@thymesVar id="notification" type="test.onlinecafe.dto.Notification"*/-->
+<th:block th:include="fragments::notification" th:if="${notification}!=null"/>
+
+<th:block th:include="fragments::header"/>
+
+<div class="jumbotron">
+    <div class="container pad">
+        <div class="row">
+            <div class="col-md-offset-2 col-md-8">
+                <form class="form-horizontal" name="coffeeOrderForm" method="POST"
+                      th:action="@{~/order}"
+                      onsubmit="return validate()">
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="name" class="col-md-3 control-label">
+                                <span th:text="#{label.name}">Name</span>
+                            </label>
+                            <div class="col-md-8">
+                                <input class="form-control" id="name" name="name"
+                                       th:placeholder="#{label.name}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="address" class="col-md-3 control-label">
+                                <span th:text="#{label.delivery_address}">Delivery address</span>
+                            </label>
+                            <div class="col-md-8">
+                                <input class="form-control" id="address" name="address"
+                                       th:placeholder="#{label.delivery_address}"
+                                       type="text" oninput="removeErrorHighlight(this)"
+                                       oninvalid="addErrorHighlight(this)">
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th><span th:text="#{label.coffee_type}">Coffee type</span></th>
+                                <th width="15%" class="text-center"><span th:text="#{label.quantity}">Quantity</span>
+                                </th>
+                                <th width="15%" class="text-center"><span th:text="#{label.price}">Price</span></th>
+                                <th width="15%" class="text-center"><span th:text="#{label.cost}">Cost</span></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!--/*@thymesVar id="orderDto" type="test.onlinecafe.dto.CoffeeOrderDto"*/-->
+                            <tr th:each="orderItemDto : ${session.orderDto.orderItems}">
+                                <td>
+                                    <span th:text="${orderItemDto.coffeeType.typeName}">Coffee type name</span>
+                                </td>
+                                <td align="center" width="15%">
+                                    <span th:text="${orderItemDto.quantity}">Qty</span>
+                                </td>
+                                <td class="text-right">
+                                    <span th:text="${#numbers.formatDecimal(orderItemDto.coffeeType.price,1,2)}">0.00</span>
+                                    <span th:text="#{label.currency_symbol}">CURR</span>
+                                </td>
+                                <td th:class="${orderItemDto.discounted}?'text-right':'text-right text-danger'">
+                                    <span th:text="${#numbers.formatDecimal(orderItemDto.cost,1,2)}">0.00</span>
+                                    <span th:text="#{label.currency_symbol}">CURR</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-right">
+                                    <strong>
+                                        <span th:text="#{label.subtotal}">Subtotal</span>:
+                                    </strong>
+                                </td>
+                                <td class="text-right">
+                                    <span th:text="${#numbers.formatDecimal(session.orderDto.cost - session.orderDto.deliveryCost,1,2)}">0.00</span>
+                                    <span th:text="#{label.currency_symbol}">CURR</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-right">
+                                    <strong> <span th:text="#{label.delivery_cost}">Delivery cost</span>:</strong>
+                                </td>
+                                <td th:class="${session.orderDto.deliveryCost==0}?'text-right text-danger':'text-right'">
+                                    <span th:text="${#numbers.formatDecimal(session.orderDto.deliveryCost,1,2)}">0.00</span>
+                                    <span th:text="#{label.currency_symbol}">CURR</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-right">
+                                    <strong><span th:text="#{label.total_cost}">Total cost</span>:</strong>
+                                </td>
+                                <td class="text-right">
+                                    <span th:text="${#numbers.formatDecimal(session.orderDto.cost,1,2)}">0.00</span>
+                                    <span th:text="#{label.currency_symbol}">CURR</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="row text-right">
+                            <button class="btn btn-primary btn-md" type="submit">
+                                <span th:text="#{button.order}">Order</span>
+                            </button>
+                            <a class="btn btn-danger btn-md" href="/cancel" th:href="@{~/cancel}">
+                                <span th:text="#{button.cancel}">Cancel</span>
+                            </a>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>
+
+<th:block th:include="fragments::footer"/>
+<script type="text/javascript">
+    function validate() {
+        var address = $('[id=address]');
+        if (!address.val()) {
+            showNotification('danger', '[[#{error.empty_address}]]');
+            addErrorHighlight(address);
+            address.focus();
+            return false;
+        }
+    }
+</script>
+</body>
+</html>
