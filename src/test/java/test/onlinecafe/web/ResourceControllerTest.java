@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ResourceControllerTest extends AbstractControllerTest {
     @Test
     public void testResources() throws Exception {
-        mockMvc.perform(get("/css/style.css"))
+        mockMvc.perform(get("/static/css/style.css"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("navbar")));
     }
