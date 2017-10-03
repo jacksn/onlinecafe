@@ -11,15 +11,15 @@ Application Demo: https://onlinecafe.herokuapp.com/ (Takes some time to boot up)
 All versions use:
 * Plain JDBC for database connectivity.
 * Logback for logging, JUnit, Hamcrest, Mockito for testing.
-* JSP views, Boostrap, jQuery, Bootstrap Notify, Font Awesome for front-end.
+* Boostrap, jQuery, Bootstrap Notify, Font Awesome for front-end.
 
-Current version uses Spring Boot, Spring Web MVC, Spring Data JPA, Hibernate ORM, Hibernate Validator, Spring Boot Test.
+Current version uses Spring Boot, Spring Web MVC, Thymeleaf, Spring Data JPA, Hibernate ORM, Hibernate Validator, Spring Boot Test.
 
 Links to other versions:   
-* [Spring Web MVC, Spring IoC, Hibernate ORM, Hibernate Validator, Spring Test](https://github.com/jacksn/onlinecafe/tree/spring-webmvc).
-* [Servlet API, Spring IoC, Hibernate ORM, Hibernate Validator, Spring Test](https://github.com/jacksn/onlinecafe/tree/hibernate).
-* [Servlet API, Spring IoC, Spring Test](https://github.com/jacksn/onlinecafe/tree/spring_ioc).
-* [Servlet API](https://github.com/jacksn/onlinecafe/tree/jdbc-servlet-jsp).
+* [Spring Web MVC, JSP, Spring IoC, Hibernate ORM, Hibernate Validator, Spring Test](https://github.com/jacksn/onlinecafe/tree/spring-webmvc).
+* [Servlet API, JSP, Spring IoC, Hibernate ORM, Hibernate Validator, Spring Test](https://github.com/jacksn/onlinecafe/tree/hibernate).
+* [Servlet API, JSP, Spring IoC, Spring Test](https://github.com/jacksn/onlinecafe/tree/spring_ioc).
+* [Servlet API, JSP](https://github.com/jacksn/onlinecafe/tree/jdbc-servlet-jsp).
 
 ## Configuration
 
